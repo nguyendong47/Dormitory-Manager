@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="QuanLyKTX2021ModelStoreContainer" CdmEntityContainer="QuanLyKTX2021Entities">
+    <EntitySetMapping Name="HoaDons">
+      <EntityTypeMapping TypeName="QuanLyKTX2021Model.HoaDon">
+        <MappingFragment StoreEntitySet="HoaDon">
+          <ScalarProperty Name="MaHoaDon" ColumnName="MaHoaDon" />
+          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
+          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
+          <ScalarProperty Name="SoNuoc" ColumnName="SoNuoc" />
+          <ScalarProperty Name="SoDien" ColumnName="SoDien" />
+          <ScalarProperty Name="Thang" ColumnName="Thang" />
+          <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+          <ScalarProperty Name="TongTien" ColumnName="TongTien" />
+          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="HopDongs">
+      <EntityTypeMapping TypeName="QuanLyKTX2021Model.HopDong">
+        <MappingFragment StoreEntitySet="HopDong">
+          <ScalarProperty Name="MaHD" ColumnName="MaHD" />
+          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
+          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
+          <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
+          <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
+          <ScalarProperty Name="CMND" ColumnName="CMND" />
+          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
+          <ScalarProperty Name="DanToc" ColumnName="DanToc" />
+          <ScalarProperty Name="Lop" ColumnName="Lop" />
+          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
+          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
+          <ScalarProperty Name="SDT" ColumnName="SDT" />
+          <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+          <ScalarProperty Name="TenPhuHuynh" ColumnName="TenPhuHuynh" />
+          <ScalarProperty Name="SDTPhuHuynh" ColumnName="SDTPhuHuynh" />
+          <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
+          <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
+          <ScalarProperty Name="TienPhong" ColumnName="TienPhong" />
+          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="NhanViens">
+      <EntityTypeMapping TypeName="QuanLyKTX2021Model.NhanVien">
+        <MappingFragment StoreEntitySet="NhanVien">
+          <ScalarProperty Name="HoTen" ColumnName="HoTen" />
+          <ScalarProperty Name="CMND" ColumnName="CMND" />
+          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
+          <ScalarProperty Name="CongViec" ColumnName="CongViec" />
+          <ScalarProperty Name="Luong" ColumnName="Luong" />
+          <ScalarProperty Name="DiaDiem" ColumnName="DiaDiem" />
+          <ScalarProperty Name="SDT" ColumnName="SDT" />
+          <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Phongs">
+      <EntityTypeMapping TypeName="QuanLyKTX2021Model.Phong">
+        <MappingFragment StoreEntitySet="Phong">
+          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
+          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
+          <ScalarProperty Name="LoaiPhong" ColumnName="LoaiPhong" />
+          <ScalarProperty Name="SoNguoiToiDa" ColumnName="SoNguoiToiDa" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="DangNhap" FunctionName="QuanLyKTX2021Model.Store.DangNhap" />
+    <FunctionImportMapping FunctionImportName="LayDanhSachHopDong" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachHopDong">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.LayDanhSachHopDong_Result">
+          <ScalarProperty Name="MaHD" ColumnName="MaHD" />
+          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
+          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
+          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
+          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
+          <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
+          <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
+          <ScalarProperty Name="TienPhong" ColumnName="TienPhong" />
+          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="LayDanhSachNhanVien" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachNhanVien">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.LayDanhSachNhanVien_Result">
+          <ScalarProperty Name="HoTen" ColumnName="HoTen" />
+          <ScalarProperty Name="CMND" ColumnName="CMND" />
+          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
+          <ScalarProperty Name="CongViec" ColumnName="CongViec" />
+          <ScalarProperty Name="Luong" ColumnName="Luong" />
+          <ScalarProperty Name="DiaDiem" ColumnName="DiaDiem" />
+          <ScalarProperty Name="SDT" ColumnName="SDT" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="LayDanhSachPhong" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachPhong">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.LayDanhSachPhong_Result">
+          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
+          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
+          <ScalarProperty Name="LoaiPhong" ColumnName="LoaiPhong" />
+          <ScalarProperty Name="SoNguoiToiDa" ColumnName="SoNguoiToiDa" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="LayDanhSachSinhVien" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachSinhVien">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.LayDanhSachSinhVien_Result">
+          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
+          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
+          <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
+          <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
+          <ScalarProperty Name="CMND" ColumnName="CMND" />
+          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
+          <ScalarProperty Name="DanToc" ColumnName="DanToc" />
+          <ScalarProperty Name="Lop" ColumnName="Lop" />
+          <ScalarProperty Name="SDT" ColumnName="SDT" />
+          <ScalarProperty Name="TenPhuHuynh" ColumnName="TenPhuHuynh" />
+          <ScalarProperty Name="SDTPhuHuynh" ColumnName="SDTPhuHuynh" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="LayDanhSachTenPhong" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachTenPhong" />
+    <FunctionImportMapping FunctionImportName="LayDanhSachToaNha" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachToaNha" />
+    <FunctionImportMapping FunctionImportName="SoNguoiHienTaiCuaPhong" FunctionName="QuanLyKTX2021Model.Store.SoNguoiHienTaiCuaPhong" />
+    <FunctionImportMapping FunctionImportName="SuaHoaDon" FunctionName="QuanLyKTX2021Model.Store.SuaHoaDon" />
+    <FunctionImportMapping FunctionImportName="SuaHopDong" FunctionName="QuanLyKTX2021Model.Store.SuaHopDong" />
+    <FunctionImportMapping FunctionImportName="SuaNhanVien" FunctionName="QuanLyKTX2021Model.Store.SuaNhanVien" />
+    <FunctionImportMapping FunctionImportName="SuaPhong" FunctionName="QuanLyKTX2021Model.Store.SuaPhong" />
+    <FunctionImportMapping FunctionImportName="SuaSinhVien" FunctionName="QuanLyKTX2021Model.Store.SuaSinhVien" />
+    <FunctionImportMapping FunctionImportName="ThemHoaDon" FunctionName="QuanLyKTX2021Model.Store.ThemHoaDon" />
+    <FunctionImportMapping FunctionImportName="ThemHopDong" FunctionName="QuanLyKTX2021Model.Store.ThemHopDong" />
+    <FunctionImportMapping FunctionImportName="ThemNhanVien" FunctionName="QuanLyKTX2021Model.Store.ThemNhanVien" />
+    <FunctionImportMapping FunctionImportName="ThemPhong" FunctionName="QuanLyKTX2021Model.Store.ThemPhong" />
+    <FunctionImportMapping FunctionImportName="TimHopDong" FunctionName="QuanLyKTX2021Model.Store.TimHopDong">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.TimHopDong_Result">
+          <ScalarProperty Name="MaHD" ColumnName="MaHD" />
+          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
+          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
+          <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
+          <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
+          <ScalarProperty Name="CMND" ColumnName="CMND" />
+          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
+          <ScalarProperty Name="DanToc" ColumnName="DanToc" />
+          <ScalarProperty Name="Lop" ColumnName="Lop" />
+          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
+          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
+          <ScalarProperty Name="SDT" ColumnName="SDT" />
+          <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+          <ScalarProperty Name="TenPhuHuynh" ColumnName="TenPhuHuynh" />
+          <ScalarProperty Name="SDTPhuHuynh" ColumnName="SDTPhuHuynh" />
+          <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
+          <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
+          <ScalarProperty Name="TienPhong" ColumnName="TienPhong" />
+          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="TimHopDongTheoMaHD" FunctionName="QuanLyKTX2021Model.Store.TimHopDongTheoMaHD">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.TimHopDongTheoMaHD_Result">
+          <ScalarProperty Name="MaHD" ColumnName="MaHD" />
+          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
+          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
+          <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
+          <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
+          <ScalarProperty Name="CMND" ColumnName="CMND" />
+          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
+          <ScalarProperty Name="DanToc" ColumnName="DanToc" />
+          <ScalarProperty Name="Lop" ColumnName="Lop" />
+          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
+          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
+          <ScalarProperty Name="SDT" ColumnName="SDT" />
+          <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+          <ScalarProperty Name="TenPhuHuynh" ColumnName="TenPhuHuynh" />
+          <ScalarProperty Name="SDTPhuHuynh" ColumnName="SDTPhuHuynh" />
+          <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
+          <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
+          <ScalarProperty Name="TienPhong" ColumnName="TienPhong" />
+          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="XoaHoaDon" FunctionName="QuanLyKTX2021Model.Store.XoaHoaDon" />
+    <FunctionImportMapping FunctionImportName="XoaHopDong" FunctionName="QuanLyKTX2021Model.Store.XoaHopDong" />
+    <FunctionImportMapping FunctionImportName="XoaNhanVien" FunctionName="QuanLyKTX2021Model.Store.XoaNhanVien" />
+    <FunctionImportMapping FunctionImportName="XoaPhong" FunctionName="QuanLyKTX2021Model.Store.XoaPhong" />
+  </EntityContainerMapping>
+</Mapping>

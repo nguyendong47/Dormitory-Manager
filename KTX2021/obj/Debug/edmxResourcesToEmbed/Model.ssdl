@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="QuanLyKTX2021Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="HoaDon">
+    <Key>
+      <PropertyRef Name="MaHoaDon" />
+    </Key>
+    <Property Name="MaHoaDon" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ToaNha" Type="nvarchar" MaxLength="100" />
+    <Property Name="TenPhong" Type="nvarchar" MaxLength="100" />
+    <Property Name="SoNuoc" Type="int" />
+    <Property Name="SoDien" Type="int" />
+    <Property Name="Thang" Type="date" />
+    <Property Name="TrangThai" Type="bit" />
+    <Property Name="TongTien" Type="decimal" Precision="18" Scale="0" />
+    <Property Name="NhanVienLap" Type="bigint" />
+  </EntityType>
+  <EntityType Name="HopDong">
+    <Key>
+      <PropertyRef Name="MaHD" />
+    </Key>
+    <Property Name="MaHD" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="MaSV" Type="nvarchar" MaxLength="100" />
+    <Property Name="TenSV" Type="nvarchar" MaxLength="100" />
+    <Property Name="NgaySinh" Type="date" />
+    <Property Name="GioiTinh" Type="bit" />
+    <Property Name="CMND" Type="bigint" />
+    <Property Name="QueQuan" Type="nvarchar(max)" />
+    <Property Name="DanToc" Type="nvarchar(max)" />
+    <Property Name="Lop" Type="nvarchar(max)" />
+    <Property Name="ToaNha" Type="nvarchar" MaxLength="100" />
+    <Property Name="TenPhong" Type="nvarchar" MaxLength="100" />
+    <Property Name="SDT" Type="bigint" />
+    <Property Name="MatKhau" Type="nvarchar" MaxLength="100" />
+    <Property Name="TenPhuHuynh" Type="nvarchar" MaxLength="100" />
+    <Property Name="SDTPhuHuynh" Type="nvarchar" MaxLength="100" />
+    <Property Name="NgayLap" Type="date" />
+    <Property Name="NgayHetHan" Type="date" />
+    <Property Name="TienPhong" Type="decimal" Precision="18" Scale="0" />
+    <Property Name="NhanVienLap" Type="bigint" />
+  </EntityType>
+  <EntityType Name="NhanVien">
+    <Key>
+      <PropertyRef Name="CMND" />
+    </Key>
+    <Property Name="HoTen" Type="nvarchar" MaxLength="100" />
+    <Property Name="CMND" Type="bigint" Nullable="false" />
+    <Property Name="QueQuan" Type="nvarchar" MaxLength="100" />
+    <Property Name="CongViec" Type="nvarchar" MaxLength="100" />
+    <Property Name="Luong" Type="bigint" />
+    <Property Name="DiaDiem" Type="nvarchar" MaxLength="100" />
+    <Property Name="SDT" Type="bigint" />
+    <Property Name="MatKhau" Type="nvarchar" MaxLength="100" />
+  </EntityType>
+  <EntityType Name="Phong">
+    <Key>
+      <PropertyRef Name="ToaNha" />
+      <PropertyRef Name="TenPhong" />
+    </Key>
+    <Property Name="ToaNha" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="TenPhong" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="LoaiPhong" Type="nvarchar" MaxLength="100" />
+    <Property Name="SoNguoiToiDa" Type="int" />
+  </EntityType>
+  <Association Name="FK__HopDong__21B6055D">
+    <End Role="Phong" Type="Self.Phong" Multiplicity="0..1" />
+    <End Role="HopDong" Type="Self.HopDong" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Phong">
+        <PropertyRef Name="ToaNha" />
+        <PropertyRef Name="TenPhong" />
+      </Principal>
+      <Dependent Role="HopDong">
+        <PropertyRef Name="ToaNha" />
+        <PropertyRef Name="TenPhong" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Function Name="DangNhap" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="maSo" Type="bigint" Mode="In" />
+    <Parameter Name="matKhau" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="fuConvertToUnsign" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="nvarchar">
+    <Parameter Name="strInput" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="LayDanhSachHopDong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="LayDanhSachNhanVien" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="LayDanhSachPhong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="LayDanhSachSinhVien" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="LayDanhSachTenPhong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="toaNha" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="LayDanhSachToaNha" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="SoNguoiHienTaiCuaPhong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="toaNha" Type="nvarchar" Mode="In" />
+    <Parameter Name="tenPhong" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="SuaHoaDon" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="MaHoaDon" Type="bigint" Mode="In" />
+    <Parameter Name="ToaNha" Type="nvarchar" Mode="In" />
+    <Parameter Name="TenPhong" Type="nvarchar" Mode="In" />
+    <Parameter Name="SoNuoc" Type="int" Mode="In" />
+    <Parameter Name="SoDien" Type="int" Mode="In" />
+    <Parameter Name="Thang" Type="date" Mode="In" />
+    <Parameter Name="TrangThai" Type="bit" Mode="In" />
+    <Parameter Name="NhanVienLap" Type="bigint" Mode="In" />
+  </Function>
+  <Function Name="SuaHopDong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="MaHD" Type="bigint" Mode="In" />
+    <Parameter Name="MaSV" Type="nvarchar" Mode="In" />
+    <Parameter Name="TenSV" Type="nvarchar" Mode="In" />
+    <Parameter Name="ToaNha" Type="nvarchar" Mode="In" />
+    <Parameter Name="TenPhong" Type="nvarchar" Mode="In" />
+    <Parameter Name="NgayLap" Type="date" Mode="In" />
+    <Parameter Name="NgayHetHan" Type="date" Mode="In" />
+    <Parameter Name="TienPhong" Type="decimal" Mode="In" />
+    <Parameter Name="NhanVienLap" Type="bigint" Mode="In" />
+  </Function>
+  <Function Name="SuaNhanVien" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="hoTen" Type="nvarchar" Mode="In" />
+    <Parameter Name="cmnd" Type="bigint" Mode="In" />
+    <Parameter Name="queQuan" Type="nvarchar" Mode="In" />
+    <Parameter Name="congViec" Type="nvarchar" Mode="In" />
+    <Parameter Name="luong" Type="bigint" Mode="In" />
+    <Parameter Name="diaDiem" Type="nvarchar" Mode="In" />
+    <Parameter Name="sdt" Type="bigint" Mode="In" />
+  </Function>
+  <Function Name="SuaPhong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="toaNha" Type="nvarchar" Mode="In" />
+    <Parameter Name="tenPhong" Type="nvarchar" Mode="In" />
+    <Parameter Name="loaiPhong" Type="nvarchar" Mode="In" />
+    <Parameter Name="soNguoiToiDa" Type="int" Mode="In" />
+  </Function>
+  <Function Name="SuaSinhVien" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="MaSV" Type="nvarchar" Mode="In" />
+    <Parameter Name="TenSV" Type="nvarchar" Mode="In" />
+    <Parameter Name="NgaySinh" Type="date" Mode="In" />
+    <Parameter Name="GioiTinh" Type="bit" Mode="In" />
+    <Parameter Name="CMND" Type="bigint" Mode="In" />
+    <Parameter Name="QueQuan" Type="nvarchar(max)" Mode="In" />
+    <Parameter Name="DanToc" Type="nvarchar(max)" Mode="In" />
+    <Parameter Name="Lop" Type="nvarchar(max)" Mode="In" />
+    <Parameter Name="SDT" Type="bigint" Mode="In" />
+    <Parameter Name="TenPhuHuynh" Type="nvarchar" Mode="In" />
+    <Parameter Name="SDTPhuHuynh" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="ThemHoaDon" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="ToaNha" Type="nvarchar" Mode="In" />
+    <Parameter Name="TenPhong" Type="nvarchar" Mode="In" />
+    <Parameter Name="SoNuoc" Type="int" Mode="In" />
+    <Parameter Name="SoDien" Type="int" Mode="In" />
+    <Parameter Name="Thang" Type="date" Mode="In" />
+    <Parameter Name="TrangThai" Type="bit" Mode="In" />
+    <Parameter Name="NhanVienLap" Type="bigint" Mode="In" />
+  </Function>
+  <Function Name="ThemHopDong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="MaSV" Type="nvarchar" Mode="In" />
+    <Parameter Name="TenSV" Type="nvarchar" Mode="In" />
+    <Parameter Name="NgaySinh" Type="date" Mode="In" />
+    <Parameter Name="GioiTinh" Type="bit" Mode="In" />
+    <Parameter Name="CMND" Type="bigint" Mode="In" />
+    <Parameter Name="QueQuan" Type="nvarchar(max)" Mode="In" />
+    <Parameter Name="DanToc" Type="nvarchar(max)" Mode="In" />
+    <Parameter Name="Lop" Type="nvarchar(max)" Mode="In" />
+    <Parameter Name="ToaNha" Type="nvarchar" Mode="In" />
+    <Parameter Name="TenPhong" Type="nvarchar" Mode="In" />
+    <Parameter Name="SDT" Type="bigint" Mode="In" />
+    <Parameter Name="MatKhau" Type="nvarchar" Mode="In" />
+    <Parameter Name="TenPhuHuynh" Type="nvarchar" Mode="In" />
+    <Parameter Name="SDTPhuHuynh" Type="nvarchar" Mode="In" />
+    <Parameter Name="NgayLap" Type="date" Mode="In" />
+    <Parameter Name="NgayHetHan" Type="date" Mode="In" />
+    <Parameter Name="TienPhong" Type="decimal" Mode="In" />
+    <Parameter Name="NhanVienLap" Type="bigint" Mode="In" />
+  </Function>
+  <Function Name="ThemNhanVien" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="hoTen" Type="nvarchar" Mode="In" />
+    <Parameter Name="cmnd" Type="bigint" Mode="In" />
+    <Parameter Name="queQuan" Type="nvarchar" Mode="In" />
+    <Parameter Name="congViec" Type="nvarchar" Mode="In" />
+    <Parameter Name="luong" Type="bigint" Mode="In" />
+    <Parameter Name="diaDiem" Type="nvarchar" Mode="In" />
+    <Parameter Name="sdt" Type="bigint" Mode="In" />
+    <Parameter Name="matKhau" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="ThemPhong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="toaNha" Type="nvarchar" Mode="In" />
+    <Parameter Name="tenPhong" Type="nvarchar" Mode="In" />
+    <Parameter Name="loaiPhong" Type="nvarchar" Mode="In" />
+    <Parameter Name="soNguoiToiDa" Type="int" Mode="In" />
+  </Function>
+  <Function Name="TimHopDong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="maHD" Type="bigint" Mode="In" />
+    <Parameter Name="tenSV" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="TimHopDongTheoMaHD" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="maHD" Type="bigint" Mode="In" />
+  </Function>
+  <Function Name="XoaHoaDon" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="maHoaDon" Type="bigint" Mode="In" />
+  </Function>
+  <Function Name="XoaHopDong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="maHD" Type="bigint" Mode="In" />
+  </Function>
+  <Function Name="XoaNhanVien" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="cmnd" Type="bigint" Mode="In" />
+  </Function>
+  <Function Name="XoaPhong" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="toaNha" Type="nvarchar" Mode="In" />
+    <Parameter Name="tenPhong" Type="nvarchar" Mode="In" />
+  </Function>
+  <EntityContainer Name="QuanLyKTX2021ModelStoreContainer">
+    <EntitySet Name="HoaDon" EntityType="Self.HoaDon" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="HopDong" EntityType="Self.HopDong" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="NhanVien" EntityType="Self.NhanVien" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Phong" EntityType="Self.Phong" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK__HopDong__21B6055D" Association="Self.FK__HopDong__21B6055D">
+      <End Role="Phong" EntitySet="Phong" />
+      <End Role="HopDong" EntitySet="HopDong" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

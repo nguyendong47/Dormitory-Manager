@@ -1,0 +1,301 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="QuanLyKTX2021Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="HoaDon">
+    <Key>
+      <PropertyRef Name="MaHoaDon" />
+    </Key>
+    <Property Name="MaHoaDon" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ToaNha" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="TenPhong" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="SoNuoc" Type="Int32" />
+    <Property Name="SoDien" Type="Int32" />
+    <Property Name="Thang" Type="DateTime" Precision="0" />
+    <Property Name="TrangThai" Type="Boolean" />
+    <Property Name="TongTien" Type="Decimal" Precision="18" Scale="0" />
+    <Property Name="NhanVienLap" Type="Int64" />
+  </EntityType>
+  <EntityType Name="HopDong">
+    <Key>
+      <PropertyRef Name="MaHD" />
+    </Key>
+    <Property Name="MaHD" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MaSV" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="TenSV" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="NgaySinh" Type="DateTime" Precision="0" />
+    <Property Name="GioiTinh" Type="Boolean" />
+    <Property Name="CMND" Type="Int64" />
+    <Property Name="QueQuan" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="DanToc" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Lop" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ToaNha" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="TenPhong" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="SDT" Type="Int64" />
+    <Property Name="MatKhau" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="TenPhuHuynh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="SDTPhuHuynh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="NgayLap" Type="DateTime" Precision="0" />
+    <Property Name="NgayHetHan" Type="DateTime" Precision="0" />
+    <Property Name="TienPhong" Type="Decimal" Precision="18" Scale="0" />
+    <Property Name="NhanVienLap" Type="Int64" />
+    <NavigationProperty Name="Phong" Relationship="Self.FK__HopDong__21B6055D" FromRole="HopDong" ToRole="Phong" />
+  </EntityType>
+  <EntityType Name="NhanVien">
+    <Key>
+      <PropertyRef Name="CMND" />
+    </Key>
+    <Property Name="HoTen" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="CMND" Type="Int64" Nullable="false" />
+    <Property Name="QueQuan" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="CongViec" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Luong" Type="Int64" />
+    <Property Name="DiaDiem" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="SDT" Type="Int64" />
+    <Property Name="MatKhau" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="Phong">
+    <Key>
+      <PropertyRef Name="ToaNha" />
+      <PropertyRef Name="TenPhong" />
+    </Key>
+    <Property Name="ToaNha" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="TenPhong" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="LoaiPhong" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="SoNguoiToiDa" Type="Int32" />
+    <NavigationProperty Name="HopDongs" Relationship="Self.FK__HopDong__21B6055D" FromRole="Phong" ToRole="HopDong" />
+  </EntityType>
+  <Association Name="FK__HopDong__21B6055D">
+    <End Role="Phong" Type="Self.Phong" Multiplicity="0..1" />
+    <End Role="HopDong" Type="Self.HopDong" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Phong">
+        <PropertyRef Name="ToaNha" />
+        <PropertyRef Name="TenPhong" />
+      </Principal>
+      <Dependent Role="HopDong">
+        <PropertyRef Name="ToaNha" />
+        <PropertyRef Name="TenPhong" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="QuanLyKTX2021Entities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="HoaDons" EntityType="Self.HoaDon" />
+    <EntitySet Name="HopDongs" EntityType="Self.HopDong" />
+    <EntitySet Name="NhanViens" EntityType="Self.NhanVien" />
+    <EntitySet Name="Phongs" EntityType="Self.Phong" />
+    <AssociationSet Name="FK__HopDong__21B6055D" Association="Self.FK__HopDong__21B6055D">
+      <End Role="Phong" EntitySet="Phongs" />
+      <End Role="HopDong" EntitySet="HopDongs" />
+    </AssociationSet>
+    <FunctionImport Name="DangNhap" ReturnType="Collection(Int32)">
+      <Parameter Name="maSo" Mode="In" Type="Int64" />
+      <Parameter Name="matKhau" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="LayDanhSachHopDong" ReturnType="Collection(QuanLyKTX2021Model.LayDanhSachHopDong_Result)" />
+    <FunctionImport Name="LayDanhSachNhanVien" ReturnType="Collection(QuanLyKTX2021Model.LayDanhSachNhanVien_Result)" />
+    <FunctionImport Name="LayDanhSachPhong" ReturnType="Collection(QuanLyKTX2021Model.LayDanhSachPhong_Result)" />
+    <FunctionImport Name="LayDanhSachSinhVien" ReturnType="Collection(QuanLyKTX2021Model.LayDanhSachSinhVien_Result)" />
+    <FunctionImport Name="LayDanhSachTenPhong" ReturnType="Collection(String)">
+      <Parameter Name="toaNha" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="LayDanhSachToaNha" ReturnType="Collection(String)" />
+    <FunctionImport Name="SoNguoiHienTaiCuaPhong" ReturnType="Collection(Int32)">
+      <Parameter Name="toaNha" Mode="In" Type="String" />
+      <Parameter Name="tenPhong" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="SuaHoaDon">
+      <Parameter Name="MaHoaDon" Mode="In" Type="Int64" />
+      <Parameter Name="ToaNha" Mode="In" Type="String" />
+      <Parameter Name="TenPhong" Mode="In" Type="String" />
+      <Parameter Name="SoNuoc" Mode="In" Type="Int32" />
+      <Parameter Name="SoDien" Mode="In" Type="Int32" />
+      <Parameter Name="Thang" Mode="In" Type="DateTime" />
+      <Parameter Name="TrangThai" Mode="In" Type="Boolean" />
+      <Parameter Name="NhanVienLap" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="SuaHopDong">
+      <Parameter Name="MaHD" Mode="In" Type="Int64" />
+      <Parameter Name="MaSV" Mode="In" Type="String" />
+      <Parameter Name="TenSV" Mode="In" Type="String" />
+      <Parameter Name="ToaNha" Mode="In" Type="String" />
+      <Parameter Name="TenPhong" Mode="In" Type="String" />
+      <Parameter Name="NgayLap" Mode="In" Type="DateTime" />
+      <Parameter Name="NgayHetHan" Mode="In" Type="DateTime" />
+      <Parameter Name="TienPhong" Mode="In" Type="Decimal" />
+      <Parameter Name="NhanVienLap" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="SuaNhanVien">
+      <Parameter Name="hoTen" Mode="In" Type="String" />
+      <Parameter Name="cmnd" Mode="In" Type="Int64" />
+      <Parameter Name="queQuan" Mode="In" Type="String" />
+      <Parameter Name="congViec" Mode="In" Type="String" />
+      <Parameter Name="luong" Mode="In" Type="Int64" />
+      <Parameter Name="diaDiem" Mode="In" Type="String" />
+      <Parameter Name="sdt" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="SuaPhong">
+      <Parameter Name="toaNha" Mode="In" Type="String" />
+      <Parameter Name="tenPhong" Mode="In" Type="String" />
+      <Parameter Name="loaiPhong" Mode="In" Type="String" />
+      <Parameter Name="soNguoiToiDa" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="SuaSinhVien">
+      <Parameter Name="MaSV" Mode="In" Type="String" />
+      <Parameter Name="TenSV" Mode="In" Type="String" />
+      <Parameter Name="NgaySinh" Mode="In" Type="DateTime" />
+      <Parameter Name="GioiTinh" Mode="In" Type="Boolean" />
+      <Parameter Name="CMND" Mode="In" Type="Int64" />
+      <Parameter Name="QueQuan" Mode="In" Type="String" />
+      <Parameter Name="DanToc" Mode="In" Type="String" />
+      <Parameter Name="Lop" Mode="In" Type="String" />
+      <Parameter Name="SDT" Mode="In" Type="Int64" />
+      <Parameter Name="TenPhuHuynh" Mode="In" Type="String" />
+      <Parameter Name="SDTPhuHuynh" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="ThemHoaDon">
+      <Parameter Name="ToaNha" Mode="In" Type="String" />
+      <Parameter Name="TenPhong" Mode="In" Type="String" />
+      <Parameter Name="SoNuoc" Mode="In" Type="Int32" />
+      <Parameter Name="SoDien" Mode="In" Type="Int32" />
+      <Parameter Name="Thang" Mode="In" Type="DateTime" />
+      <Parameter Name="TrangThai" Mode="In" Type="Boolean" />
+      <Parameter Name="NhanVienLap" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="ThemHopDong">
+      <Parameter Name="MaSV" Mode="In" Type="String" />
+      <Parameter Name="TenSV" Mode="In" Type="String" />
+      <Parameter Name="NgaySinh" Mode="In" Type="DateTime" />
+      <Parameter Name="GioiTinh" Mode="In" Type="Boolean" />
+      <Parameter Name="CMND" Mode="In" Type="Int64" />
+      <Parameter Name="QueQuan" Mode="In" Type="String" />
+      <Parameter Name="DanToc" Mode="In" Type="String" />
+      <Parameter Name="Lop" Mode="In" Type="String" />
+      <Parameter Name="ToaNha" Mode="In" Type="String" />
+      <Parameter Name="TenPhong" Mode="In" Type="String" />
+      <Parameter Name="SDT" Mode="In" Type="Int64" />
+      <Parameter Name="MatKhau" Mode="In" Type="String" />
+      <Parameter Name="TenPhuHuynh" Mode="In" Type="String" />
+      <Parameter Name="SDTPhuHuynh" Mode="In" Type="String" />
+      <Parameter Name="NgayLap" Mode="In" Type="DateTime" />
+      <Parameter Name="NgayHetHan" Mode="In" Type="DateTime" />
+      <Parameter Name="TienPhong" Mode="In" Type="Decimal" />
+      <Parameter Name="NhanVienLap" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="ThemNhanVien">
+      <Parameter Name="hoTen" Mode="In" Type="String" />
+      <Parameter Name="cmnd" Mode="In" Type="Int64" />
+      <Parameter Name="queQuan" Mode="In" Type="String" />
+      <Parameter Name="congViec" Mode="In" Type="String" />
+      <Parameter Name="luong" Mode="In" Type="Int64" />
+      <Parameter Name="diaDiem" Mode="In" Type="String" />
+      <Parameter Name="sdt" Mode="In" Type="Int64" />
+      <Parameter Name="matKhau" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="ThemPhong">
+      <Parameter Name="toaNha" Mode="In" Type="String" />
+      <Parameter Name="tenPhong" Mode="In" Type="String" />
+      <Parameter Name="loaiPhong" Mode="In" Type="String" />
+      <Parameter Name="soNguoiToiDa" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="TimHopDong" ReturnType="Collection(QuanLyKTX2021Model.TimHopDong_Result)">
+      <Parameter Name="maHD" Mode="In" Type="Int64" />
+      <Parameter Name="tenSV" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="TimHopDongTheoMaHD" ReturnType="Collection(QuanLyKTX2021Model.TimHopDongTheoMaHD_Result)">
+      <Parameter Name="maHD" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="XoaHoaDon">
+      <Parameter Name="maHoaDon" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="XoaHopDong">
+      <Parameter Name="maHD" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="XoaNhanVien">
+      <Parameter Name="cmnd" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="XoaPhong">
+      <Parameter Name="toaNha" Mode="In" Type="String" />
+      <Parameter Name="tenPhong" Mode="In" Type="String" />
+    </FunctionImport>
+  </EntityContainer>
+  <ComplexType Name="LayDanhSachHopDong_Result">
+    <Property Type="Int64" Name="MaHD" Nullable="false" />
+    <Property Type="String" Name="MaSV" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="TenSV" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="ToaNha" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="TenPhong" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="NgayLap" Nullable="true" />
+    <Property Type="DateTime" Name="NgayHetHan" Nullable="true" />
+    <Property Type="Decimal" Name="TienPhong" Nullable="true" Precision="18" Scale="0" />
+    <Property Type="Int64" Name="NhanVienLap" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="LayDanhSachNhanVien_Result">
+    <Property Type="String" Name="HoTen" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="CMND" Nullable="false" />
+    <Property Type="String" Name="QueQuan" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="CongViec" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Luong" Nullable="true" />
+    <Property Type="String" Name="DiaDiem" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SDT" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="LayDanhSachPhong_Result">
+    <Property Type="String" Name="ToaNha" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="TenPhong" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="LoaiPhong" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="SoNguoiToiDa" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="LayDanhSachSinhVien_Result">
+    <Property Type="String" Name="MaSV" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="TenSV" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="NgaySinh" Nullable="true" />
+    <Property Type="Boolean" Name="GioiTinh" Nullable="true" />
+    <Property Type="Int64" Name="CMND" Nullable="true" />
+    <Property Type="String" Name="QueQuan" Nullable="true" />
+    <Property Type="String" Name="DanToc" Nullable="true" />
+    <Property Type="String" Name="Lop" Nullable="true" />
+    <Property Type="Int64" Name="SDT" Nullable="true" />
+    <Property Type="String" Name="TenPhuHuynh" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="SDTPhuHuynh" Nullable="true" MaxLength="100" />
+  </ComplexType>
+  <ComplexType Name="TimHopDong_Result">
+    <Property Type="Int64" Name="MaHD" Nullable="false" />
+    <Property Type="String" Name="MaSV" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="TenSV" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="NgaySinh" Nullable="true" />
+    <Property Type="Boolean" Name="GioiTinh" Nullable="true" />
+    <Property Type="Int64" Name="CMND" Nullable="true" />
+    <Property Type="String" Name="QueQuan" Nullable="true" />
+    <Property Type="String" Name="DanToc" Nullable="true" />
+    <Property Type="String" Name="Lop" Nullable="true" />
+    <Property Type="String" Name="ToaNha" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="TenPhong" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SDT" Nullable="true" />
+    <Property Type="String" Name="MatKhau" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="TenPhuHuynh" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="SDTPhuHuynh" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="NgayLap" Nullable="true" />
+    <Property Type="DateTime" Name="NgayHetHan" Nullable="true" />
+    <Property Type="Decimal" Name="TienPhong" Nullable="true" Precision="18" Scale="0" />
+    <Property Type="Int64" Name="NhanVienLap" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="TimHopDongTheoMaHD_Result">
+    <Property Type="Int64" Name="MaHD" Nullable="false" />
+    <Property Type="String" Name="MaSV" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="TenSV" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="NgaySinh" Nullable="true" />
+    <Property Type="Boolean" Name="GioiTinh" Nullable="true" />
+    <Property Type="Int64" Name="CMND" Nullable="true" />
+    <Property Type="String" Name="QueQuan" Nullable="true" />
+    <Property Type="String" Name="DanToc" Nullable="true" />
+    <Property Type="String" Name="Lop" Nullable="true" />
+    <Property Type="String" Name="ToaNha" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="TenPhong" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SDT" Nullable="true" />
+    <Property Type="String" Name="MatKhau" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="TenPhuHuynh" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="SDTPhuHuynh" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="NgayLap" Nullable="true" />
+    <Property Type="DateTime" Name="NgayHetHan" Nullable="true" />
+    <Property Type="Decimal" Name="TienPhong" Nullable="true" Precision="18" Scale="0" />
+    <Property Type="Int64" Name="NhanVienLap" Nullable="true" />
+  </ComplexType>
+</Schema>
