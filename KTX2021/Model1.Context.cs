@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KTX2021
+namespace Dormitory_Management_2021
 {
     using System;
     using System.Data.Entity;
@@ -15,10 +15,10 @@ namespace KTX2021
     using System.Data.Entity.Core.Objects;
     using System.Linq;
     
-    public partial class QuanLyKTX2021Entities : DbContext
+    public partial class db_Dormitory_Management_2021Entities : DbContext
     {
-        public QuanLyKTX2021Entities()
-            : base("name=QuanLyKTX2021Entities")
+        public db_Dormitory_Management_2021Entities()
+            : base("name=db_Dormitory_Management_2021Entities")
         {
         }
     
@@ -27,502 +27,662 @@ namespace KTX2021
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<HoaDon> HoaDons { get; set; }
-        public virtual DbSet<HopDong> HopDongs { get; set; }
-        public virtual DbSet<NhanVien> NhanViens { get; set; }
-        public virtual DbSet<Phong> Phongs { get; set; }
+        public virtual DbSet<tbl_Bill> tbl_Bill { get; set; }
+        public virtual DbSet<tbl_Contract> tbl_Contract { get; set; }
+        public virtual DbSet<tbl_Employee> tbl_Employee { get; set; }
+        public virtual DbSet<tbl_Room> tbl_Room { get; set; }
     
-        public virtual ObjectResult<Nullable<int>> DangNhap(Nullable<long> maSo, string matKhau)
+        public virtual int usp_Add_Bill(string name_Room, Nullable<int> number_Water_Bill, Nullable<int> number_Electricty_Bill, Nullable<System.DateTime> month_Bill, Nullable<bool> status_Bill, Nullable<decimal> total_Money_Bill)
         {
-            var maSoParameter = maSo.HasValue ?
-                new ObjectParameter("maSo", maSo) :
-                new ObjectParameter("maSo", typeof(long));
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
     
-            var matKhauParameter = matKhau != null ?
-                new ObjectParameter("matKhau", matKhau) :
-                new ObjectParameter("matKhau", typeof(string));
+            var number_Water_BillParameter = number_Water_Bill.HasValue ?
+                new ObjectParameter("Number_Water_Bill", number_Water_Bill) :
+                new ObjectParameter("Number_Water_Bill", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("DangNhap", maSoParameter, matKhauParameter);
+            var number_Electricty_BillParameter = number_Electricty_Bill.HasValue ?
+                new ObjectParameter("Number_Electricty_Bill", number_Electricty_Bill) :
+                new ObjectParameter("Number_Electricty_Bill", typeof(int));
+    
+            var month_BillParameter = month_Bill.HasValue ?
+                new ObjectParameter("Month_Bill", month_Bill) :
+                new ObjectParameter("Month_Bill", typeof(System.DateTime));
+    
+            var status_BillParameter = status_Bill.HasValue ?
+                new ObjectParameter("Status_Bill", status_Bill) :
+                new ObjectParameter("Status_Bill", typeof(bool));
+    
+            var total_Money_BillParameter = total_Money_Bill.HasValue ?
+                new ObjectParameter("Total_Money_Bill", total_Money_Bill) :
+                new ObjectParameter("Total_Money_Bill", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Add_Bill", name_RoomParameter, number_Water_BillParameter, number_Electricty_BillParameter, month_BillParameter, status_BillParameter, total_Money_BillParameter);
         }
     
-        public virtual ObjectResult<LayDanhSachHoaDon_Result> LayDanhSachHoaDon()
+        public virtual int usp_Add_Contract(string name_Student_Contract, Nullable<System.DateTime> date_of_Birth_Student_Contract, string sex_Student_Contract, Nullable<long> identity_Card_Student_Contract, string home_Town_Student_Contract, string nation_Student_Contract, string class_Student_Contract, string name_Room, Nullable<long> phone_Number_Student_Contract, string parents_Name_Student_Contract, Nullable<long> phone_Number_Parents_Student_Contract, Nullable<System.DateTime> start_Day_Contract, Nullable<System.DateTime> expiration_Date_Contract, Nullable<decimal> total_Money_Contract)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<LayDanhSachHoaDon_Result>("LayDanhSachHoaDon");
+            var name_Student_ContractParameter = name_Student_Contract != null ?
+                new ObjectParameter("Name_Student_Contract", name_Student_Contract) :
+                new ObjectParameter("Name_Student_Contract", typeof(string));
+    
+            var date_of_Birth_Student_ContractParameter = date_of_Birth_Student_Contract.HasValue ?
+                new ObjectParameter("Date_of_Birth_Student_Contract", date_of_Birth_Student_Contract) :
+                new ObjectParameter("Date_of_Birth_Student_Contract", typeof(System.DateTime));
+    
+            var sex_Student_ContractParameter = sex_Student_Contract != null ?
+                new ObjectParameter("Sex_Student_Contract", sex_Student_Contract) :
+                new ObjectParameter("Sex_Student_Contract", typeof(string));
+    
+            var identity_Card_Student_ContractParameter = identity_Card_Student_Contract.HasValue ?
+                new ObjectParameter("Identity_Card_Student_Contract", identity_Card_Student_Contract) :
+                new ObjectParameter("Identity_Card_Student_Contract", typeof(long));
+    
+            var home_Town_Student_ContractParameter = home_Town_Student_Contract != null ?
+                new ObjectParameter("Home_Town_Student_Contract", home_Town_Student_Contract) :
+                new ObjectParameter("Home_Town_Student_Contract", typeof(string));
+    
+            var nation_Student_ContractParameter = nation_Student_Contract != null ?
+                new ObjectParameter("Nation_Student_Contract", nation_Student_Contract) :
+                new ObjectParameter("Nation_Student_Contract", typeof(string));
+    
+            var class_Student_ContractParameter = class_Student_Contract != null ?
+                new ObjectParameter("Class_Student_Contract", class_Student_Contract) :
+                new ObjectParameter("Class_Student_Contract", typeof(string));
+    
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
+    
+            var phone_Number_Student_ContractParameter = phone_Number_Student_Contract.HasValue ?
+                new ObjectParameter("Phone_Number_Student_Contract", phone_Number_Student_Contract) :
+                new ObjectParameter("Phone_Number_Student_Contract", typeof(long));
+    
+            var parents_Name_Student_ContractParameter = parents_Name_Student_Contract != null ?
+                new ObjectParameter("Parents_Name_Student_Contract", parents_Name_Student_Contract) :
+                new ObjectParameter("Parents_Name_Student_Contract", typeof(string));
+    
+            var phone_Number_Parents_Student_ContractParameter = phone_Number_Parents_Student_Contract.HasValue ?
+                new ObjectParameter("Phone_Number_Parents_Student_Contract", phone_Number_Parents_Student_Contract) :
+                new ObjectParameter("Phone_Number_Parents_Student_Contract", typeof(long));
+    
+            var start_Day_ContractParameter = start_Day_Contract.HasValue ?
+                new ObjectParameter("Start_Day_Contract", start_Day_Contract) :
+                new ObjectParameter("Start_Day_Contract", typeof(System.DateTime));
+    
+            var expiration_Date_ContractParameter = expiration_Date_Contract.HasValue ?
+                new ObjectParameter("Expiration_Date_Contract", expiration_Date_Contract) :
+                new ObjectParameter("Expiration_Date_Contract", typeof(System.DateTime));
+    
+            var total_Money_ContractParameter = total_Money_Contract.HasValue ?
+                new ObjectParameter("Total_Money_Contract", total_Money_Contract) :
+                new ObjectParameter("Total_Money_Contract", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Add_Contract", name_Student_ContractParameter, date_of_Birth_Student_ContractParameter, sex_Student_ContractParameter, identity_Card_Student_ContractParameter, home_Town_Student_ContractParameter, nation_Student_ContractParameter, class_Student_ContractParameter, name_RoomParameter, phone_Number_Student_ContractParameter, parents_Name_Student_ContractParameter, phone_Number_Parents_Student_ContractParameter, start_Day_ContractParameter, expiration_Date_ContractParameter, total_Money_ContractParameter);
         }
     
-        public virtual ObjectResult<LayDanhSachHopDong_Result> LayDanhSachHopDong()
+        public virtual int usp_Add_Employee(string name_Employee, Nullable<long> identity_Card_Employee, string home_Town_Employee, string work_Employee, Nullable<long> salary_Employee, string workplace_Employee, Nullable<long> phone_Number_Employee)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<LayDanhSachHopDong_Result>("LayDanhSachHopDong");
+            var name_EmployeeParameter = name_Employee != null ?
+                new ObjectParameter("Name_Employee", name_Employee) :
+                new ObjectParameter("Name_Employee", typeof(string));
+    
+            var identity_Card_EmployeeParameter = identity_Card_Employee.HasValue ?
+                new ObjectParameter("Identity_Card_Employee", identity_Card_Employee) :
+                new ObjectParameter("Identity_Card_Employee", typeof(long));
+    
+            var home_Town_EmployeeParameter = home_Town_Employee != null ?
+                new ObjectParameter("Home_Town_Employee", home_Town_Employee) :
+                new ObjectParameter("Home_Town_Employee", typeof(string));
+    
+            var work_EmployeeParameter = work_Employee != null ?
+                new ObjectParameter("Work_Employee", work_Employee) :
+                new ObjectParameter("Work_Employee", typeof(string));
+    
+            var salary_EmployeeParameter = salary_Employee.HasValue ?
+                new ObjectParameter("Salary_Employee", salary_Employee) :
+                new ObjectParameter("Salary_Employee", typeof(long));
+    
+            var workplace_EmployeeParameter = workplace_Employee != null ?
+                new ObjectParameter("Workplace_Employee", workplace_Employee) :
+                new ObjectParameter("Workplace_Employee", typeof(string));
+    
+            var phone_Number_EmployeeParameter = phone_Number_Employee.HasValue ?
+                new ObjectParameter("Phone_Number_Employee", phone_Number_Employee) :
+                new ObjectParameter("Phone_Number_Employee", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Add_Employee", name_EmployeeParameter, identity_Card_EmployeeParameter, home_Town_EmployeeParameter, work_EmployeeParameter, salary_EmployeeParameter, workplace_EmployeeParameter, phone_Number_EmployeeParameter);
         }
     
-        public virtual ObjectResult<LayDanhSachNhanVien_Result> LayDanhSachNhanVien()
+        public virtual int usp_Add_Room(string building_Room, string name_Room, string type_Room, Nullable<int> maximum_Number_of_People_Room)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<LayDanhSachNhanVien_Result>("LayDanhSachNhanVien");
+            var building_RoomParameter = building_Room != null ?
+                new ObjectParameter("Building_Room", building_Room) :
+                new ObjectParameter("Building_Room", typeof(string));
+    
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
+    
+            var type_RoomParameter = type_Room != null ?
+                new ObjectParameter("Type_Room", type_Room) :
+                new ObjectParameter("Type_Room", typeof(string));
+    
+            var maximum_Number_of_People_RoomParameter = maximum_Number_of_People_Room.HasValue ?
+                new ObjectParameter("Maximum_Number_of_People_Room", maximum_Number_of_People_Room) :
+                new ObjectParameter("Maximum_Number_of_People_Room", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Add_Room", building_RoomParameter, name_RoomParameter, type_RoomParameter, maximum_Number_of_People_RoomParameter);
         }
     
-        public virtual ObjectResult<LayDanhSachPhong_Result> LayDanhSachPhong()
+        public virtual int usp_Delete_Bill(Nullable<long> iD_Bill)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<LayDanhSachPhong_Result>("LayDanhSachPhong");
+            var iD_BillParameter = iD_Bill.HasValue ?
+                new ObjectParameter("ID_Bill", iD_Bill) :
+                new ObjectParameter("ID_Bill", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Delete_Bill", iD_BillParameter);
         }
     
-        public virtual ObjectResult<LayDanhSachSinhVien_Result> LayDanhSachSinhVien()
+        public virtual int usp_Delete_Contract(Nullable<long> iD_Contract)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<LayDanhSachSinhVien_Result>("LayDanhSachSinhVien");
+            var iD_ContractParameter = iD_Contract.HasValue ?
+                new ObjectParameter("ID_Contract", iD_Contract) :
+                new ObjectParameter("ID_Contract", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Delete_Contract", iD_ContractParameter);
         }
     
-        public virtual ObjectResult<string> LayDanhSachTenPhong(string toaNha)
+        public virtual int usp_Delete_Employee(Nullable<long> identity_Card_Employee)
         {
-            var toaNhaParameter = toaNha != null ?
-                new ObjectParameter("toaNha", toaNha) :
-                new ObjectParameter("toaNha", typeof(string));
+            var identity_Card_EmployeeParameter = identity_Card_Employee.HasValue ?
+                new ObjectParameter("Identity_Card_Employee", identity_Card_Employee) :
+                new ObjectParameter("Identity_Card_Employee", typeof(long));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("LayDanhSachTenPhong", toaNhaParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Delete_Employee", identity_Card_EmployeeParameter);
         }
     
-        public virtual ObjectResult<string> LayDanhSachToaNha()
+        public virtual int usp_Delete_Room(string name_Room)
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("LayDanhSachToaNha");
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Delete_Room", name_RoomParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> SoNguoiHienTaiCuaPhong(string toaNha, string tenPhong)
+        public virtual int usp_Edit_Account(string username_Account, string old_Password_Account, string new_Password_Account)
         {
-            var toaNhaParameter = toaNha != null ?
-                new ObjectParameter("toaNha", toaNha) :
-                new ObjectParameter("toaNha", typeof(string));
+            var username_AccountParameter = username_Account != null ?
+                new ObjectParameter("Username_Account", username_Account) :
+                new ObjectParameter("Username_Account", typeof(string));
     
-            var tenPhongParameter = tenPhong != null ?
-                new ObjectParameter("tenPhong", tenPhong) :
-                new ObjectParameter("tenPhong", typeof(string));
+            var old_Password_AccountParameter = old_Password_Account != null ?
+                new ObjectParameter("Old_Password_Account", old_Password_Account) :
+                new ObjectParameter("Old_Password_Account", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("SoNguoiHienTaiCuaPhong", toaNhaParameter, tenPhongParameter);
+            var new_Password_AccountParameter = new_Password_Account != null ?
+                new ObjectParameter("New_Password_Account", new_Password_Account) :
+                new ObjectParameter("New_Password_Account", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Edit_Account", username_AccountParameter, old_Password_AccountParameter, new_Password_AccountParameter);
         }
     
-        public virtual int SuaHoaDon(Nullable<long> maHoaDon, string toaNha, string tenPhong, Nullable<int> soNuoc, Nullable<int> soDien, Nullable<System.DateTime> thang, Nullable<bool> trangThai, Nullable<decimal> tongTien, Nullable<long> nhanVienLap)
+        public virtual int usp_Edit_Bill(Nullable<long> iD_Bill, string name_Room, Nullable<int> number_Water_Bill, Nullable<int> number_Electricty_Bill, Nullable<System.DateTime> month_Bill, Nullable<bool> status_Bill, Nullable<decimal> total_Money_Bill)
         {
-            var maHoaDonParameter = maHoaDon.HasValue ?
-                new ObjectParameter("MaHoaDon", maHoaDon) :
-                new ObjectParameter("MaHoaDon", typeof(long));
+            var iD_BillParameter = iD_Bill.HasValue ?
+                new ObjectParameter("ID_Bill", iD_Bill) :
+                new ObjectParameter("ID_Bill", typeof(long));
     
-            var toaNhaParameter = toaNha != null ?
-                new ObjectParameter("ToaNha", toaNha) :
-                new ObjectParameter("ToaNha", typeof(string));
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
     
-            var tenPhongParameter = tenPhong != null ?
-                new ObjectParameter("TenPhong", tenPhong) :
-                new ObjectParameter("TenPhong", typeof(string));
+            var number_Water_BillParameter = number_Water_Bill.HasValue ?
+                new ObjectParameter("Number_Water_Bill", number_Water_Bill) :
+                new ObjectParameter("Number_Water_Bill", typeof(int));
     
-            var soNuocParameter = soNuoc.HasValue ?
-                new ObjectParameter("SoNuoc", soNuoc) :
-                new ObjectParameter("SoNuoc", typeof(int));
+            var number_Electricty_BillParameter = number_Electricty_Bill.HasValue ?
+                new ObjectParameter("Number_Electricty_Bill", number_Electricty_Bill) :
+                new ObjectParameter("Number_Electricty_Bill", typeof(int));
     
-            var soDienParameter = soDien.HasValue ?
-                new ObjectParameter("SoDien", soDien) :
-                new ObjectParameter("SoDien", typeof(int));
+            var month_BillParameter = month_Bill.HasValue ?
+                new ObjectParameter("Month_Bill", month_Bill) :
+                new ObjectParameter("Month_Bill", typeof(System.DateTime));
     
-            var thangParameter = thang.HasValue ?
-                new ObjectParameter("Thang", thang) :
-                new ObjectParameter("Thang", typeof(System.DateTime));
+            var status_BillParameter = status_Bill.HasValue ?
+                new ObjectParameter("Status_Bill", status_Bill) :
+                new ObjectParameter("Status_Bill", typeof(bool));
     
-            var trangThaiParameter = trangThai.HasValue ?
-                new ObjectParameter("TrangThai", trangThai) :
-                new ObjectParameter("TrangThai", typeof(bool));
+            var total_Money_BillParameter = total_Money_Bill.HasValue ?
+                new ObjectParameter("Total_Money_Bill", total_Money_Bill) :
+                new ObjectParameter("Total_Money_Bill", typeof(decimal));
     
-            var tongTienParameter = tongTien.HasValue ?
-                new ObjectParameter("TongTien", tongTien) :
-                new ObjectParameter("TongTien", typeof(decimal));
-    
-            var nhanVienLapParameter = nhanVienLap.HasValue ?
-                new ObjectParameter("NhanVienLap", nhanVienLap) :
-                new ObjectParameter("NhanVienLap", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SuaHoaDon", maHoaDonParameter, toaNhaParameter, tenPhongParameter, soNuocParameter, soDienParameter, thangParameter, trangThaiParameter, tongTienParameter, nhanVienLapParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Edit_Bill", iD_BillParameter, name_RoomParameter, number_Water_BillParameter, number_Electricty_BillParameter, month_BillParameter, status_BillParameter, total_Money_BillParameter);
         }
     
-        public virtual int SuaHopDong(Nullable<long> maHD, string maSV, string tenSV, string toaNha, string tenPhong, Nullable<System.DateTime> ngayLap, Nullable<System.DateTime> ngayHetHan, Nullable<decimal> tienPhong, Nullable<long> nhanVienLap)
+        public virtual int usp_Edit_Contract(Nullable<long> iD_Contract, string name_Student_Contract, string name_Room, Nullable<System.DateTime> start_Day_Contract, Nullable<System.DateTime> expiration_Date_Contract, Nullable<decimal> total_Money_Contract)
         {
-            var maHDParameter = maHD.HasValue ?
-                new ObjectParameter("MaHD", maHD) :
-                new ObjectParameter("MaHD", typeof(long));
+            var iD_ContractParameter = iD_Contract.HasValue ?
+                new ObjectParameter("ID_Contract", iD_Contract) :
+                new ObjectParameter("ID_Contract", typeof(long));
     
-            var maSVParameter = maSV != null ?
-                new ObjectParameter("MaSV", maSV) :
-                new ObjectParameter("MaSV", typeof(string));
+            var name_Student_ContractParameter = name_Student_Contract != null ?
+                new ObjectParameter("Name_Student_Contract", name_Student_Contract) :
+                new ObjectParameter("Name_Student_Contract", typeof(string));
     
-            var tenSVParameter = tenSV != null ?
-                new ObjectParameter("TenSV", tenSV) :
-                new ObjectParameter("TenSV", typeof(string));
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
     
-            var toaNhaParameter = toaNha != null ?
-                new ObjectParameter("ToaNha", toaNha) :
-                new ObjectParameter("ToaNha", typeof(string));
+            var start_Day_ContractParameter = start_Day_Contract.HasValue ?
+                new ObjectParameter("Start_Day_Contract", start_Day_Contract) :
+                new ObjectParameter("Start_Day_Contract", typeof(System.DateTime));
     
-            var tenPhongParameter = tenPhong != null ?
-                new ObjectParameter("TenPhong", tenPhong) :
-                new ObjectParameter("TenPhong", typeof(string));
+            var expiration_Date_ContractParameter = expiration_Date_Contract.HasValue ?
+                new ObjectParameter("Expiration_Date_Contract", expiration_Date_Contract) :
+                new ObjectParameter("Expiration_Date_Contract", typeof(System.DateTime));
     
-            var ngayLapParameter = ngayLap.HasValue ?
-                new ObjectParameter("NgayLap", ngayLap) :
-                new ObjectParameter("NgayLap", typeof(System.DateTime));
+            var total_Money_ContractParameter = total_Money_Contract.HasValue ?
+                new ObjectParameter("Total_Money_Contract", total_Money_Contract) :
+                new ObjectParameter("Total_Money_Contract", typeof(decimal));
     
-            var ngayHetHanParameter = ngayHetHan.HasValue ?
-                new ObjectParameter("NgayHetHan", ngayHetHan) :
-                new ObjectParameter("NgayHetHan", typeof(System.DateTime));
-    
-            var tienPhongParameter = tienPhong.HasValue ?
-                new ObjectParameter("TienPhong", tienPhong) :
-                new ObjectParameter("TienPhong", typeof(decimal));
-    
-            var nhanVienLapParameter = nhanVienLap.HasValue ?
-                new ObjectParameter("NhanVienLap", nhanVienLap) :
-                new ObjectParameter("NhanVienLap", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SuaHopDong", maHDParameter, maSVParameter, tenSVParameter, toaNhaParameter, tenPhongParameter, ngayLapParameter, ngayHetHanParameter, tienPhongParameter, nhanVienLapParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Edit_Contract", iD_ContractParameter, name_Student_ContractParameter, name_RoomParameter, start_Day_ContractParameter, expiration_Date_ContractParameter, total_Money_ContractParameter);
         }
     
-        public virtual int SuaNhanVien(string hoTen, Nullable<long> cmnd, string queQuan, string congViec, Nullable<long> luong, string diaDiem, Nullable<long> sdt)
+        public virtual int usp_Edit_Employee(string name_Employee, Nullable<long> identity_Card_Employee, string home_Town_Employee, string work_Employee, Nullable<long> salary_Employee, string workplace_Employee, Nullable<long> phone_Number_Employee)
         {
-            var hoTenParameter = hoTen != null ?
-                new ObjectParameter("hoTen", hoTen) :
-                new ObjectParameter("hoTen", typeof(string));
+            var name_EmployeeParameter = name_Employee != null ?
+                new ObjectParameter("Name_Employee", name_Employee) :
+                new ObjectParameter("Name_Employee", typeof(string));
     
-            var cmndParameter = cmnd.HasValue ?
-                new ObjectParameter("cmnd", cmnd) :
-                new ObjectParameter("cmnd", typeof(long));
+            var identity_Card_EmployeeParameter = identity_Card_Employee.HasValue ?
+                new ObjectParameter("Identity_Card_Employee", identity_Card_Employee) :
+                new ObjectParameter("Identity_Card_Employee", typeof(long));
     
-            var queQuanParameter = queQuan != null ?
-                new ObjectParameter("queQuan", queQuan) :
-                new ObjectParameter("queQuan", typeof(string));
+            var home_Town_EmployeeParameter = home_Town_Employee != null ?
+                new ObjectParameter("Home_Town_Employee", home_Town_Employee) :
+                new ObjectParameter("Home_Town_Employee", typeof(string));
     
-            var congViecParameter = congViec != null ?
-                new ObjectParameter("congViec", congViec) :
-                new ObjectParameter("congViec", typeof(string));
+            var work_EmployeeParameter = work_Employee != null ?
+                new ObjectParameter("Work_Employee", work_Employee) :
+                new ObjectParameter("Work_Employee", typeof(string));
     
-            var luongParameter = luong.HasValue ?
-                new ObjectParameter("luong", luong) :
-                new ObjectParameter("luong", typeof(long));
+            var salary_EmployeeParameter = salary_Employee.HasValue ?
+                new ObjectParameter("Salary_Employee", salary_Employee) :
+                new ObjectParameter("Salary_Employee", typeof(long));
     
-            var diaDiemParameter = diaDiem != null ?
-                new ObjectParameter("diaDiem", diaDiem) :
-                new ObjectParameter("diaDiem", typeof(string));
+            var workplace_EmployeeParameter = workplace_Employee != null ?
+                new ObjectParameter("Workplace_Employee", workplace_Employee) :
+                new ObjectParameter("Workplace_Employee", typeof(string));
     
-            var sdtParameter = sdt.HasValue ?
-                new ObjectParameter("sdt", sdt) :
-                new ObjectParameter("sdt", typeof(long));
+            var phone_Number_EmployeeParameter = phone_Number_Employee.HasValue ?
+                new ObjectParameter("Phone_Number_Employee", phone_Number_Employee) :
+                new ObjectParameter("Phone_Number_Employee", typeof(long));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SuaNhanVien", hoTenParameter, cmndParameter, queQuanParameter, congViecParameter, luongParameter, diaDiemParameter, sdtParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Edit_Employee", name_EmployeeParameter, identity_Card_EmployeeParameter, home_Town_EmployeeParameter, work_EmployeeParameter, salary_EmployeeParameter, workplace_EmployeeParameter, phone_Number_EmployeeParameter);
         }
     
-        public virtual int SuaPhong(string toaNha, string tenPhong, string loaiPhong, Nullable<int> soNguoiToiDa)
+        public virtual int usp_Edit_Room(string building_Room, string name_Room, string type_Room, Nullable<int> maximum_Number_of_People_Room)
         {
-            var toaNhaParameter = toaNha != null ?
-                new ObjectParameter("toaNha", toaNha) :
-                new ObjectParameter("toaNha", typeof(string));
+            var building_RoomParameter = building_Room != null ?
+                new ObjectParameter("Building_Room", building_Room) :
+                new ObjectParameter("Building_Room", typeof(string));
     
-            var tenPhongParameter = tenPhong != null ?
-                new ObjectParameter("tenPhong", tenPhong) :
-                new ObjectParameter("tenPhong", typeof(string));
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
     
-            var loaiPhongParameter = loaiPhong != null ?
-                new ObjectParameter("loaiPhong", loaiPhong) :
-                new ObjectParameter("loaiPhong", typeof(string));
+            var type_RoomParameter = type_Room != null ?
+                new ObjectParameter("Type_Room", type_Room) :
+                new ObjectParameter("Type_Room", typeof(string));
     
-            var soNguoiToiDaParameter = soNguoiToiDa.HasValue ?
-                new ObjectParameter("soNguoiToiDa", soNguoiToiDa) :
-                new ObjectParameter("soNguoiToiDa", typeof(int));
+            var maximum_Number_of_People_RoomParameter = maximum_Number_of_People_Room.HasValue ?
+                new ObjectParameter("Maximum_Number_of_People_Room", maximum_Number_of_People_Room) :
+                new ObjectParameter("Maximum_Number_of_People_Room", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SuaPhong", toaNhaParameter, tenPhongParameter, loaiPhongParameter, soNguoiToiDaParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Edit_Room", building_RoomParameter, name_RoomParameter, type_RoomParameter, maximum_Number_of_People_RoomParameter);
         }
     
-        public virtual int SuaSinhVien(string maSV, string tenSV, Nullable<System.DateTime> ngaySinh, Nullable<bool> gioiTinh, Nullable<long> cMND, string queQuan, string danToc, string lop, Nullable<long> sDT, string tenPhuHuynh, string sDTPhuHuynh)
+        public virtual int usp_Edit_Student(string name_Student_Contract, Nullable<System.DateTime> date_of_Birth_Student_Contract, string sex_Student_Contract, Nullable<long> identity_Card_Student_Contract, string home_Town_Student_Contract, string nation_Student_Contract, string class_Student_Contract, Nullable<long> phone_Number_Student_Contract, string parents_Name_Student_Contract, Nullable<long> phone_Number_Parents_Student_Contract)
         {
-            var maSVParameter = maSV != null ?
-                new ObjectParameter("MaSV", maSV) :
-                new ObjectParameter("MaSV", typeof(string));
+            var name_Student_ContractParameter = name_Student_Contract != null ?
+                new ObjectParameter("Name_Student_Contract", name_Student_Contract) :
+                new ObjectParameter("Name_Student_Contract", typeof(string));
     
-            var tenSVParameter = tenSV != null ?
-                new ObjectParameter("TenSV", tenSV) :
-                new ObjectParameter("TenSV", typeof(string));
+            var date_of_Birth_Student_ContractParameter = date_of_Birth_Student_Contract.HasValue ?
+                new ObjectParameter("Date_of_Birth_Student_Contract", date_of_Birth_Student_Contract) :
+                new ObjectParameter("Date_of_Birth_Student_Contract", typeof(System.DateTime));
     
-            var ngaySinhParameter = ngaySinh.HasValue ?
-                new ObjectParameter("NgaySinh", ngaySinh) :
-                new ObjectParameter("NgaySinh", typeof(System.DateTime));
+            var sex_Student_ContractParameter = sex_Student_Contract != null ?
+                new ObjectParameter("Sex_Student_Contract", sex_Student_Contract) :
+                new ObjectParameter("Sex_Student_Contract", typeof(string));
     
-            var gioiTinhParameter = gioiTinh.HasValue ?
-                new ObjectParameter("GioiTinh", gioiTinh) :
-                new ObjectParameter("GioiTinh", typeof(bool));
+            var identity_Card_Student_ContractParameter = identity_Card_Student_Contract.HasValue ?
+                new ObjectParameter("Identity_Card_Student_Contract", identity_Card_Student_Contract) :
+                new ObjectParameter("Identity_Card_Student_Contract", typeof(long));
     
-            var cMNDParameter = cMND.HasValue ?
-                new ObjectParameter("CMND", cMND) :
-                new ObjectParameter("CMND", typeof(long));
+            var home_Town_Student_ContractParameter = home_Town_Student_Contract != null ?
+                new ObjectParameter("Home_Town_Student_Contract", home_Town_Student_Contract) :
+                new ObjectParameter("Home_Town_Student_Contract", typeof(string));
     
-            var queQuanParameter = queQuan != null ?
-                new ObjectParameter("QueQuan", queQuan) :
-                new ObjectParameter("QueQuan", typeof(string));
+            var nation_Student_ContractParameter = nation_Student_Contract != null ?
+                new ObjectParameter("Nation_Student_Contract", nation_Student_Contract) :
+                new ObjectParameter("Nation_Student_Contract", typeof(string));
     
-            var danTocParameter = danToc != null ?
-                new ObjectParameter("DanToc", danToc) :
-                new ObjectParameter("DanToc", typeof(string));
+            var class_Student_ContractParameter = class_Student_Contract != null ?
+                new ObjectParameter("Class_Student_Contract", class_Student_Contract) :
+                new ObjectParameter("Class_Student_Contract", typeof(string));
     
-            var lopParameter = lop != null ?
-                new ObjectParameter("Lop", lop) :
-                new ObjectParameter("Lop", typeof(string));
+            var phone_Number_Student_ContractParameter = phone_Number_Student_Contract.HasValue ?
+                new ObjectParameter("Phone_Number_Student_Contract", phone_Number_Student_Contract) :
+                new ObjectParameter("Phone_Number_Student_Contract", typeof(long));
     
-            var sDTParameter = sDT.HasValue ?
-                new ObjectParameter("SDT", sDT) :
-                new ObjectParameter("SDT", typeof(long));
+            var parents_Name_Student_ContractParameter = parents_Name_Student_Contract != null ?
+                new ObjectParameter("Parents_Name_Student_Contract", parents_Name_Student_Contract) :
+                new ObjectParameter("Parents_Name_Student_Contract", typeof(string));
     
-            var tenPhuHuynhParameter = tenPhuHuynh != null ?
-                new ObjectParameter("TenPhuHuynh", tenPhuHuynh) :
-                new ObjectParameter("TenPhuHuynh", typeof(string));
+            var phone_Number_Parents_Student_ContractParameter = phone_Number_Parents_Student_Contract.HasValue ?
+                new ObjectParameter("Phone_Number_Parents_Student_Contract", phone_Number_Parents_Student_Contract) :
+                new ObjectParameter("Phone_Number_Parents_Student_Contract", typeof(long));
     
-            var sDTPhuHuynhParameter = sDTPhuHuynh != null ?
-                new ObjectParameter("SDTPhuHuynh", sDTPhuHuynh) :
-                new ObjectParameter("SDTPhuHuynh", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SuaSinhVien", maSVParameter, tenSVParameter, ngaySinhParameter, gioiTinhParameter, cMNDParameter, queQuanParameter, danTocParameter, lopParameter, sDTParameter, tenPhuHuynhParameter, sDTPhuHuynhParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_Edit_Student", name_Student_ContractParameter, date_of_Birth_Student_ContractParameter, sex_Student_ContractParameter, identity_Card_Student_ContractParameter, home_Town_Student_ContractParameter, nation_Student_ContractParameter, class_Student_ContractParameter, phone_Number_Student_ContractParameter, parents_Name_Student_ContractParameter, phone_Number_Parents_Student_ContractParameter);
         }
     
-        public virtual int ThemHoaDon(string toaNha, string tenPhong, Nullable<int> soNuoc, Nullable<int> soDien, Nullable<System.DateTime> thang, Nullable<bool> trangThai, Nullable<decimal> tongTien, Nullable<long> nhanVienLap)
+        public virtual ObjectResult<usp_Get_Bill_Result> usp_Get_Bill()
         {
-            var toaNhaParameter = toaNha != null ?
-                new ObjectParameter("ToaNha", toaNha) :
-                new ObjectParameter("ToaNha", typeof(string));
-    
-            var tenPhongParameter = tenPhong != null ?
-                new ObjectParameter("TenPhong", tenPhong) :
-                new ObjectParameter("TenPhong", typeof(string));
-    
-            var soNuocParameter = soNuoc.HasValue ?
-                new ObjectParameter("SoNuoc", soNuoc) :
-                new ObjectParameter("SoNuoc", typeof(int));
-    
-            var soDienParameter = soDien.HasValue ?
-                new ObjectParameter("SoDien", soDien) :
-                new ObjectParameter("SoDien", typeof(int));
-    
-            var thangParameter = thang.HasValue ?
-                new ObjectParameter("Thang", thang) :
-                new ObjectParameter("Thang", typeof(System.DateTime));
-    
-            var trangThaiParameter = trangThai.HasValue ?
-                new ObjectParameter("TrangThai", trangThai) :
-                new ObjectParameter("TrangThai", typeof(bool));
-    
-            var tongTienParameter = tongTien.HasValue ?
-                new ObjectParameter("TongTien", tongTien) :
-                new ObjectParameter("TongTien", typeof(decimal));
-    
-            var nhanVienLapParameter = nhanVienLap.HasValue ?
-                new ObjectParameter("NhanVienLap", nhanVienLap) :
-                new ObjectParameter("NhanVienLap", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ThemHoaDon", toaNhaParameter, tenPhongParameter, soNuocParameter, soDienParameter, thangParameter, trangThaiParameter, tongTienParameter, nhanVienLapParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Bill_Result>("usp_Get_Bill");
         }
     
-        public virtual int ThemHopDong(string maSV, string tenSV, Nullable<System.DateTime> ngaySinh, Nullable<bool> gioiTinh, Nullable<long> cMND, string queQuan, string danToc, string lop, string toaNha, string tenPhong, Nullable<long> sDT, string matKhau, string tenPhuHuynh, string sDTPhuHuynh, Nullable<System.DateTime> ngayLap, Nullable<System.DateTime> ngayHetHan, Nullable<decimal> tienPhong, Nullable<long> nhanVienLap)
+        public virtual ObjectResult<usp_Get_Bill_by_Month_Bill_Result> usp_Get_Bill_by_Month_Bill(Nullable<System.DateTime> month_Bill)
         {
-            var maSVParameter = maSV != null ?
-                new ObjectParameter("MaSV", maSV) :
-                new ObjectParameter("MaSV", typeof(string));
+            var month_BillParameter = month_Bill.HasValue ?
+                new ObjectParameter("Month_Bill", month_Bill) :
+                new ObjectParameter("Month_Bill", typeof(System.DateTime));
     
-            var tenSVParameter = tenSV != null ?
-                new ObjectParameter("TenSV", tenSV) :
-                new ObjectParameter("TenSV", typeof(string));
-    
-            var ngaySinhParameter = ngaySinh.HasValue ?
-                new ObjectParameter("NgaySinh", ngaySinh) :
-                new ObjectParameter("NgaySinh", typeof(System.DateTime));
-    
-            var gioiTinhParameter = gioiTinh.HasValue ?
-                new ObjectParameter("GioiTinh", gioiTinh) :
-                new ObjectParameter("GioiTinh", typeof(bool));
-    
-            var cMNDParameter = cMND.HasValue ?
-                new ObjectParameter("CMND", cMND) :
-                new ObjectParameter("CMND", typeof(long));
-    
-            var queQuanParameter = queQuan != null ?
-                new ObjectParameter("QueQuan", queQuan) :
-                new ObjectParameter("QueQuan", typeof(string));
-    
-            var danTocParameter = danToc != null ?
-                new ObjectParameter("DanToc", danToc) :
-                new ObjectParameter("DanToc", typeof(string));
-    
-            var lopParameter = lop != null ?
-                new ObjectParameter("Lop", lop) :
-                new ObjectParameter("Lop", typeof(string));
-    
-            var toaNhaParameter = toaNha != null ?
-                new ObjectParameter("ToaNha", toaNha) :
-                new ObjectParameter("ToaNha", typeof(string));
-    
-            var tenPhongParameter = tenPhong != null ?
-                new ObjectParameter("TenPhong", tenPhong) :
-                new ObjectParameter("TenPhong", typeof(string));
-    
-            var sDTParameter = sDT.HasValue ?
-                new ObjectParameter("SDT", sDT) :
-                new ObjectParameter("SDT", typeof(long));
-    
-            var matKhauParameter = matKhau != null ?
-                new ObjectParameter("MatKhau", matKhau) :
-                new ObjectParameter("MatKhau", typeof(string));
-    
-            var tenPhuHuynhParameter = tenPhuHuynh != null ?
-                new ObjectParameter("TenPhuHuynh", tenPhuHuynh) :
-                new ObjectParameter("TenPhuHuynh", typeof(string));
-    
-            var sDTPhuHuynhParameter = sDTPhuHuynh != null ?
-                new ObjectParameter("SDTPhuHuynh", sDTPhuHuynh) :
-                new ObjectParameter("SDTPhuHuynh", typeof(string));
-    
-            var ngayLapParameter = ngayLap.HasValue ?
-                new ObjectParameter("NgayLap", ngayLap) :
-                new ObjectParameter("NgayLap", typeof(System.DateTime));
-    
-            var ngayHetHanParameter = ngayHetHan.HasValue ?
-                new ObjectParameter("NgayHetHan", ngayHetHan) :
-                new ObjectParameter("NgayHetHan", typeof(System.DateTime));
-    
-            var tienPhongParameter = tienPhong.HasValue ?
-                new ObjectParameter("TienPhong", tienPhong) :
-                new ObjectParameter("TienPhong", typeof(decimal));
-    
-            var nhanVienLapParameter = nhanVienLap.HasValue ?
-                new ObjectParameter("NhanVienLap", nhanVienLap) :
-                new ObjectParameter("NhanVienLap", typeof(long));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ThemHopDong", maSVParameter, tenSVParameter, ngaySinhParameter, gioiTinhParameter, cMNDParameter, queQuanParameter, danTocParameter, lopParameter, toaNhaParameter, tenPhongParameter, sDTParameter, matKhauParameter, tenPhuHuynhParameter, sDTPhuHuynhParameter, ngayLapParameter, ngayHetHanParameter, tienPhongParameter, nhanVienLapParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Bill_by_Month_Bill_Result>("usp_Get_Bill_by_Month_Bill", month_BillParameter);
         }
     
-        public virtual int ThemNhanVien(string hoTen, Nullable<long> cmnd, string queQuan, string congViec, Nullable<long> luong, string diaDiem, Nullable<long> sdt, string matKhau)
+        public virtual ObjectResult<usp_Get_Bill_by_Name_Room_Result> usp_Get_Bill_by_Name_Room(string name_Room)
         {
-            var hoTenParameter = hoTen != null ?
-                new ObjectParameter("hoTen", hoTen) :
-                new ObjectParameter("hoTen", typeof(string));
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
     
-            var cmndParameter = cmnd.HasValue ?
-                new ObjectParameter("cmnd", cmnd) :
-                new ObjectParameter("cmnd", typeof(long));
-    
-            var queQuanParameter = queQuan != null ?
-                new ObjectParameter("queQuan", queQuan) :
-                new ObjectParameter("queQuan", typeof(string));
-    
-            var congViecParameter = congViec != null ?
-                new ObjectParameter("congViec", congViec) :
-                new ObjectParameter("congViec", typeof(string));
-    
-            var luongParameter = luong.HasValue ?
-                new ObjectParameter("luong", luong) :
-                new ObjectParameter("luong", typeof(long));
-    
-            var diaDiemParameter = diaDiem != null ?
-                new ObjectParameter("diaDiem", diaDiem) :
-                new ObjectParameter("diaDiem", typeof(string));
-    
-            var sdtParameter = sdt.HasValue ?
-                new ObjectParameter("sdt", sdt) :
-                new ObjectParameter("sdt", typeof(long));
-    
-            var matKhauParameter = matKhau != null ?
-                new ObjectParameter("matKhau", matKhau) :
-                new ObjectParameter("matKhau", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ThemNhanVien", hoTenParameter, cmndParameter, queQuanParameter, congViecParameter, luongParameter, diaDiemParameter, sdtParameter, matKhauParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Bill_by_Name_Room_Result>("usp_Get_Bill_by_Name_Room", name_RoomParameter);
         }
     
-        public virtual int ThemPhong(string toaNha, string tenPhong, string loaiPhong, Nullable<int> soNguoiToiDa)
+        public virtual ObjectResult<usp_Get_Bill_by_Status_Bill_Result> usp_Get_Bill_by_Status_Bill(Nullable<bool> status_Bill)
         {
-            var toaNhaParameter = toaNha != null ?
-                new ObjectParameter("toaNha", toaNha) :
-                new ObjectParameter("toaNha", typeof(string));
+            var status_BillParameter = status_Bill.HasValue ?
+                new ObjectParameter("Status_Bill", status_Bill) :
+                new ObjectParameter("Status_Bill", typeof(bool));
     
-            var tenPhongParameter = tenPhong != null ?
-                new ObjectParameter("tenPhong", tenPhong) :
-                new ObjectParameter("tenPhong", typeof(string));
-    
-            var loaiPhongParameter = loaiPhong != null ?
-                new ObjectParameter("loaiPhong", loaiPhong) :
-                new ObjectParameter("loaiPhong", typeof(string));
-    
-            var soNguoiToiDaParameter = soNguoiToiDa.HasValue ?
-                new ObjectParameter("soNguoiToiDa", soNguoiToiDa) :
-                new ObjectParameter("soNguoiToiDa", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ThemPhong", toaNhaParameter, tenPhongParameter, loaiPhongParameter, soNguoiToiDaParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Bill_by_Status_Bill_Result>("usp_Get_Bill_by_Status_Bill", status_BillParameter);
         }
     
-        public virtual ObjectResult<TimHopDong_Result> TimHopDong(Nullable<long> maHD, string tenSV)
+        public virtual ObjectResult<usp_Get_Contract_Result> usp_Get_Contract()
         {
-            var maHDParameter = maHD.HasValue ?
-                new ObjectParameter("maHD", maHD) :
-                new ObjectParameter("maHD", typeof(long));
-    
-            var tenSVParameter = tenSV != null ?
-                new ObjectParameter("tenSV", tenSV) :
-                new ObjectParameter("tenSV", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<TimHopDong_Result>("TimHopDong", maHDParameter, tenSVParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Contract_Result>("usp_Get_Contract");
         }
     
-        public virtual ObjectResult<TimHopDongTheoMaHD_Result> TimHopDongTheoMaHD(Nullable<long> maHD)
+        public virtual ObjectResult<usp_Get_Contract_by_Class_Student_Contract_Result> usp_Get_Contract_by_Class_Student_Contract(string class_Student_Contract)
         {
-            var maHDParameter = maHD.HasValue ?
-                new ObjectParameter("maHD", maHD) :
-                new ObjectParameter("maHD", typeof(long));
+            var class_Student_ContractParameter = class_Student_Contract != null ?
+                new ObjectParameter("Class_Student_Contract", class_Student_Contract) :
+                new ObjectParameter("Class_Student_Contract", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<TimHopDongTheoMaHD_Result>("TimHopDongTheoMaHD", maHDParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Contract_by_Class_Student_Contract_Result>("usp_Get_Contract_by_Class_Student_Contract", class_Student_ContractParameter);
         }
     
-        public virtual int XoaHoaDon(Nullable<long> maHoaDon)
+        public virtual ObjectResult<usp_Get_Contract_by_Home_Town_Student_Contract_Result> usp_Get_Contract_by_Home_Town_Student_Contract(string home_Town_Student_Contract)
         {
-            var maHoaDonParameter = maHoaDon.HasValue ?
-                new ObjectParameter("maHoaDon", maHoaDon) :
-                new ObjectParameter("maHoaDon", typeof(long));
+            var home_Town_Student_ContractParameter = home_Town_Student_Contract != null ?
+                new ObjectParameter("Home_Town_Student_Contract", home_Town_Student_Contract) :
+                new ObjectParameter("Home_Town_Student_Contract", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("XoaHoaDon", maHoaDonParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Contract_by_Home_Town_Student_Contract_Result>("usp_Get_Contract_by_Home_Town_Student_Contract", home_Town_Student_ContractParameter);
         }
     
-        public virtual int XoaHopDong(Nullable<long> maHD)
+        public virtual ObjectResult<usp_Get_Contract_by_Name_Room_Result> usp_Get_Contract_by_Name_Room(string name_Room)
         {
-            var maHDParameter = maHD.HasValue ?
-                new ObjectParameter("maHD", maHD) :
-                new ObjectParameter("maHD", typeof(long));
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("XoaHopDong", maHDParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Contract_by_Name_Room_Result>("usp_Get_Contract_by_Name_Room", name_RoomParameter);
         }
     
-        public virtual int XoaNhanVien(Nullable<long> cmnd)
+        public virtual ObjectResult<usp_Get_Contract_by_Name_Student_Contract_Result> usp_Get_Contract_by_Name_Student_Contract(string name_Student_Contract)
         {
-            var cmndParameter = cmnd.HasValue ?
-                new ObjectParameter("cmnd", cmnd) :
-                new ObjectParameter("cmnd", typeof(long));
+            var name_Student_ContractParameter = name_Student_Contract != null ?
+                new ObjectParameter("Name_Student_Contract", name_Student_Contract) :
+                new ObjectParameter("Name_Student_Contract", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("XoaNhanVien", cmndParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Contract_by_Name_Student_Contract_Result>("usp_Get_Contract_by_Name_Student_Contract", name_Student_ContractParameter);
         }
     
-        public virtual int XoaPhong(string toaNha, string tenPhong)
+        public virtual ObjectResult<usp_Get_Employee_Result> usp_Get_Employee()
         {
-            var toaNhaParameter = toaNha != null ?
-                new ObjectParameter("toaNha", toaNha) :
-                new ObjectParameter("toaNha", typeof(string));
-    
-            var tenPhongParameter = tenPhong != null ?
-                new ObjectParameter("tenPhong", tenPhong) :
-                new ObjectParameter("tenPhong", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("XoaPhong", toaNhaParameter, tenPhongParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Employee_Result>("usp_Get_Employee");
         }
     
-        public virtual ObjectResult<TimPhong_Result> TimPhong(string tenPhong)
+        public virtual ObjectResult<usp_Get_Employee_by_Home_Town_Employee_Result> usp_Get_Employee_by_Home_Town_Employee(string home_Town_Employee)
         {
-            var tenPhongParameter = tenPhong != null ?
-                new ObjectParameter("tenPhong", tenPhong) :
-                new ObjectParameter("tenPhong", typeof(string));
+            var home_Town_EmployeeParameter = home_Town_Employee != null ?
+                new ObjectParameter("Home_Town_Employee", home_Town_Employee) :
+                new ObjectParameter("Home_Town_Employee", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<TimPhong_Result>("TimPhong", tenPhongParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Employee_by_Home_Town_Employee_Result>("usp_Get_Employee_by_Home_Town_Employee", home_Town_EmployeeParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Employee_by_Identity_Card_Employee_Result> usp_Get_Employee_by_Identity_Card_Employee(string identity_Card_Employee)
+        {
+            var identity_Card_EmployeeParameter = identity_Card_Employee != null ?
+                new ObjectParameter("Identity_Card_Employee", identity_Card_Employee) :
+                new ObjectParameter("Identity_Card_Employee", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Employee_by_Identity_Card_Employee_Result>("usp_Get_Employee_by_Identity_Card_Employee", identity_Card_EmployeeParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Employee_by_Name_Employee_Result> usp_Get_Employee_by_Name_Employee(string name_Employee)
+        {
+            var name_EmployeeParameter = name_Employee != null ?
+                new ObjectParameter("Name_Employee", name_Employee) :
+                new ObjectParameter("Name_Employee", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Employee_by_Name_Employee_Result>("usp_Get_Employee_by_Name_Employee", name_EmployeeParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Employee_by_Phone_Number_Employee_Result> usp_Get_Employee_by_Phone_Number_Employee(string phone_Number_Employee)
+        {
+            var phone_Number_EmployeeParameter = phone_Number_Employee != null ?
+                new ObjectParameter("Phone_Number_Employee", phone_Number_Employee) :
+                new ObjectParameter("Phone_Number_Employee", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Employee_by_Phone_Number_Employee_Result>("usp_Get_Employee_by_Phone_Number_Employee", phone_Number_EmployeeParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Employee_by_Work_Employee_Result> usp_Get_Employee_by_Work_Employee(string work_Employee)
+        {
+            var work_EmployeeParameter = work_Employee != null ?
+                new ObjectParameter("Work_Employee", work_Employee) :
+                new ObjectParameter("Work_Employee", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Employee_by_Work_Employee_Result>("usp_Get_Employee_by_Work_Employee", work_EmployeeParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Employee_by_Workplace_Employee_Result> usp_Get_Employee_by_Workplace_Employee(string workplace_Employee)
+        {
+            var workplace_EmployeeParameter = workplace_Employee != null ?
+                new ObjectParameter("Workplace_Employee", workplace_Employee) :
+                new ObjectParameter("Workplace_Employee", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Employee_by_Workplace_Employee_Result>("usp_Get_Employee_by_Workplace_Employee", workplace_EmployeeParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Room_Result> usp_Get_Room()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Room_Result>("usp_Get_Room");
+        }
+    
+        public virtual ObjectResult<usp_Get_Room_by_Name_Room_Result> usp_Get_Room_by_Name_Room(string name_Room)
+        {
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Room_by_Name_Room_Result>("usp_Get_Room_by_Name_Room", name_RoomParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Room_By_Status_Result> usp_Get_Room_By_Status(Nullable<int> status)
+        {
+            var statusParameter = status.HasValue ?
+                new ObjectParameter("status", status) :
+                new ObjectParameter("status", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Room_By_Status_Result>("usp_Get_Room_By_Status", statusParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Room_by_The_Building_Room_Result> usp_Get_Room_by_The_Building_Room(string building_Room)
+        {
+            var building_RoomParameter = building_Room != null ?
+                new ObjectParameter("Building_Room", building_Room) :
+                new ObjectParameter("Building_Room", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Room_by_The_Building_Room_Result>("usp_Get_Room_by_The_Building_Room", building_RoomParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Room_by_Type_Room_Result> usp_Get_Room_by_Type_Room(string type_Room)
+        {
+            var type_RoomParameter = type_Room != null ?
+                new ObjectParameter("Type_Room", type_Room) :
+                new ObjectParameter("Type_Room", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Room_by_Type_Room_Result>("usp_Get_Room_by_Type_Room", type_RoomParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Student_Result> usp_Get_Student()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Student_Result>("usp_Get_Student");
+        }
+    
+        public virtual ObjectResult<usp_Get_Student_by_Class_Student_Contract_Result> usp_Get_Student_by_Class_Student_Contract(string class_Student_Contract)
+        {
+            var class_Student_ContractParameter = class_Student_Contract != null ?
+                new ObjectParameter("Class_Student_Contract", class_Student_Contract) :
+                new ObjectParameter("Class_Student_Contract", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Student_by_Class_Student_Contract_Result>("usp_Get_Student_by_Class_Student_Contract", class_Student_ContractParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Student_by_Home_Town_Student_Contract_Result> usp_Get_Student_by_Home_Town_Student_Contract(string home_Town_Student_Contract)
+        {
+            var home_Town_Student_ContractParameter = home_Town_Student_Contract != null ?
+                new ObjectParameter("Home_Town_Student_Contract", home_Town_Student_Contract) :
+                new ObjectParameter("Home_Town_Student_Contract", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Student_by_Home_Town_Student_Contract_Result>("usp_Get_Student_by_Home_Town_Student_Contract", home_Town_Student_ContractParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Student_by_Identity_Card_Student_Contract_Result> usp_Get_Student_by_Identity_Card_Student_Contract(Nullable<long> identity_Card_Student_Contract)
+        {
+            var identity_Card_Student_ContractParameter = identity_Card_Student_Contract.HasValue ?
+                new ObjectParameter("Identity_Card_Student_Contract", identity_Card_Student_Contract) :
+                new ObjectParameter("Identity_Card_Student_Contract", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Student_by_Identity_Card_Student_Contract_Result>("usp_Get_Student_by_Identity_Card_Student_Contract", identity_Card_Student_ContractParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Student_by_Name_Room_Result> usp_Get_Student_by_Name_Room(string name_Room)
+        {
+            var name_RoomParameter = name_Room != null ?
+                new ObjectParameter("Name_Room", name_Room) :
+                new ObjectParameter("Name_Room", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Student_by_Name_Room_Result>("usp_Get_Student_by_Name_Room", name_RoomParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Student_by_Name_Student_Contract_Result> usp_Get_Student_by_Name_Student_Contract(string name_Student_Contract)
+        {
+            var name_Student_ContractParameter = name_Student_Contract != null ?
+                new ObjectParameter("Name_Student_Contract", name_Student_Contract) :
+                new ObjectParameter("Name_Student_Contract", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Student_by_Name_Student_Contract_Result>("usp_Get_Student_by_Name_Student_Contract", name_Student_ContractParameter);
+        }
+    
+        public virtual ObjectResult<usp_Get_Student_by_Parents_Name_Student_Contract_Result> usp_Get_Student_by_Parents_Name_Student_Contract(string parents_Name_Student_Contract)
+        {
+            var parents_Name_Student_ContractParameter = parents_Name_Student_Contract != null ?
+                new ObjectParameter("Parents_Name_Student_Contract", parents_Name_Student_Contract) :
+                new ObjectParameter("Parents_Name_Student_Contract", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Get_Student_by_Parents_Name_Student_Contract_Result>("usp_Get_Student_by_Parents_Name_Student_Contract", parents_Name_Student_ContractParameter);
+        }
+    
+        public virtual ObjectResult<string> usp_Get_The_Building_Room()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("usp_Get_The_Building_Room");
+        }
+    
+        public virtual ObjectResult<string> usp_Get_Work_Employee()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("usp_Get_Work_Employee");
+        }
+    
+        public virtual ObjectResult<string> usp_Get_Workplace_Employee()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("usp_Get_Workplace_Employee");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> usp_Login(string username_Account, string password_Account)
+        {
+            var username_AccountParameter = username_Account != null ?
+                new ObjectParameter("Username_Account", username_Account) :
+                new ObjectParameter("Username_Account", typeof(string));
+    
+            var password_AccountParameter = password_Account != null ?
+                new ObjectParameter("Password_Account", password_Account) :
+                new ObjectParameter("Password_Account", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("usp_Login", username_AccountParameter, password_AccountParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> usp_Total_Bill()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("usp_Total_Bill");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> usp_Total_Bill_Unpaid()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("usp_Total_Bill_Unpaid");
+        }
+    
+        public virtual ObjectResult<string> usp_Total_Buiding_Room()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("usp_Total_Buiding_Room");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> usp_Total_Contract()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("usp_Total_Contract");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> usp_Total_Employee()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("usp_Total_Employee");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> usp_Total_Room()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("usp_Total_Room");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> usp_Total_Room_Empty()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("usp_Total_Room_Empty");
         }
     }
 }

@@ -1,216 +1,458 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-  <EntityContainerMapping StorageEntityContainer="QuanLyKTX2021ModelStoreContainer" CdmEntityContainer="QuanLyKTX2021Entities">
-    <EntitySetMapping Name="HoaDons">
-      <EntityTypeMapping TypeName="QuanLyKTX2021Model.HoaDon">
-        <MappingFragment StoreEntitySet="HoaDon">
-          <ScalarProperty Name="MaHoaDon" ColumnName="MaHoaDon" />
-          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
-          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
-          <ScalarProperty Name="SoNuoc" ColumnName="SoNuoc" />
-          <ScalarProperty Name="SoDien" ColumnName="SoDien" />
-          <ScalarProperty Name="Thang" ColumnName="Thang" />
-          <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
-          <ScalarProperty Name="TongTien" ColumnName="TongTien" />
-          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+  <EntityContainerMapping StorageEntityContainer="db_Dormitory_Management_2021ModelStoreContainer" CdmEntityContainer="db_Dormitory_Management_2021Entities">
+    <EntitySetMapping Name="tbl_Bill">
+      <EntityTypeMapping TypeName="db_Dormitory_Management_2021Model.tbl_Bill">
+        <MappingFragment StoreEntitySet="tbl_Bill">
+          <ScalarProperty Name="ID_Bill" ColumnName="ID_Bill" />
+          <ScalarProperty Name="Name_Room" ColumnName="Name_Room" />
+          <ScalarProperty Name="Number_Water_Bill" ColumnName="Number_Water_Bill" />
+          <ScalarProperty Name="Number_Electricty_Bill" ColumnName="Number_Electricty_Bill" />
+          <ScalarProperty Name="Month_Bill" ColumnName="Month_Bill" />
+          <ScalarProperty Name="Status_Bill" ColumnName="Status_Bill" />
+          <ScalarProperty Name="Total_Money_Bill" ColumnName="Total_Money_Bill" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="HopDongs">
-      <EntityTypeMapping TypeName="QuanLyKTX2021Model.HopDong">
-        <MappingFragment StoreEntitySet="HopDong">
-          <ScalarProperty Name="MaHD" ColumnName="MaHD" />
-          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
-          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
-          <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
-          <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
-          <ScalarProperty Name="CMND" ColumnName="CMND" />
-          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
-          <ScalarProperty Name="DanToc" ColumnName="DanToc" />
-          <ScalarProperty Name="Lop" ColumnName="Lop" />
-          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
-          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
-          <ScalarProperty Name="SDT" ColumnName="SDT" />
-          <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
-          <ScalarProperty Name="TenPhuHuynh" ColumnName="TenPhuHuynh" />
-          <ScalarProperty Name="SDTPhuHuynh" ColumnName="SDTPhuHuynh" />
-          <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
-          <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
-          <ScalarProperty Name="TienPhong" ColumnName="TienPhong" />
-          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+    <EntitySetMapping Name="tbl_Contract">
+      <EntityTypeMapping TypeName="db_Dormitory_Management_2021Model.tbl_Contract">
+        <MappingFragment StoreEntitySet="tbl_Contract">
+          <ScalarProperty Name="ID_Contract" ColumnName="ID_Contract" />
+          <ScalarProperty Name="Name_Student_Contract" ColumnName="Name_Student_Contract" />
+          <ScalarProperty Name="Date_of_Birth_Student_Contract" ColumnName="Date_of_Birth_Student_Contract" />
+          <ScalarProperty Name="Sex_Student_Contract" ColumnName="Sex_Student_Contract" />
+          <ScalarProperty Name="Identity_Card_Student_Contract" ColumnName="Identity_Card_Student_Contract" />
+          <ScalarProperty Name="Home_Town_Student_Contract" ColumnName="Home_Town_Student_Contract" />
+          <ScalarProperty Name="Nation_Student_Contract" ColumnName="Nation_Student_Contract" />
+          <ScalarProperty Name="Class_Student_Contract" ColumnName="Class_Student_Contract" />
+          <ScalarProperty Name="Name_Room" ColumnName="Name_Room" />
+          <ScalarProperty Name="Phone_Number_Student_Contract" ColumnName="Phone_Number_Student_Contract" />
+          <ScalarProperty Name="Parents_Name_Student_Contract" ColumnName="Parents_Name_Student_Contract" />
+          <ScalarProperty Name="Phone_Number_Parents_Student_Contract" ColumnName="Phone_Number_Parents_Student_Contract" />
+          <ScalarProperty Name="Start_Day_Contract" ColumnName="Start_Day_Contract" />
+          <ScalarProperty Name="Expiration_Date_Contract" ColumnName="Expiration_Date_Contract" />
+          <ScalarProperty Name="Total_Money_Contract" ColumnName="Total_Money_Contract" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="NhanViens">
-      <EntityTypeMapping TypeName="QuanLyKTX2021Model.NhanVien">
-        <MappingFragment StoreEntitySet="NhanVien">
-          <ScalarProperty Name="HoTen" ColumnName="HoTen" />
-          <ScalarProperty Name="CMND" ColumnName="CMND" />
-          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
-          <ScalarProperty Name="CongViec" ColumnName="CongViec" />
-          <ScalarProperty Name="Luong" ColumnName="Luong" />
-          <ScalarProperty Name="DiaDiem" ColumnName="DiaDiem" />
-          <ScalarProperty Name="SDT" ColumnName="SDT" />
-          <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+    <EntitySetMapping Name="tbl_Employee">
+      <EntityTypeMapping TypeName="db_Dormitory_Management_2021Model.tbl_Employee">
+        <MappingFragment StoreEntitySet="tbl_Employee">
+          <ScalarProperty Name="Name_Employee" ColumnName="Name_Employee" />
+          <ScalarProperty Name="Identity_Card_Employee" ColumnName="Identity_Card_Employee" />
+          <ScalarProperty Name="Home_Town_Employee" ColumnName="Home_Town_Employee" />
+          <ScalarProperty Name="Work_Employee" ColumnName="Work_Employee" />
+          <ScalarProperty Name="Salary_Employee" ColumnName="Salary_Employee" />
+          <ScalarProperty Name="Workplace_Employee" ColumnName="Workplace_Employee" />
+          <ScalarProperty Name="Phone_Number_Employee" ColumnName="Phone_Number_Employee" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="Phongs">
-      <EntityTypeMapping TypeName="QuanLyKTX2021Model.Phong">
-        <MappingFragment StoreEntitySet="Phong">
-          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
-          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
-          <ScalarProperty Name="LoaiPhong" ColumnName="LoaiPhong" />
-          <ScalarProperty Name="SoNguoiToiDa" ColumnName="SoNguoiToiDa" />
+    <EntitySetMapping Name="tbl_Room">
+      <EntityTypeMapping TypeName="db_Dormitory_Management_2021Model.tbl_Room">
+        <MappingFragment StoreEntitySet="tbl_Room">
+          <ScalarProperty Name="Building_Room" ColumnName="Building_Room" />
+          <ScalarProperty Name="Name_Room" ColumnName="Name_Room" />
+          <ScalarProperty Name="Type_Room" ColumnName="Type_Room" />
+          <ScalarProperty Name="Maximum_Number_of_People_Room" ColumnName="Maximum_Number_of_People_Room" />
+          <ScalarProperty Name="Current_Number_of_People_Room" ColumnName="Current_Number_of_People_Room" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <FunctionImportMapping FunctionImportName="DangNhap" FunctionName="QuanLyKTX2021Model.Store.DangNhap" />
-    <FunctionImportMapping FunctionImportName="LayDanhSachHoaDon" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachHoaDon">
+    <FunctionImportMapping FunctionImportName="usp_Add_Bill" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Add_Bill" />
+    <FunctionImportMapping FunctionImportName="usp_Add_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Add_Contract" />
+    <FunctionImportMapping FunctionImportName="usp_Add_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Add_Employee" />
+    <FunctionImportMapping FunctionImportName="usp_Add_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Add_Room" />
+    <FunctionImportMapping FunctionImportName="usp_Delete_Bill" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Delete_Bill" />
+    <FunctionImportMapping FunctionImportName="usp_Delete_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Delete_Contract" />
+    <FunctionImportMapping FunctionImportName="usp_Delete_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Delete_Employee" />
+    <FunctionImportMapping FunctionImportName="usp_Delete_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Delete_Room" />
+    <FunctionImportMapping FunctionImportName="usp_Edit_Account" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Edit_Account" />
+    <FunctionImportMapping FunctionImportName="usp_Edit_Bill" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Edit_Bill" />
+    <FunctionImportMapping FunctionImportName="usp_Edit_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Edit_Contract" />
+    <FunctionImportMapping FunctionImportName="usp_Edit_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Edit_Employee" />
+    <FunctionImportMapping FunctionImportName="usp_Edit_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Edit_Room" />
+    <FunctionImportMapping FunctionImportName="usp_Edit_Student" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Edit_Student" />
+    <FunctionImportMapping FunctionImportName="usp_Get_Bill" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Bill">
       <ResultMapping>
-        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.LayDanhSachHoaDon_Result">
-          <ScalarProperty Name="MaHoaDon" ColumnName="MaHoaDon" />
-          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
-          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
-          <ScalarProperty Name="SoNuoc" ColumnName="SoNuoc" />
-          <ScalarProperty Name="SoDien" ColumnName="SoDien" />
-          <ScalarProperty Name="Thang" ColumnName="Thang" />
-          <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
-          <ScalarProperty Name="TongTien" ColumnName="TongTien" />
-          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Bill_Result">
+          <ScalarProperty Name="Mã_Hoá_Đơn" ColumnName="Mã Hoá Đơn" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Số_Nước" ColumnName="Số Nước" />
+          <ScalarProperty Name="Số_Điện" ColumnName="Số Điện" />
+          <ScalarProperty Name="Tháng" ColumnName="Tháng" />
+          <ScalarProperty Name="Trạng_Thái" ColumnName="Trạng Thái" />
+          <ScalarProperty Name="Tổng_Tiền" ColumnName="Tổng Tiền" />
         </ComplexTypeMapping>
       </ResultMapping>
     </FunctionImportMapping>
-    <FunctionImportMapping FunctionImportName="LayDanhSachHopDong" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachHopDong">
+    <FunctionImportMapping FunctionImportName="usp_Get_Bill_by_Month_Bill" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Bill_by_Month_Bill">
       <ResultMapping>
-        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.LayDanhSachHopDong_Result">
-          <ScalarProperty Name="MaHD" ColumnName="MaHD" />
-          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
-          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
-          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
-          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
-          <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
-          <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
-          <ScalarProperty Name="TienPhong" ColumnName="TienPhong" />
-          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Bill_by_Month_Bill_Result">
+          <ScalarProperty Name="Mã_Hoá_Đơn" ColumnName="Mã Hoá Đơn" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Số_Nước" ColumnName="Số Nước" />
+          <ScalarProperty Name="Số_Điện" ColumnName="Số Điện" />
+          <ScalarProperty Name="Tháng" ColumnName="Tháng" />
+          <ScalarProperty Name="Trạng_Thái" ColumnName="Trạng Thái" />
+          <ScalarProperty Name="Tổng_Tiền" ColumnName="Tổng Tiền" />
         </ComplexTypeMapping>
       </ResultMapping>
     </FunctionImportMapping>
-    <FunctionImportMapping FunctionImportName="LayDanhSachNhanVien" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachNhanVien">
+    <FunctionImportMapping FunctionImportName="usp_Get_Bill_by_Name_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Bill_by_Name_Room">
       <ResultMapping>
-        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.LayDanhSachNhanVien_Result">
-          <ScalarProperty Name="HoTen" ColumnName="HoTen" />
-          <ScalarProperty Name="CMND" ColumnName="CMND" />
-          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
-          <ScalarProperty Name="CongViec" ColumnName="CongViec" />
-          <ScalarProperty Name="Luong" ColumnName="Luong" />
-          <ScalarProperty Name="DiaDiem" ColumnName="DiaDiem" />
-          <ScalarProperty Name="SDT" ColumnName="SDT" />
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Bill_by_Name_Room_Result">
+          <ScalarProperty Name="Mã_Hoá_Đơn" ColumnName="Mã Hoá Đơn" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Số_Nước" ColumnName="Số Nước" />
+          <ScalarProperty Name="Số_Điện" ColumnName="Số Điện" />
+          <ScalarProperty Name="Tháng" ColumnName="Tháng" />
+          <ScalarProperty Name="Trạng_Thái" ColumnName="Trạng Thái" />
+          <ScalarProperty Name="Tổng_Tiền" ColumnName="Tổng Tiền" />
         </ComplexTypeMapping>
       </ResultMapping>
     </FunctionImportMapping>
-    <FunctionImportMapping FunctionImportName="LayDanhSachPhong" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachPhong">
+    <FunctionImportMapping FunctionImportName="usp_Get_Bill_by_Status_Bill" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Bill_by_Status_Bill">
       <ResultMapping>
-        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.LayDanhSachPhong_Result">
-          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
-          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
-          <ScalarProperty Name="LoaiPhong" ColumnName="LoaiPhong" />
-          <ScalarProperty Name="SoNguoiToiDa" ColumnName="SoNguoiToiDa" />
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Bill_by_Status_Bill_Result">
+          <ScalarProperty Name="Mã_Hoá_Đơn" ColumnName="Mã Hoá Đơn" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Số_Nước" ColumnName="Số Nước" />
+          <ScalarProperty Name="Số_Điện" ColumnName="Số Điện" />
+          <ScalarProperty Name="Tháng" ColumnName="Tháng" />
+          <ScalarProperty Name="Trạng_Thái" ColumnName="Trạng Thái" />
+          <ScalarProperty Name="Tổng_Tiền" ColumnName="Tổng Tiền" />
         </ComplexTypeMapping>
       </ResultMapping>
     </FunctionImportMapping>
-    <FunctionImportMapping FunctionImportName="LayDanhSachSinhVien" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachSinhVien">
+    <FunctionImportMapping FunctionImportName="usp_Get_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Contract">
       <ResultMapping>
-        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.LayDanhSachSinhVien_Result">
-          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
-          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
-          <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
-          <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
-          <ScalarProperty Name="CMND" ColumnName="CMND" />
-          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
-          <ScalarProperty Name="DanToc" ColumnName="DanToc" />
-          <ScalarProperty Name="Lop" ColumnName="Lop" />
-          <ScalarProperty Name="SDT" ColumnName="SDT" />
-          <ScalarProperty Name="TenPhuHuynh" ColumnName="TenPhuHuynh" />
-          <ScalarProperty Name="SDTPhuHuynh" ColumnName="SDTPhuHuynh" />
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Contract_Result">
+          <ScalarProperty Name="Mã_Hợp_Đồng" ColumnName="Mã Hợp Đồng" />
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Ngày_Bắt_Đầu" ColumnName="Ngày Bắt Đầu" />
+          <ScalarProperty Name="Ngày_Hết_Hạn" ColumnName="Ngày Hết Hạn" />
+          <ScalarProperty Name="Tổng_Tiền" ColumnName="Tổng Tiền" />
         </ComplexTypeMapping>
       </ResultMapping>
     </FunctionImportMapping>
-    <FunctionImportMapping FunctionImportName="LayDanhSachTenPhong" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachTenPhong" />
-    <FunctionImportMapping FunctionImportName="LayDanhSachToaNha" FunctionName="QuanLyKTX2021Model.Store.LayDanhSachToaNha" />
-    <FunctionImportMapping FunctionImportName="SoNguoiHienTaiCuaPhong" FunctionName="QuanLyKTX2021Model.Store.SoNguoiHienTaiCuaPhong" />
-    <FunctionImportMapping FunctionImportName="SuaHoaDon" FunctionName="QuanLyKTX2021Model.Store.SuaHoaDon" />
-    <FunctionImportMapping FunctionImportName="SuaHopDong" FunctionName="QuanLyKTX2021Model.Store.SuaHopDong" />
-    <FunctionImportMapping FunctionImportName="SuaNhanVien" FunctionName="QuanLyKTX2021Model.Store.SuaNhanVien" />
-    <FunctionImportMapping FunctionImportName="SuaPhong" FunctionName="QuanLyKTX2021Model.Store.SuaPhong" />
-    <FunctionImportMapping FunctionImportName="SuaSinhVien" FunctionName="QuanLyKTX2021Model.Store.SuaSinhVien" />
-    <FunctionImportMapping FunctionImportName="ThemHoaDon" FunctionName="QuanLyKTX2021Model.Store.ThemHoaDon" />
-    <FunctionImportMapping FunctionImportName="ThemHopDong" FunctionName="QuanLyKTX2021Model.Store.ThemHopDong" />
-    <FunctionImportMapping FunctionImportName="ThemNhanVien" FunctionName="QuanLyKTX2021Model.Store.ThemNhanVien" />
-    <FunctionImportMapping FunctionImportName="ThemPhong" FunctionName="QuanLyKTX2021Model.Store.ThemPhong" />
-    <FunctionImportMapping FunctionImportName="TimHopDong" FunctionName="QuanLyKTX2021Model.Store.TimHopDong">
+    <FunctionImportMapping FunctionImportName="usp_Get_Contract_by_Class_Student_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Contract_by_Class_Student_Contract">
       <ResultMapping>
-        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.TimHopDong_Result">
-          <ScalarProperty Name="MaHD" ColumnName="MaHD" />
-          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
-          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
-          <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
-          <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
-          <ScalarProperty Name="CMND" ColumnName="CMND" />
-          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
-          <ScalarProperty Name="DanToc" ColumnName="DanToc" />
-          <ScalarProperty Name="Lop" ColumnName="Lop" />
-          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
-          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
-          <ScalarProperty Name="SDT" ColumnName="SDT" />
-          <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
-          <ScalarProperty Name="TenPhuHuynh" ColumnName="TenPhuHuynh" />
-          <ScalarProperty Name="SDTPhuHuynh" ColumnName="SDTPhuHuynh" />
-          <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
-          <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
-          <ScalarProperty Name="TienPhong" ColumnName="TienPhong" />
-          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Contract_by_Class_Student_Contract_Result">
+          <ScalarProperty Name="Mã_Hợp_Đồng" ColumnName="Mã Hợp Đồng" />
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Ngày_Bắt_Đầu" ColumnName="Ngày Bắt Đầu" />
+          <ScalarProperty Name="Ngày_Hết_Hạn" ColumnName="Ngày Hết Hạn" />
+          <ScalarProperty Name="Tổng_Tiền" ColumnName="Tổng Tiền" />
         </ComplexTypeMapping>
       </ResultMapping>
     </FunctionImportMapping>
-    <FunctionImportMapping FunctionImportName="TimHopDongTheoMaHD" FunctionName="QuanLyKTX2021Model.Store.TimHopDongTheoMaHD">
+    <FunctionImportMapping FunctionImportName="usp_Get_Contract_by_Home_Town_Student_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Contract_by_Home_Town_Student_Contract">
       <ResultMapping>
-        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.TimHopDongTheoMaHD_Result">
-          <ScalarProperty Name="MaHD" ColumnName="MaHD" />
-          <ScalarProperty Name="MaSV" ColumnName="MaSV" />
-          <ScalarProperty Name="TenSV" ColumnName="TenSV" />
-          <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
-          <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
-          <ScalarProperty Name="CMND" ColumnName="CMND" />
-          <ScalarProperty Name="QueQuan" ColumnName="QueQuan" />
-          <ScalarProperty Name="DanToc" ColumnName="DanToc" />
-          <ScalarProperty Name="Lop" ColumnName="Lop" />
-          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
-          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
-          <ScalarProperty Name="SDT" ColumnName="SDT" />
-          <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
-          <ScalarProperty Name="TenPhuHuynh" ColumnName="TenPhuHuynh" />
-          <ScalarProperty Name="SDTPhuHuynh" ColumnName="SDTPhuHuynh" />
-          <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
-          <ScalarProperty Name="NgayHetHan" ColumnName="NgayHetHan" />
-          <ScalarProperty Name="TienPhong" ColumnName="TienPhong" />
-          <ScalarProperty Name="NhanVienLap" ColumnName="NhanVienLap" />
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Contract_by_Home_Town_Student_Contract_Result">
+          <ScalarProperty Name="Mã_Hợp_Đồng" ColumnName="Mã Hợp Đồng" />
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Ngày_Bắt_Đầu" ColumnName="Ngày Bắt Đầu" />
+          <ScalarProperty Name="Ngày_Hết_Hạn" ColumnName="Ngày Hết Hạn" />
+          <ScalarProperty Name="Tổng_Tiền" ColumnName="Tổng Tiền" />
         </ComplexTypeMapping>
       </ResultMapping>
     </FunctionImportMapping>
-    <FunctionImportMapping FunctionImportName="XoaHoaDon" FunctionName="QuanLyKTX2021Model.Store.XoaHoaDon" />
-    <FunctionImportMapping FunctionImportName="XoaHopDong" FunctionName="QuanLyKTX2021Model.Store.XoaHopDong" />
-    <FunctionImportMapping FunctionImportName="XoaNhanVien" FunctionName="QuanLyKTX2021Model.Store.XoaNhanVien" />
-    <FunctionImportMapping FunctionImportName="XoaPhong" FunctionName="QuanLyKTX2021Model.Store.XoaPhong" />
-    <FunctionImportMapping FunctionImportName="TimPhong" FunctionName="QuanLyKTX2021Model.Store.TimPhong">
+    <FunctionImportMapping FunctionImportName="usp_Get_Contract_by_Name_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Contract_by_Name_Room">
       <ResultMapping>
-        <ComplexTypeMapping TypeName="QuanLyKTX2021Model.TimPhong_Result">
-          <ScalarProperty Name="ToaNha" ColumnName="ToaNha" />
-          <ScalarProperty Name="TenPhong" ColumnName="TenPhong" />
-          <ScalarProperty Name="LoaiPhong" ColumnName="LoaiPhong" />
-          <ScalarProperty Name="SoNguoiToiDa" ColumnName="SoNguoiToiDa" />
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Contract_by_Name_Room_Result">
+          <ScalarProperty Name="Mã_Hợp_Đồng" ColumnName="Mã Hợp Đồng" />
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Ngày_Bắt_Đầu" ColumnName="Ngày Bắt Đầu" />
+          <ScalarProperty Name="Ngày_Hết_Hạn" ColumnName="Ngày Hết Hạn" />
+          <ScalarProperty Name="Tổng_Tiền" ColumnName="Tổng Tiền" />
         </ComplexTypeMapping>
       </ResultMapping>
     </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Contract_by_Name_Student_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Contract_by_Name_Student_Contract">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Contract_by_Name_Student_Contract_Result">
+          <ScalarProperty Name="Mã_Hợp_Đồng" ColumnName="Mã Hợp Đồng" />
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Ngày_Bắt_Đầu" ColumnName="Ngày Bắt Đầu" />
+          <ScalarProperty Name="Ngày_Hết_Hạn" ColumnName="Ngày Hết Hạn" />
+          <ScalarProperty Name="Tổng_Tiền" ColumnName="Tổng Tiền" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Employee">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Employee_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Công_Việc" ColumnName="Công Việc" />
+          <ScalarProperty Name="Lương" ColumnName="Lương" />
+          <ScalarProperty Name="Địa_Điểm_Làm_Việc" ColumnName="Địa Điểm Làm Việc" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Employee_by_Home_Town_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Employee_by_Home_Town_Employee">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Employee_by_Home_Town_Employee_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Công_Việc" ColumnName="Công Việc" />
+          <ScalarProperty Name="Lương" ColumnName="Lương" />
+          <ScalarProperty Name="Địa_Điểm_Làm_Việc" ColumnName="Địa Điểm Làm Việc" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Employee_by_Identity_Card_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Employee_by_Identity_Card_Employee">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Employee_by_Identity_Card_Employee_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Công_Việc" ColumnName="Công Việc" />
+          <ScalarProperty Name="Lương" ColumnName="Lương" />
+          <ScalarProperty Name="Địa_Điểm_Làm_Việc" ColumnName="Địa Điểm Làm Việc" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Employee_by_Name_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Employee_by_Name_Employee">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Employee_by_Name_Employee_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Công_Việc" ColumnName="Công Việc" />
+          <ScalarProperty Name="Lương" ColumnName="Lương" />
+          <ScalarProperty Name="Địa_Điểm_Làm_Việc" ColumnName="Địa Điểm Làm Việc" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Employee_by_Phone_Number_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Employee_by_Phone_Number_Employee">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Employee_by_Phone_Number_Employee_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Công_Việc" ColumnName="Công Việc" />
+          <ScalarProperty Name="Lương" ColumnName="Lương" />
+          <ScalarProperty Name="Địa_Điểm_Làm_Việc" ColumnName="Địa Điểm Làm Việc" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Employee_by_Work_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Employee_by_Work_Employee">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Employee_by_Work_Employee_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Công_Việc" ColumnName="Công Việc" />
+          <ScalarProperty Name="Lương" ColumnName="Lương" />
+          <ScalarProperty Name="Địa_Điểm_Làm_Việc" ColumnName="Địa Điểm Làm Việc" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Employee_by_Workplace_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Employee_by_Workplace_Employee">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Employee_by_Workplace_Employee_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Công_Việc" ColumnName="Công Việc" />
+          <ScalarProperty Name="Lương" ColumnName="Lương" />
+          <ScalarProperty Name="Địa_Điểm_Làm_Việc" ColumnName="Địa Điểm Làm Việc" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Room">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Room_Result">
+          <ScalarProperty Name="Toà_Nhà" ColumnName="Toà Nhà" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Loại_Phòng" ColumnName="Loại Phòng" />
+          <ScalarProperty Name="Số_Người_Tối_Đa" ColumnName="Số Người Tối Đa" />
+          <ScalarProperty Name="Số_Người_Hiện_Tại" ColumnName="Số Người Hiện Tại" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Room_by_Name_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Room_by_Name_Room">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Room_by_Name_Room_Result">
+          <ScalarProperty Name="Toà_Nhà" ColumnName="Toà Nhà" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Loại_Phòng" ColumnName="Loại Phòng" />
+          <ScalarProperty Name="Số_Người_Tối_Đa" ColumnName="Số Người Tối Đa" />
+          <ScalarProperty Name="Số_Người_Hiện_Tại" ColumnName="Số Người Hiện Tại" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Room_By_Status" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Room_By_Status">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Room_By_Status_Result">
+          <ScalarProperty Name="Toà_Nhà" ColumnName="Toà Nhà" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Loại_Phòng" ColumnName="Loại Phòng" />
+          <ScalarProperty Name="Số_Người_Tối_Đa" ColumnName="Số Người Tối Đa" />
+          <ScalarProperty Name="Số_Người_Hiện_Tại" ColumnName="Số Người Hiện Tại" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Room_by_The_Building_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Room_by_The_Building_Room">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Room_by_The_Building_Room_Result">
+          <ScalarProperty Name="Toà_Nhà" ColumnName="Toà Nhà" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Loại_Phòng" ColumnName="Loại Phòng" />
+          <ScalarProperty Name="Số_Người_Tối_Đa" ColumnName="Số Người Tối Đa" />
+          <ScalarProperty Name="Số_Người_Hiện_Tại" ColumnName="Số Người Hiện Tại" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Room_by_Type_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Room_by_Type_Room">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Room_by_Type_Room_Result">
+          <ScalarProperty Name="Toà_Nhà" ColumnName="Toà Nhà" />
+          <ScalarProperty Name="Tên_Phòng" ColumnName="Tên Phòng" />
+          <ScalarProperty Name="Loại_Phòng" ColumnName="Loại Phòng" />
+          <ScalarProperty Name="Số_Người_Tối_Đa" ColumnName="Số Người Tối Đa" />
+          <ScalarProperty Name="Số_Người_Hiện_Tại" ColumnName="Số Người Hiện Tại" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Student" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Student">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Student_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Ngày_Sinh" ColumnName="Ngày Sinh" />
+          <ScalarProperty Name="Giới_Tính" ColumnName="Giới Tính" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Dân_Tộc" ColumnName="Dân Tộc" />
+          <ScalarProperty Name="Lớp" ColumnName="Lớp" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+          <ScalarProperty Name="Phụ_Huynh" ColumnName="Phụ Huynh" />
+          <ScalarProperty Name="SĐT_Phụ_Huynh" ColumnName="SĐT Phụ Huynh" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Student_by_Class_Student_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Student_by_Class_Student_Contract">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Student_by_Class_Student_Contract_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Ngày_Sinh" ColumnName="Ngày Sinh" />
+          <ScalarProperty Name="Giới_Tính" ColumnName="Giới Tính" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Dân_Tộc" ColumnName="Dân Tộc" />
+          <ScalarProperty Name="Lớp" ColumnName="Lớp" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+          <ScalarProperty Name="Phụ_Huynh" ColumnName="Phụ Huynh" />
+          <ScalarProperty Name="SĐT_Phụ_Huynh" ColumnName="SĐT Phụ Huynh" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Student_by_Home_Town_Student_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Student_by_Home_Town_Student_Contract">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Student_by_Home_Town_Student_Contract_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Ngày_Sinh" ColumnName="Ngày Sinh" />
+          <ScalarProperty Name="Giới_Tính" ColumnName="Giới Tính" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Dân_Tộc" ColumnName="Dân Tộc" />
+          <ScalarProperty Name="Lớp" ColumnName="Lớp" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+          <ScalarProperty Name="Phụ_Huynh" ColumnName="Phụ Huynh" />
+          <ScalarProperty Name="SĐT_Phụ_Huynh" ColumnName="SĐT Phụ Huynh" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Student_by_Identity_Card_Student_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Student_by_Identity_Card_Student_Contract">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Student_by_Identity_Card_Student_Contract_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Ngày_Sinh" ColumnName="Ngày Sinh" />
+          <ScalarProperty Name="Giới_Tính" ColumnName="Giới Tính" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Dân_Tộc" ColumnName="Dân Tộc" />
+          <ScalarProperty Name="Lớp" ColumnName="Lớp" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+          <ScalarProperty Name="Phụ_Huynh" ColumnName="Phụ Huynh" />
+          <ScalarProperty Name="SĐT_Phụ_Huynh" ColumnName="SĐT Phụ Huynh" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Student_by_Name_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Student_by_Name_Room">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Student_by_Name_Room_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Ngày_Sinh" ColumnName="Ngày Sinh" />
+          <ScalarProperty Name="Giới_Tính" ColumnName="Giới Tính" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Dân_Tộc" ColumnName="Dân Tộc" />
+          <ScalarProperty Name="Lớp" ColumnName="Lớp" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+          <ScalarProperty Name="Phụ_Huynh" ColumnName="Phụ Huynh" />
+          <ScalarProperty Name="SĐT_Phụ_Huynh" ColumnName="SĐT Phụ Huynh" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Student_by_Name_Student_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Student_by_Name_Student_Contract">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Student_by_Name_Student_Contract_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Ngày_Sinh" ColumnName="Ngày Sinh" />
+          <ScalarProperty Name="Giới_Tính" ColumnName="Giới Tính" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Dân_Tộc" ColumnName="Dân Tộc" />
+          <ScalarProperty Name="Lớp" ColumnName="Lớp" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+          <ScalarProperty Name="Phụ_Huynh" ColumnName="Phụ Huynh" />
+          <ScalarProperty Name="SĐT_Phụ_Huynh" ColumnName="SĐT Phụ Huynh" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_Student_by_Parents_Name_Student_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Student_by_Parents_Name_Student_Contract">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="db_Dormitory_Management_2021Model.usp_Get_Student_by_Parents_Name_Student_Contract_Result">
+          <ScalarProperty Name="Tên" ColumnName="Tên" />
+          <ScalarProperty Name="Ngày_Sinh" ColumnName="Ngày Sinh" />
+          <ScalarProperty Name="Giới_Tính" ColumnName="Giới Tính" />
+          <ScalarProperty Name="Căn_Cước_Công_Dân" ColumnName="Căn Cước Công Dân" />
+          <ScalarProperty Name="Quê_Quán" ColumnName="Quê Quán" />
+          <ScalarProperty Name="Dân_Tộc" ColumnName="Dân Tộc" />
+          <ScalarProperty Name="Lớp" ColumnName="Lớp" />
+          <ScalarProperty Name="SĐT" ColumnName="SĐT" />
+          <ScalarProperty Name="Phụ_Huynh" ColumnName="Phụ Huynh" />
+          <ScalarProperty Name="SĐT_Phụ_Huynh" ColumnName="SĐT Phụ Huynh" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="usp_Get_The_Building_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_The_Building_Room" />
+    <FunctionImportMapping FunctionImportName="usp_Get_Work_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Work_Employee" />
+    <FunctionImportMapping FunctionImportName="usp_Get_Workplace_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Get_Workplace_Employee" />
+    <FunctionImportMapping FunctionImportName="usp_Login" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Login" />
+    <FunctionImportMapping FunctionImportName="usp_Total_Bill" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Total_Bill" />
+    <FunctionImportMapping FunctionImportName="usp_Total_Bill_Unpaid" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Total_Bill_Unpaid" />
+    <FunctionImportMapping FunctionImportName="usp_Total_Buiding_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Total_Buiding_Room" />
+    <FunctionImportMapping FunctionImportName="usp_Total_Contract" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Total_Contract" />
+    <FunctionImportMapping FunctionImportName="usp_Total_Employee" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Total_Employee" />
+    <FunctionImportMapping FunctionImportName="usp_Total_Room" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Total_Room" />
+    <FunctionImportMapping FunctionImportName="usp_Total_Room_Empty" FunctionName="db_Dormitory_Management_2021Model.Store.usp_Total_Room_Empty" />
   </EntityContainerMapping>
 </Mapping>

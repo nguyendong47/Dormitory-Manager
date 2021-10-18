@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace KTX2021
+namespace Dormitory_Management_2021
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace KTX2021
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FLogin());
+            Application.Run(new F_Main());
         }
     }
 }

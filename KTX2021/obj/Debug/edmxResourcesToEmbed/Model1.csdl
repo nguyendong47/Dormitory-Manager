@@ -1,324 +1,545 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Schema Namespace="QuanLyKTX2021Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-  <EntityType Name="HoaDon">
+<Schema Namespace="db_Dormitory_Management_2021Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="tbl_Bill">
     <Key>
-      <PropertyRef Name="MaHoaDon" />
+      <PropertyRef Name="ID_Bill" />
     </Key>
-    <Property Name="MaHoaDon" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="ToaNha" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="TenPhong" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="SoNuoc" Type="Int32" />
-    <Property Name="SoDien" Type="Int32" />
-    <Property Name="Thang" Type="DateTime" Precision="0" />
-    <Property Name="TrangThai" Type="Boolean" />
-    <Property Name="TongTien" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="NhanVienLap" Type="Int64" />
+    <Property Name="ID_Bill" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name_Room" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Number_Water_Bill" Type="Int32" />
+    <Property Name="Number_Electricty_Bill" Type="Int32" />
+    <Property Name="Month_Bill" Type="DateTime" Precision="0" />
+    <Property Name="Status_Bill" Type="Boolean" />
+    <Property Name="Total_Money_Bill" Type="Decimal" Precision="18" Scale="0" />
+    <NavigationProperty Name="tbl_Room" Relationship="Self.FK__tbl_Bill__Name_R__4222D4EF" FromRole="tbl_Bill" ToRole="tbl_Room" />
   </EntityType>
-  <EntityType Name="HopDong">
+  <EntityType Name="tbl_Contract">
     <Key>
-      <PropertyRef Name="MaHD" />
+      <PropertyRef Name="Identity_Card_Student_Contract" />
     </Key>
-    <Property Name="MaHD" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="MaSV" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="TenSV" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="NgaySinh" Type="DateTime" Precision="0" />
-    <Property Name="GioiTinh" Type="Boolean" />
-    <Property Name="CMND" Type="Int64" />
-    <Property Name="QueQuan" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-    <Property Name="DanToc" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-    <Property Name="Lop" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-    <Property Name="ToaNha" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="TenPhong" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="SDT" Type="Int64" />
-    <Property Name="MatKhau" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="TenPhuHuynh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="SDTPhuHuynh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="NgayLap" Type="DateTime" Precision="0" />
-    <Property Name="NgayHetHan" Type="DateTime" Precision="0" />
-    <Property Name="TienPhong" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="NhanVienLap" Type="Int64" />
-    <NavigationProperty Name="Phong" Relationship="Self.FK__HopDong__21B6055D" FromRole="HopDong" ToRole="Phong" />
+    <Property Name="ID_Contract" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name_Student_Contract" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Date_of_Birth_Student_Contract" Type="DateTime" Precision="0" />
+    <Property Name="Sex_Student_Contract" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Identity_Card_Student_Contract" Type="Int64" Nullable="false" />
+    <Property Name="Home_Town_Student_Contract" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Nation_Student_Contract" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Class_Student_Contract" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Name_Room" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Phone_Number_Student_Contract" Type="Int64" />
+    <Property Name="Parents_Name_Student_Contract" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Phone_Number_Parents_Student_Contract" Type="Int64" />
+    <Property Name="Start_Day_Contract" Type="DateTime" Precision="0" />
+    <Property Name="Expiration_Date_Contract" Type="DateTime" Precision="0" />
+    <Property Name="Total_Money_Contract" Type="Decimal" Precision="18" Scale="0" />
+    <NavigationProperty Name="tbl_Room" Relationship="Self.FK__tbl_Contr__Name___2D27B809" FromRole="tbl_Contract" ToRole="tbl_Room" />
   </EntityType>
-  <EntityType Name="NhanVien">
+  <EntityType Name="tbl_Employee">
     <Key>
-      <PropertyRef Name="CMND" />
+      <PropertyRef Name="Identity_Card_Employee" />
     </Key>
-    <Property Name="HoTen" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="CMND" Type="Int64" Nullable="false" />
-    <Property Name="QueQuan" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="CongViec" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="Luong" Type="Int64" />
-    <Property Name="DiaDiem" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="SDT" Type="Int64" />
-    <Property Name="MatKhau" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Name_Employee" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Identity_Card_Employee" Type="Int64" Nullable="false" />
+    <Property Name="Home_Town_Employee" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Work_Employee" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Salary_Employee" Type="Int64" />
+    <Property Name="Workplace_Employee" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Phone_Number_Employee" Type="Int64" />
   </EntityType>
-  <EntityType Name="Phong">
+  <EntityType Name="tbl_Room">
     <Key>
-      <PropertyRef Name="ToaNha" />
-      <PropertyRef Name="TenPhong" />
+      <PropertyRef Name="Name_Room" />
     </Key>
-    <Property Name="ToaNha" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-    <Property Name="TenPhong" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-    <Property Name="LoaiPhong" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="SoNguoiToiDa" Type="Int32" />
-    <NavigationProperty Name="HopDongs" Relationship="Self.FK__HopDong__21B6055D" FromRole="Phong" ToRole="HopDong" />
+    <Property Name="Building_Room" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Name_Room" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Type_Room" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Maximum_Number_of_People_Room" Type="Int32" />
+    <Property Name="Current_Number_of_People_Room" Type="Int32" />
+    <NavigationProperty Name="tbl_Bill" Relationship="Self.FK__tbl_Bill__Name_R__4222D4EF" FromRole="tbl_Room" ToRole="tbl_Bill" />
+    <NavigationProperty Name="tbl_Contract" Relationship="Self.FK__tbl_Contr__Name___2D27B809" FromRole="tbl_Room" ToRole="tbl_Contract" />
   </EntityType>
-  <Association Name="FK__HopDong__21B6055D">
-    <End Role="Phong" Type="Self.Phong" Multiplicity="0..1" />
-    <End Role="HopDong" Type="Self.HopDong" Multiplicity="*" />
+  <Association Name="FK__tbl_Bill__Name_R__4222D4EF">
+    <End Role="tbl_Room" Type="Self.tbl_Room" Multiplicity="0..1" />
+    <End Role="tbl_Bill" Type="Self.tbl_Bill" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Phong">
-        <PropertyRef Name="ToaNha" />
-        <PropertyRef Name="TenPhong" />
+      <Principal Role="tbl_Room">
+        <PropertyRef Name="Name_Room" />
       </Principal>
-      <Dependent Role="HopDong">
-        <PropertyRef Name="ToaNha" />
-        <PropertyRef Name="TenPhong" />
+      <Dependent Role="tbl_Bill">
+        <PropertyRef Name="Name_Room" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <EntityContainer Name="QuanLyKTX2021Entities" annotation:LazyLoadingEnabled="true">
-    <EntitySet Name="HoaDons" EntityType="Self.HoaDon" />
-    <EntitySet Name="HopDongs" EntityType="Self.HopDong" />
-    <EntitySet Name="NhanViens" EntityType="Self.NhanVien" />
-    <EntitySet Name="Phongs" EntityType="Self.Phong" />
-    <AssociationSet Name="FK__HopDong__21B6055D" Association="Self.FK__HopDong__21B6055D">
-      <End Role="Phong" EntitySet="Phongs" />
-      <End Role="HopDong" EntitySet="HopDongs" />
+  <Association Name="FK__tbl_Contr__Name___2D27B809">
+    <End Role="tbl_Room" Type="Self.tbl_Room" Multiplicity="0..1" />
+    <End Role="tbl_Contract" Type="Self.tbl_Contract" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_Room">
+        <PropertyRef Name="Name_Room" />
+      </Principal>
+      <Dependent Role="tbl_Contract">
+        <PropertyRef Name="Name_Room" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="db_Dormitory_Management_2021Entities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="tbl_Bill" EntityType="Self.tbl_Bill" />
+    <EntitySet Name="tbl_Contract" EntityType="Self.tbl_Contract" />
+    <EntitySet Name="tbl_Employee" EntityType="Self.tbl_Employee" />
+    <EntitySet Name="tbl_Room" EntityType="Self.tbl_Room" />
+    <AssociationSet Name="FK__tbl_Bill__Name_R__4222D4EF" Association="Self.FK__tbl_Bill__Name_R__4222D4EF">
+      <End Role="tbl_Room" EntitySet="tbl_Room" />
+      <End Role="tbl_Bill" EntitySet="tbl_Bill" />
     </AssociationSet>
-    <FunctionImport Name="DangNhap" ReturnType="Collection(Int32)">
-      <Parameter Name="maSo" Mode="In" Type="Int64" />
-      <Parameter Name="matKhau" Mode="In" Type="String" />
+    <AssociationSet Name="FK__tbl_Contr__Name___2D27B809" Association="Self.FK__tbl_Contr__Name___2D27B809">
+      <End Role="tbl_Room" EntitySet="tbl_Room" />
+      <End Role="tbl_Contract" EntitySet="tbl_Contract" />
+    </AssociationSet>
+    <FunctionImport Name="usp_Add_Bill">
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
+      <Parameter Name="Number_Water_Bill" Mode="In" Type="Int32" />
+      <Parameter Name="Number_Electricty_Bill" Mode="In" Type="Int32" />
+      <Parameter Name="Month_Bill" Mode="In" Type="DateTime" />
+      <Parameter Name="Status_Bill" Mode="In" Type="Boolean" />
+      <Parameter Name="Total_Money_Bill" Mode="In" Type="Decimal" />
     </FunctionImport>
-    <FunctionImport Name="LayDanhSachHoaDon" ReturnType="Collection(QuanLyKTX2021Model.LayDanhSachHoaDon_Result)" />
-    <FunctionImport Name="LayDanhSachHopDong" ReturnType="Collection(QuanLyKTX2021Model.LayDanhSachHopDong_Result)" />
-    <FunctionImport Name="LayDanhSachNhanVien" ReturnType="Collection(QuanLyKTX2021Model.LayDanhSachNhanVien_Result)" />
-    <FunctionImport Name="LayDanhSachPhong" ReturnType="Collection(QuanLyKTX2021Model.LayDanhSachPhong_Result)" />
-    <FunctionImport Name="LayDanhSachSinhVien" ReturnType="Collection(QuanLyKTX2021Model.LayDanhSachSinhVien_Result)" />
-    <FunctionImport Name="LayDanhSachTenPhong" ReturnType="Collection(String)">
-      <Parameter Name="toaNha" Mode="In" Type="String" />
+    <FunctionImport Name="usp_Add_Contract">
+      <Parameter Name="Name_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Date_of_Birth_Student_Contract" Mode="In" Type="DateTime" />
+      <Parameter Name="Sex_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Identity_Card_Student_Contract" Mode="In" Type="Int64" />
+      <Parameter Name="Home_Town_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Nation_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Class_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
+      <Parameter Name="Phone_Number_Student_Contract" Mode="In" Type="Int64" />
+      <Parameter Name="Parents_Name_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Phone_Number_Parents_Student_Contract" Mode="In" Type="Int64" />
+      <Parameter Name="Start_Day_Contract" Mode="In" Type="DateTime" />
+      <Parameter Name="Expiration_Date_Contract" Mode="In" Type="DateTime" />
+      <Parameter Name="Total_Money_Contract" Mode="In" Type="Decimal" />
     </FunctionImport>
-    <FunctionImport Name="LayDanhSachToaNha" ReturnType="Collection(String)" />
-    <FunctionImport Name="SoNguoiHienTaiCuaPhong" ReturnType="Collection(Int32)">
-      <Parameter Name="toaNha" Mode="In" Type="String" />
-      <Parameter Name="tenPhong" Mode="In" Type="String" />
+    <FunctionImport Name="usp_Add_Employee">
+      <Parameter Name="Name_Employee" Mode="In" Type="String" />
+      <Parameter Name="Identity_Card_Employee" Mode="In" Type="Int64" />
+      <Parameter Name="Home_Town_Employee" Mode="In" Type="String" />
+      <Parameter Name="Work_Employee" Mode="In" Type="String" />
+      <Parameter Name="Salary_Employee" Mode="In" Type="Int64" />
+      <Parameter Name="Workplace_Employee" Mode="In" Type="String" />
+      <Parameter Name="Phone_Number_Employee" Mode="In" Type="Int64" />
     </FunctionImport>
-    <FunctionImport Name="SuaHoaDon">
-      <Parameter Name="MaHoaDon" Mode="In" Type="Int64" />
-      <Parameter Name="ToaNha" Mode="In" Type="String" />
-      <Parameter Name="TenPhong" Mode="In" Type="String" />
-      <Parameter Name="SoNuoc" Mode="In" Type="Int32" />
-      <Parameter Name="SoDien" Mode="In" Type="Int32" />
-      <Parameter Name="Thang" Mode="In" Type="DateTime" />
-      <Parameter Name="TrangThai" Mode="In" Type="Boolean" />
-      <Parameter Name="TongTien" Mode="In" Type="Decimal" />
-      <Parameter Name="NhanVienLap" Mode="In" Type="Int64" />
+    <FunctionImport Name="usp_Add_Room">
+      <Parameter Name="Building_Room" Mode="In" Type="String" />
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
+      <Parameter Name="Type_Room" Mode="In" Type="String" />
+      <Parameter Name="Maximum_Number_of_People_Room" Mode="In" Type="Int32" />
     </FunctionImport>
-    <FunctionImport Name="SuaHopDong">
-      <Parameter Name="MaHD" Mode="In" Type="Int64" />
-      <Parameter Name="MaSV" Mode="In" Type="String" />
-      <Parameter Name="TenSV" Mode="In" Type="String" />
-      <Parameter Name="ToaNha" Mode="In" Type="String" />
-      <Parameter Name="TenPhong" Mode="In" Type="String" />
-      <Parameter Name="NgayLap" Mode="In" Type="DateTime" />
-      <Parameter Name="NgayHetHan" Mode="In" Type="DateTime" />
-      <Parameter Name="TienPhong" Mode="In" Type="Decimal" />
-      <Parameter Name="NhanVienLap" Mode="In" Type="Int64" />
+    <FunctionImport Name="usp_Delete_Bill">
+      <Parameter Name="ID_Bill" Mode="In" Type="Int64" />
     </FunctionImport>
-    <FunctionImport Name="SuaNhanVien">
-      <Parameter Name="hoTen" Mode="In" Type="String" />
-      <Parameter Name="cmnd" Mode="In" Type="Int64" />
-      <Parameter Name="queQuan" Mode="In" Type="String" />
-      <Parameter Name="congViec" Mode="In" Type="String" />
-      <Parameter Name="luong" Mode="In" Type="Int64" />
-      <Parameter Name="diaDiem" Mode="In" Type="String" />
-      <Parameter Name="sdt" Mode="In" Type="Int64" />
+    <FunctionImport Name="usp_Delete_Contract">
+      <Parameter Name="ID_Contract" Mode="In" Type="Int64" />
     </FunctionImport>
-    <FunctionImport Name="SuaPhong">
-      <Parameter Name="toaNha" Mode="In" Type="String" />
-      <Parameter Name="tenPhong" Mode="In" Type="String" />
-      <Parameter Name="loaiPhong" Mode="In" Type="String" />
-      <Parameter Name="soNguoiToiDa" Mode="In" Type="Int32" />
+    <FunctionImport Name="usp_Delete_Employee">
+      <Parameter Name="Identity_Card_Employee" Mode="In" Type="Int64" />
     </FunctionImport>
-    <FunctionImport Name="SuaSinhVien">
-      <Parameter Name="MaSV" Mode="In" Type="String" />
-      <Parameter Name="TenSV" Mode="In" Type="String" />
-      <Parameter Name="NgaySinh" Mode="In" Type="DateTime" />
-      <Parameter Name="GioiTinh" Mode="In" Type="Boolean" />
-      <Parameter Name="CMND" Mode="In" Type="Int64" />
-      <Parameter Name="QueQuan" Mode="In" Type="String" />
-      <Parameter Name="DanToc" Mode="In" Type="String" />
-      <Parameter Name="Lop" Mode="In" Type="String" />
-      <Parameter Name="SDT" Mode="In" Type="Int64" />
-      <Parameter Name="TenPhuHuynh" Mode="In" Type="String" />
-      <Parameter Name="SDTPhuHuynh" Mode="In" Type="String" />
+    <FunctionImport Name="usp_Delete_Room">
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
     </FunctionImport>
-    <FunctionImport Name="ThemHoaDon">
-      <Parameter Name="ToaNha" Mode="In" Type="String" />
-      <Parameter Name="TenPhong" Mode="In" Type="String" />
-      <Parameter Name="SoNuoc" Mode="In" Type="Int32" />
-      <Parameter Name="SoDien" Mode="In" Type="Int32" />
-      <Parameter Name="Thang" Mode="In" Type="DateTime" />
-      <Parameter Name="TrangThai" Mode="In" Type="Boolean" />
-      <Parameter Name="TongTien" Mode="In" Type="Decimal" />
-      <Parameter Name="NhanVienLap" Mode="In" Type="Int64" />
+    <FunctionImport Name="usp_Edit_Account">
+      <Parameter Name="Username_Account" Mode="In" Type="String" />
+      <Parameter Name="Old_Password_Account" Mode="In" Type="String" />
+      <Parameter Name="New_Password_Account" Mode="In" Type="String" />
     </FunctionImport>
-    <FunctionImport Name="ThemHopDong">
-      <Parameter Name="MaSV" Mode="In" Type="String" />
-      <Parameter Name="TenSV" Mode="In" Type="String" />
-      <Parameter Name="NgaySinh" Mode="In" Type="DateTime" />
-      <Parameter Name="GioiTinh" Mode="In" Type="Boolean" />
-      <Parameter Name="CMND" Mode="In" Type="Int64" />
-      <Parameter Name="QueQuan" Mode="In" Type="String" />
-      <Parameter Name="DanToc" Mode="In" Type="String" />
-      <Parameter Name="Lop" Mode="In" Type="String" />
-      <Parameter Name="ToaNha" Mode="In" Type="String" />
-      <Parameter Name="TenPhong" Mode="In" Type="String" />
-      <Parameter Name="SDT" Mode="In" Type="Int64" />
-      <Parameter Name="MatKhau" Mode="In" Type="String" />
-      <Parameter Name="TenPhuHuynh" Mode="In" Type="String" />
-      <Parameter Name="SDTPhuHuynh" Mode="In" Type="String" />
-      <Parameter Name="NgayLap" Mode="In" Type="DateTime" />
-      <Parameter Name="NgayHetHan" Mode="In" Type="DateTime" />
-      <Parameter Name="TienPhong" Mode="In" Type="Decimal" />
-      <Parameter Name="NhanVienLap" Mode="In" Type="Int64" />
+    <FunctionImport Name="usp_Edit_Bill">
+      <Parameter Name="ID_Bill" Mode="In" Type="Int64" />
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
+      <Parameter Name="Number_Water_Bill" Mode="In" Type="Int32" />
+      <Parameter Name="Number_Electricty_Bill" Mode="In" Type="Int32" />
+      <Parameter Name="Month_Bill" Mode="In" Type="DateTime" />
+      <Parameter Name="Status_Bill" Mode="In" Type="Boolean" />
+      <Parameter Name="Total_Money_Bill" Mode="In" Type="Decimal" />
     </FunctionImport>
-    <FunctionImport Name="ThemNhanVien">
-      <Parameter Name="hoTen" Mode="In" Type="String" />
-      <Parameter Name="cmnd" Mode="In" Type="Int64" />
-      <Parameter Name="queQuan" Mode="In" Type="String" />
-      <Parameter Name="congViec" Mode="In" Type="String" />
-      <Parameter Name="luong" Mode="In" Type="Int64" />
-      <Parameter Name="diaDiem" Mode="In" Type="String" />
-      <Parameter Name="sdt" Mode="In" Type="Int64" />
-      <Parameter Name="matKhau" Mode="In" Type="String" />
+    <FunctionImport Name="usp_Edit_Contract">
+      <Parameter Name="ID_Contract" Mode="In" Type="Int64" />
+      <Parameter Name="Name_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
+      <Parameter Name="Start_Day_Contract" Mode="In" Type="DateTime" />
+      <Parameter Name="Expiration_Date_Contract" Mode="In" Type="DateTime" />
+      <Parameter Name="Total_Money_Contract" Mode="In" Type="Decimal" />
     </FunctionImport>
-    <FunctionImport Name="ThemPhong">
-      <Parameter Name="toaNha" Mode="In" Type="String" />
-      <Parameter Name="tenPhong" Mode="In" Type="String" />
-      <Parameter Name="loaiPhong" Mode="In" Type="String" />
-      <Parameter Name="soNguoiToiDa" Mode="In" Type="Int32" />
+    <FunctionImport Name="usp_Edit_Employee">
+      <Parameter Name="Name_Employee" Mode="In" Type="String" />
+      <Parameter Name="Identity_Card_Employee" Mode="In" Type="Int64" />
+      <Parameter Name="Home_Town_Employee" Mode="In" Type="String" />
+      <Parameter Name="Work_Employee" Mode="In" Type="String" />
+      <Parameter Name="Salary_Employee" Mode="In" Type="Int64" />
+      <Parameter Name="Workplace_Employee" Mode="In" Type="String" />
+      <Parameter Name="Phone_Number_Employee" Mode="In" Type="Int64" />
     </FunctionImport>
-    <FunctionImport Name="TimHopDong" ReturnType="Collection(QuanLyKTX2021Model.TimHopDong_Result)">
-      <Parameter Name="maHD" Mode="In" Type="Int64" />
-      <Parameter Name="tenSV" Mode="In" Type="String" />
+    <FunctionImport Name="usp_Edit_Room">
+      <Parameter Name="Building_Room" Mode="In" Type="String" />
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
+      <Parameter Name="Type_Room" Mode="In" Type="String" />
+      <Parameter Name="Maximum_Number_of_People_Room" Mode="In" Type="Int32" />
     </FunctionImport>
-    <FunctionImport Name="TimHopDongTheoMaHD" ReturnType="Collection(QuanLyKTX2021Model.TimHopDongTheoMaHD_Result)">
-      <Parameter Name="maHD" Mode="In" Type="Int64" />
+    <FunctionImport Name="usp_Edit_Student">
+      <Parameter Name="Name_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Date_of_Birth_Student_Contract" Mode="In" Type="DateTime" />
+      <Parameter Name="Sex_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Identity_Card_Student_Contract" Mode="In" Type="Int64" />
+      <Parameter Name="Home_Town_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Nation_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Class_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Phone_Number_Student_Contract" Mode="In" Type="Int64" />
+      <Parameter Name="Parents_Name_Student_Contract" Mode="In" Type="String" />
+      <Parameter Name="Phone_Number_Parents_Student_Contract" Mode="In" Type="Int64" />
     </FunctionImport>
-    <FunctionImport Name="XoaHoaDon">
-      <Parameter Name="maHoaDon" Mode="In" Type="Int64" />
+    <FunctionImport Name="usp_Get_Bill" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Bill_Result)" />
+    <FunctionImport Name="usp_Get_Bill_by_Month_Bill" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Bill_by_Month_Bill_Result)">
+      <Parameter Name="Month_Bill" Mode="In" Type="DateTime" />
     </FunctionImport>
-    <FunctionImport Name="XoaHopDong">
-      <Parameter Name="maHD" Mode="In" Type="Int64" />
+    <FunctionImport Name="usp_Get_Bill_by_Name_Room" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Bill_by_Name_Room_Result)">
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
     </FunctionImport>
-    <FunctionImport Name="XoaNhanVien">
-      <Parameter Name="cmnd" Mode="In" Type="Int64" />
+    <FunctionImport Name="usp_Get_Bill_by_Status_Bill" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Bill_by_Status_Bill_Result)">
+      <Parameter Name="Status_Bill" Mode="In" Type="Boolean" />
     </FunctionImport>
-    <FunctionImport Name="XoaPhong">
-      <Parameter Name="toaNha" Mode="In" Type="String" />
-      <Parameter Name="tenPhong" Mode="In" Type="String" />
+    <FunctionImport Name="usp_Get_Contract" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Contract_Result)" />
+    <FunctionImport Name="usp_Get_Contract_by_Class_Student_Contract" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Contract_by_Class_Student_Contract_Result)">
+      <Parameter Name="Class_Student_Contract" Mode="In" Type="String" />
     </FunctionImport>
-    <FunctionImport Name="TimPhong" ReturnType="Collection(QuanLyKTX2021Model.TimPhong_Result)">
-      <Parameter Name="tenPhong" Mode="In" Type="String" />
+    <FunctionImport Name="usp_Get_Contract_by_Home_Town_Student_Contract" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Contract_by_Home_Town_Student_Contract_Result)">
+      <Parameter Name="Home_Town_Student_Contract" Mode="In" Type="String" />
     </FunctionImport>
+    <FunctionImport Name="usp_Get_Contract_by_Name_Room" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Contract_by_Name_Room_Result)">
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Contract_by_Name_Student_Contract" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Contract_by_Name_Student_Contract_Result)">
+      <Parameter Name="Name_Student_Contract" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Employee" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Employee_Result)" />
+    <FunctionImport Name="usp_Get_Employee_by_Home_Town_Employee" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Employee_by_Home_Town_Employee_Result)">
+      <Parameter Name="Home_Town_Employee" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Employee_by_Identity_Card_Employee" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Employee_by_Identity_Card_Employee_Result)">
+      <Parameter Name="Identity_Card_Employee" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Employee_by_Name_Employee" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Employee_by_Name_Employee_Result)">
+      <Parameter Name="Name_Employee" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Employee_by_Phone_Number_Employee" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Employee_by_Phone_Number_Employee_Result)">
+      <Parameter Name="Phone_Number_Employee" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Employee_by_Work_Employee" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Employee_by_Work_Employee_Result)">
+      <Parameter Name="Work_Employee" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Employee_by_Workplace_Employee" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Employee_by_Workplace_Employee_Result)">
+      <Parameter Name="Workplace_Employee" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Room" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Room_Result)" />
+    <FunctionImport Name="usp_Get_Room_by_Name_Room" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Room_by_Name_Room_Result)">
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Room_By_Status" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Room_By_Status_Result)">
+      <Parameter Name="status" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Room_by_The_Building_Room" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Room_by_The_Building_Room_Result)">
+      <Parameter Name="Building_Room" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Room_by_Type_Room" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Room_by_Type_Room_Result)">
+      <Parameter Name="Type_Room" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Student" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Student_Result)" />
+    <FunctionImport Name="usp_Get_Student_by_Class_Student_Contract" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Student_by_Class_Student_Contract_Result)">
+      <Parameter Name="Class_Student_Contract" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Student_by_Home_Town_Student_Contract" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Student_by_Home_Town_Student_Contract_Result)">
+      <Parameter Name="Home_Town_Student_Contract" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Student_by_Identity_Card_Student_Contract" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Student_by_Identity_Card_Student_Contract_Result)">
+      <Parameter Name="Identity_Card_Student_Contract" Mode="In" Type="Int64" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Student_by_Name_Room" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Student_by_Name_Room_Result)">
+      <Parameter Name="Name_Room" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Student_by_Name_Student_Contract" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Student_by_Name_Student_Contract_Result)">
+      <Parameter Name="Name_Student_Contract" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_Student_by_Parents_Name_Student_Contract" ReturnType="Collection(db_Dormitory_Management_2021Model.usp_Get_Student_by_Parents_Name_Student_Contract_Result)">
+      <Parameter Name="Parents_Name_Student_Contract" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Get_The_Building_Room" ReturnType="Collection(String)" />
+    <FunctionImport Name="usp_Get_Work_Employee" ReturnType="Collection(String)" />
+    <FunctionImport Name="usp_Get_Workplace_Employee" ReturnType="Collection(String)" />
+    <FunctionImport Name="usp_Login" ReturnType="Collection(Int32)">
+      <Parameter Name="Username_Account" Mode="In" Type="String" />
+      <Parameter Name="Password_Account" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="usp_Total_Bill" ReturnType="Collection(Int32)" />
+    <FunctionImport Name="usp_Total_Bill_Unpaid" ReturnType="Collection(Int32)" />
+    <FunctionImport Name="usp_Total_Buiding_Room" ReturnType="Collection(String)" />
+    <FunctionImport Name="usp_Total_Contract" ReturnType="Collection(Int32)" />
+    <FunctionImport Name="usp_Total_Employee" ReturnType="Collection(Int32)" />
+    <FunctionImport Name="usp_Total_Room" ReturnType="Collection(Int32)" />
+    <FunctionImport Name="usp_Total_Room_Empty" ReturnType="Collection(Int32)" />
   </EntityContainer>
-  <ComplexType Name="LayDanhSachHoaDon_Result">
-    <Property Type="Int64" Name="MaHoaDon" Nullable="false" />
-    <Property Type="String" Name="ToaNha" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenPhong" Nullable="true" MaxLength="100" />
-    <Property Type="Int32" Name="SoNuoc" Nullable="true" />
-    <Property Type="Int32" Name="SoDien" Nullable="true" />
-    <Property Type="DateTime" Name="Thang" Nullable="true" />
-    <Property Type="Boolean" Name="TrangThai" Nullable="true" />
-    <Property Type="Decimal" Name="TongTien" Nullable="true" Precision="18" Scale="0" />
-    <Property Type="Int64" Name="NhanVienLap" Nullable="true" />
+  <ComplexType Name="usp_Get_Bill_Result">
+    <Property Type="Int64" Name="Mã_Hoá_Đơn" Nullable="false" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="Số_Nước" Nullable="true" />
+    <Property Type="Int32" Name="Số_Điện" Nullable="true" />
+    <Property Type="DateTime" Name="Tháng" Nullable="true" />
+    <Property Type="String" Name="Trạng_Thái" Nullable="false" MaxLength="15" />
+    <Property Type="Decimal" Name="Tổng_Tiền" Nullable="true" Precision="18" Scale="0" />
   </ComplexType>
-  <ComplexType Name="LayDanhSachHopDong_Result">
-    <Property Type="Int64" Name="MaHD" Nullable="false" />
-    <Property Type="String" Name="MaSV" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenSV" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="ToaNha" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenPhong" Nullable="true" MaxLength="100" />
-    <Property Type="DateTime" Name="NgayLap" Nullable="true" />
-    <Property Type="DateTime" Name="NgayHetHan" Nullable="true" />
-    <Property Type="Decimal" Name="TienPhong" Nullable="true" Precision="18" Scale="0" />
-    <Property Type="Int64" Name="NhanVienLap" Nullable="true" />
+  <ComplexType Name="usp_Get_Bill_by_Month_Bill_Result">
+    <Property Type="Int64" Name="Mã_Hoá_Đơn" Nullable="false" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="Số_Nước" Nullable="true" />
+    <Property Type="Int32" Name="Số_Điện" Nullable="true" />
+    <Property Type="DateTime" Name="Tháng" Nullable="true" />
+    <Property Type="String" Name="Trạng_Thái" Nullable="false" MaxLength="15" />
+    <Property Type="Decimal" Name="Tổng_Tiền" Nullable="true" Precision="18" Scale="0" />
   </ComplexType>
-  <ComplexType Name="LayDanhSachNhanVien_Result">
-    <Property Type="String" Name="HoTen" Nullable="true" MaxLength="100" />
-    <Property Type="Int64" Name="CMND" Nullable="false" />
-    <Property Type="String" Name="QueQuan" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="CongViec" Nullable="true" MaxLength="100" />
-    <Property Type="Int64" Name="Luong" Nullable="true" />
-    <Property Type="String" Name="DiaDiem" Nullable="true" MaxLength="100" />
-    <Property Type="Int64" Name="SDT" Nullable="true" />
+  <ComplexType Name="usp_Get_Bill_by_Name_Room_Result">
+    <Property Type="Int64" Name="Mã_Hoá_Đơn" Nullable="false" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="Số_Nước" Nullable="true" />
+    <Property Type="Int32" Name="Số_Điện" Nullable="true" />
+    <Property Type="DateTime" Name="Tháng" Nullable="true" />
+    <Property Type="String" Name="Trạng_Thái" Nullable="false" MaxLength="15" />
+    <Property Type="Decimal" Name="Tổng_Tiền" Nullable="true" Precision="18" Scale="0" />
   </ComplexType>
-  <ComplexType Name="LayDanhSachPhong_Result">
-    <Property Type="String" Name="ToaNha" Nullable="false" MaxLength="100" />
-    <Property Type="String" Name="TenPhong" Nullable="false" MaxLength="100" />
-    <Property Type="String" Name="LoaiPhong" Nullable="true" MaxLength="100" />
-    <Property Type="Int32" Name="SoNguoiToiDa" Nullable="true" />
+  <ComplexType Name="usp_Get_Bill_by_Status_Bill_Result">
+    <Property Type="Int64" Name="Mã_Hoá_Đơn" Nullable="false" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="Số_Nước" Nullable="true" />
+    <Property Type="Int32" Name="Số_Điện" Nullable="true" />
+    <Property Type="DateTime" Name="Tháng" Nullable="true" />
+    <Property Type="String" Name="Trạng_Thái" Nullable="false" MaxLength="15" />
+    <Property Type="Decimal" Name="Tổng_Tiền" Nullable="true" Precision="18" Scale="0" />
   </ComplexType>
-  <ComplexType Name="LayDanhSachSinhVien_Result">
-    <Property Type="String" Name="MaSV" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenSV" Nullable="true" MaxLength="100" />
-    <Property Type="DateTime" Name="NgaySinh" Nullable="true" />
-    <Property Type="Boolean" Name="GioiTinh" Nullable="true" />
-    <Property Type="Int64" Name="CMND" Nullable="true" />
-    <Property Type="String" Name="QueQuan" Nullable="true" />
-    <Property Type="String" Name="DanToc" Nullable="true" />
-    <Property Type="String" Name="Lop" Nullable="true" />
-    <Property Type="Int64" Name="SDT" Nullable="true" />
-    <Property Type="String" Name="TenPhuHuynh" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="SDTPhuHuynh" Nullable="true" MaxLength="100" />
+  <ComplexType Name="usp_Get_Contract_Result">
+    <Property Type="Int64" Name="Mã_Hợp_Đồng" Nullable="false" />
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Bắt_Đầu" Nullable="true" />
+    <Property Type="DateTime" Name="Ngày_Hết_Hạn" Nullable="true" />
+    <Property Type="Decimal" Name="Tổng_Tiền" Nullable="true" Precision="18" Scale="0" />
   </ComplexType>
-  <ComplexType Name="TimHopDong_Result">
-    <Property Type="Int64" Name="MaHD" Nullable="false" />
-    <Property Type="String" Name="MaSV" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenSV" Nullable="true" MaxLength="100" />
-    <Property Type="DateTime" Name="NgaySinh" Nullable="true" />
-    <Property Type="Boolean" Name="GioiTinh" Nullable="true" />
-    <Property Type="Int64" Name="CMND" Nullable="true" />
-    <Property Type="String" Name="QueQuan" Nullable="true" />
-    <Property Type="String" Name="DanToc" Nullable="true" />
-    <Property Type="String" Name="Lop" Nullable="true" />
-    <Property Type="String" Name="ToaNha" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenPhong" Nullable="true" MaxLength="100" />
-    <Property Type="Int64" Name="SDT" Nullable="true" />
-    <Property Type="String" Name="MatKhau" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenPhuHuynh" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="SDTPhuHuynh" Nullable="true" MaxLength="100" />
-    <Property Type="DateTime" Name="NgayLap" Nullable="true" />
-    <Property Type="DateTime" Name="NgayHetHan" Nullable="true" />
-    <Property Type="Decimal" Name="TienPhong" Nullable="true" Precision="18" Scale="0" />
-    <Property Type="Int64" Name="NhanVienLap" Nullable="true" />
+  <ComplexType Name="usp_Get_Contract_by_Class_Student_Contract_Result">
+    <Property Type="Int64" Name="Mã_Hợp_Đồng" Nullable="false" />
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Bắt_Đầu" Nullable="true" />
+    <Property Type="DateTime" Name="Ngày_Hết_Hạn" Nullable="true" />
+    <Property Type="Decimal" Name="Tổng_Tiền" Nullable="true" Precision="18" Scale="0" />
   </ComplexType>
-  <ComplexType Name="TimHopDongTheoMaHD_Result">
-    <Property Type="Int64" Name="MaHD" Nullable="false" />
-    <Property Type="String" Name="MaSV" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenSV" Nullable="true" MaxLength="100" />
-    <Property Type="DateTime" Name="NgaySinh" Nullable="true" />
-    <Property Type="Boolean" Name="GioiTinh" Nullable="true" />
-    <Property Type="Int64" Name="CMND" Nullable="true" />
-    <Property Type="String" Name="QueQuan" Nullable="true" />
-    <Property Type="String" Name="DanToc" Nullable="true" />
-    <Property Type="String" Name="Lop" Nullable="true" />
-    <Property Type="String" Name="ToaNha" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenPhong" Nullable="true" MaxLength="100" />
-    <Property Type="Int64" Name="SDT" Nullable="true" />
-    <Property Type="String" Name="MatKhau" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="TenPhuHuynh" Nullable="true" MaxLength="100" />
-    <Property Type="String" Name="SDTPhuHuynh" Nullable="true" MaxLength="100" />
-    <Property Type="DateTime" Name="NgayLap" Nullable="true" />
-    <Property Type="DateTime" Name="NgayHetHan" Nullable="true" />
-    <Property Type="Decimal" Name="TienPhong" Nullable="true" Precision="18" Scale="0" />
-    <Property Type="Int64" Name="NhanVienLap" Nullable="true" />
+  <ComplexType Name="usp_Get_Contract_by_Home_Town_Student_Contract_Result">
+    <Property Type="Int64" Name="Mã_Hợp_Đồng" Nullable="false" />
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Bắt_Đầu" Nullable="true" />
+    <Property Type="DateTime" Name="Ngày_Hết_Hạn" Nullable="true" />
+    <Property Type="Decimal" Name="Tổng_Tiền" Nullable="true" Precision="18" Scale="0" />
   </ComplexType>
-  <ComplexType Name="TimPhong_Result">
-    <Property Type="String" Name="ToaNha" Nullable="false" MaxLength="100" />
-    <Property Type="String" Name="TenPhong" Nullable="false" MaxLength="100" />
-    <Property Type="String" Name="LoaiPhong" Nullable="true" MaxLength="100" />
-    <Property Type="Int32" Name="SoNguoiToiDa" Nullable="true" />
+  <ComplexType Name="usp_Get_Contract_by_Name_Room_Result">
+    <Property Type="Int64" Name="Mã_Hợp_Đồng" Nullable="false" />
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Bắt_Đầu" Nullable="true" />
+    <Property Type="DateTime" Name="Ngày_Hết_Hạn" Nullable="true" />
+    <Property Type="Decimal" Name="Tổng_Tiền" Nullable="true" Precision="18" Scale="0" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Contract_by_Name_Student_Contract_Result">
+    <Property Type="Int64" Name="Mã_Hợp_Đồng" Nullable="false" />
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Bắt_Đầu" Nullable="true" />
+    <Property Type="DateTime" Name="Ngày_Hết_Hạn" Nullable="true" />
+    <Property Type="Decimal" Name="Tổng_Tiền" Nullable="true" Precision="18" Scale="0" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Employee_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Công_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Lương" Nullable="true" />
+    <Property Type="String" Name="Địa_Điểm_Làm_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Employee_by_Home_Town_Employee_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Công_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Lương" Nullable="true" />
+    <Property Type="String" Name="Địa_Điểm_Làm_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Employee_by_Identity_Card_Employee_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Công_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Lương" Nullable="true" />
+    <Property Type="String" Name="Địa_Điểm_Làm_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Employee_by_Name_Employee_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Công_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Lương" Nullable="true" />
+    <Property Type="String" Name="Địa_Điểm_Làm_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Employee_by_Phone_Number_Employee_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Công_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Lương" Nullable="true" />
+    <Property Type="String" Name="Địa_Điểm_Làm_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Employee_by_Work_Employee_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Công_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Lương" Nullable="true" />
+    <Property Type="String" Name="Địa_Điểm_Làm_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Employee_by_Workplace_Employee_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Công_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Lương" Nullable="true" />
+    <Property Type="String" Name="Địa_Điểm_Làm_Việc" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Room_Result">
+    <Property Type="String" Name="Toà_Nhà" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="Loại_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="Số_Người_Tối_Đa" Nullable="true" />
+    <Property Type="Int32" Name="Số_Người_Hiện_Tại" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Room_by_Name_Room_Result">
+    <Property Type="String" Name="Toà_Nhà" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="Loại_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="Số_Người_Tối_Đa" Nullable="true" />
+    <Property Type="Int32" Name="Số_Người_Hiện_Tại" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Room_By_Status_Result">
+    <Property Type="String" Name="Toà_Nhà" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="Loại_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="Số_Người_Tối_Đa" Nullable="true" />
+    <Property Type="Int32" Name="Số_Người_Hiện_Tại" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Room_by_The_Building_Room_Result">
+    <Property Type="String" Name="Toà_Nhà" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="Loại_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="Số_Người_Tối_Đa" Nullable="true" />
+    <Property Type="Int32" Name="Số_Người_Hiện_Tại" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Room_by_Type_Room_Result">
+    <Property Type="String" Name="Toà_Nhà" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Tên_Phòng" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="Loại_Phòng" Nullable="true" MaxLength="100" />
+    <Property Type="Int32" Name="Số_Người_Tối_Đa" Nullable="true" />
+    <Property Type="Int32" Name="Số_Người_Hiện_Tại" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Student_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Sinh" Nullable="true" />
+    <Property Type="String" Name="Giới_Tính" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" />
+    <Property Type="String" Name="Dân_Tộc" Nullable="true" />
+    <Property Type="String" Name="Lớp" Nullable="true" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+    <Property Type="String" Name="Phụ_Huynh" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT_Phụ_Huynh" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Student_by_Class_Student_Contract_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Sinh" Nullable="true" />
+    <Property Type="String" Name="Giới_Tính" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" />
+    <Property Type="String" Name="Dân_Tộc" Nullable="true" />
+    <Property Type="String" Name="Lớp" Nullable="true" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+    <Property Type="String" Name="Phụ_Huynh" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT_Phụ_Huynh" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Student_by_Home_Town_Student_Contract_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Sinh" Nullable="true" />
+    <Property Type="String" Name="Giới_Tính" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" />
+    <Property Type="String" Name="Dân_Tộc" Nullable="true" />
+    <Property Type="String" Name="Lớp" Nullable="true" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+    <Property Type="String" Name="Phụ_Huynh" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT_Phụ_Huynh" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Student_by_Identity_Card_Student_Contract_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Sinh" Nullable="true" />
+    <Property Type="String" Name="Giới_Tính" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" />
+    <Property Type="String" Name="Dân_Tộc" Nullable="true" />
+    <Property Type="String" Name="Lớp" Nullable="true" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+    <Property Type="String" Name="Phụ_Huynh" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT_Phụ_Huynh" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Student_by_Name_Room_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Sinh" Nullable="true" />
+    <Property Type="String" Name="Giới_Tính" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" />
+    <Property Type="String" Name="Dân_Tộc" Nullable="true" />
+    <Property Type="String" Name="Lớp" Nullable="true" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+    <Property Type="String" Name="Phụ_Huynh" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT_Phụ_Huynh" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Student_by_Name_Student_Contract_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Sinh" Nullable="true" />
+    <Property Type="String" Name="Giới_Tính" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" />
+    <Property Type="String" Name="Dân_Tộc" Nullable="true" />
+    <Property Type="String" Name="Lớp" Nullable="true" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+    <Property Type="String" Name="Phụ_Huynh" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT_Phụ_Huynh" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="usp_Get_Student_by_Parents_Name_Student_Contract_Result">
+    <Property Type="String" Name="Tên" Nullable="true" MaxLength="100" />
+    <Property Type="DateTime" Name="Ngày_Sinh" Nullable="true" />
+    <Property Type="String" Name="Giới_Tính" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="Căn_Cước_Công_Dân" Nullable="false" />
+    <Property Type="String" Name="Quê_Quán" Nullable="true" />
+    <Property Type="String" Name="Dân_Tộc" Nullable="true" />
+    <Property Type="String" Name="Lớp" Nullable="true" />
+    <Property Type="Int64" Name="SĐT" Nullable="true" />
+    <Property Type="String" Name="Phụ_Huynh" Nullable="true" MaxLength="100" />
+    <Property Type="Int64" Name="SĐT_Phụ_Huynh" Nullable="true" />
   </ComplexType>
 </Schema>
