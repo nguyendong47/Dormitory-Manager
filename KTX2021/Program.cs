@@ -16,7 +16,7 @@ namespace Dormitory_Management_2021
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new F_Main());
+            Application.Run(new F_Login());
         }
     }
 }
