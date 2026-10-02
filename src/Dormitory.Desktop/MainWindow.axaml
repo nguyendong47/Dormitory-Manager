@@ -1,0 +1,82 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        xmlns:views="using:Dormitory.Desktop.Views"
+        x:Class="Dormitory.Desktop.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Hệ Thống Quản Lý Ký Túc Xá - Dormitory Management"
+        Width="1180" Height="720"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <views:DashboardView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RoomListViewModel}">
+            <views:RoomListView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:StudentListViewModel}">
+            <views:StudentListView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ContractListViewModel}">
+            <views:ContractListView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:BillListViewModel}">
+            <views:BillListView/>
+        </DataTemplate>
+    </Window.DataTemplates>
+
+    <Grid ColumnDefinitions="240,*">
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0" Background="{DynamicResource SystemAltMediumHighColor}"
+                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="0,0,1,0">
+            <Grid RowDefinitions="Auto,*,Auto" Margin="16,20,16,16">
+                <!-- App Brand -->
+                <StackPanel Grid.Row="0" Spacing="6" Margin="0,0,0,24">
+                    <TextBlock Text="🏢 KTX DORMITORY" FontSize="18" FontWeight="Bold" Foreground="#0078D4"/>
+                    <TextBlock Text="Quản Lý Ký Túc Xá" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+
+                <!-- Navigation Buttons -->
+                <StackPanel Grid.Row="1" Spacing="8">
+                    <Button Content="📊  Tổng quan"
+                            Command="{Binding NavigateToDashboardCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Padding="12,10" CornerRadius="6"/>
+
+                    <Button Content="🏠  Phòng ở"
+                            Command="{Binding NavigateToRoomsCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Padding="12,10" CornerRadius="6"/>
+
+                    <Button Content="🎓  Sinh viên"
+                            Command="{Binding NavigateToStudentsCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Padding="12,10" CornerRadius="6"/>
+
+                    <Button Content="📝  Hợp đồng"
+                            Command="{Binding NavigateToContractsCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Padding="12,10" CornerRadius="6"/>
+
+                    <Button Content="💵  Hóa đơn &amp; Dịch vụ"
+                            Command="{Binding NavigateToBillsCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Padding="12,10" CornerRadius="6"/>
+                </StackPanel>
+
+                <!-- Footer Info -->
+                <StackPanel Grid.Row="2" Spacing="4">
+                    <Separator Margin="0,0,0,10"/>
+                    <TextBlock Text="👤 Đang đăng nhập: Admin" FontSize="12" FontWeight="SemiBold"/>
+                    <TextBlock Text=".NET 8 LTS • Avalonia UI 11" FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Border Grid.Column="1" Background="{DynamicResource SystemChromeMediumLowColor}">
+            <TransitioningContentControl Content="{Binding CurrentView}"/>
+        </Border>
+    </Grid>
+</Window>

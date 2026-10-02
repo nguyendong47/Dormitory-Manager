@@ -1,0 +1,31 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code & Rider
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# SQLite local database
+*.db
+*.db-shm
+*.db-wal
+
+# Nuget packages
+packages/
+*.nupkg
+
+# GitNexus local index
+.gitnexus/

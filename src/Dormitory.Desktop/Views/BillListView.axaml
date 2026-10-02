@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             x:Class="Dormitory.Desktop.Views.BillListView"
+             x:DataType="vm:BillListViewModel">
+
+    <Grid RowDefinitions="Auto,*" Margin="24">
+        <!-- Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Quản Lý Hóa Đơn &amp; Thu Tiền" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Tính tiền phòng, điện nước và ghi nhận thanh toán dịch vụ hàng tháng" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Button Content="💵 Thu tiền (Đã thanh toán)" Command="{Binding MarkAsPaidCommand}"/>
+                <Button Content="🔄 Làm mới" Command="{Binding LoadBillsCommand}"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Main DataGrid -->
+        <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+            <DataGrid ItemsSource="{Binding Bills}"
+                      SelectedItem="{Binding SelectedBill}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      GridLinesVisibility="Horizontal"
+                      CanUserResizeColumns="True"
+                      BorderThickness="0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding BillCode}" Width="150"/>
+                    <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber}" Width="90"/>
+                    <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building}" Width="120"/>
+                    <DataGridTextColumn Header="Tháng" Binding="{Binding Month}" Width="70"/>
+                    <DataGridTextColumn Header="Năm" Binding="{Binding Year}" Width="70"/>
+                    <DataGridTextColumn Header="Tiền phòng (đ)" Binding="{Binding RoomFee, StringFormat='{}{0:N0}'}" Width="120"/>
+                    <DataGridTextColumn Header="Điện (kWh)" Binding="{Binding ElectricUsage, StringFormat='{}{0:N0}'}" Width="90"/>
+                    <DataGridTextColumn Header="Tiền điện (đ)" Binding="{Binding ElectricFee, StringFormat='{}{0:N0}'}" Width="110"/>
+                    <DataGridTextColumn Header="Nước (m3)" Binding="{Binding WaterUsage, StringFormat='{}{0:N0}'}" Width="80"/>
+                    <DataGridTextColumn Header="Tiền nước (đ)" Binding="{Binding WaterFee, StringFormat='{}{0:N0}'}" Width="110"/>
+                    <DataGridTextColumn Header="Phụ phí (đ)" Binding="{Binding OtherServiceFee, StringFormat='{}{0:N0}'}" Width="100"/>
+                    <DataGridTextColumn Header="Tổng cộng (đ)" Binding="{Binding TotalAmount, StringFormat='{}{0:N0}'}" Width="130"/>
+                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="120"/>
+                    <DataGridTextColumn Header="Hạn nộp" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="110"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

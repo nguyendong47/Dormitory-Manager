@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             x:Class="Dormitory.Desktop.Views.ContractListView"
+             x:DataType="vm:ContractListViewModel">
+
+    <Grid RowDefinitions="Auto,*" Margin="24">
+        <!-- Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Quản Lý Hợp Đồng Thuê Phòng" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Danh sách hợp đồng thuê KTX giữa sinh viên và ban quản lý, thời hạn và tiền cọc" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Button Content="⏹️ Thanh lý HĐ" Command="{Binding TerminateContractCommand}"/>
+                <Button Content="🔄 Làm mới" Command="{Binding LoadContractsCommand}"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Main DataGrid -->
+        <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+            <DataGrid ItemsSource="{Binding Contracts}"
+                      SelectedItem="{Binding SelectedContract}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      GridLinesVisibility="Horizontal"
+                      CanUserResizeColumns="True"
+                      BorderThickness="0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Số hợp đồng" Binding="{Binding ContractNumber}" Width="150"/>
+                    <DataGridTextColumn Header="Họ tên sinh viên" Binding="{Binding StudentName}" Width="160"/>
+                    <DataGridTextColumn Header="Mã sinh viên" Binding="{Binding StudentCode}" Width="120"/>
+                    <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber}" Width="90"/>
+                    <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building}" Width="130"/>
+                    <DataGridTextColumn Header="Ngày bắt đầu" Binding="{Binding StartDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="120"/>
+                    <DataGridTextColumn Header="Ngày kết thúc" Binding="{Binding EndDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="120"/>
+                    <DataGridTextColumn Header="Tiền cọc (đ)" Binding="{Binding DepositAmount, StringFormat='{}{0:N0}'}" Width="120"/>
+                    <DataGridTextColumn Header="Giá thuê (đ/th)" Binding="{Binding MonthlyRate, StringFormat='{}{0:N0}'}" Width="130"/>
+                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="110"/>
+                    <DataGridTextColumn Header="Ghi chú" Binding="{Binding Notes}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

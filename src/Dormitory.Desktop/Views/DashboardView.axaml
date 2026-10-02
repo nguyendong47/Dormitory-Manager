@@ -1,0 +1,85 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             x:Class="Dormitory.Desktop.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" Spacing="20">
+            <!-- Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Tổng Quan Ký Túc Xá" FontSize="26" FontWeight="SemiBold"/>
+                <TextBlock Text="Báo cáo số liệu phòng ở, sinh viên, hợp đồng và doanh thu tháng hiện tại" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="14"/>
+            </StackPanel>
+
+            <!-- Cards Grid: Thống kê nhanh -->
+            <Grid ColumnDefinitions="*,*,*,*" Margin="0,10,0,0">
+                <!-- Thẻ 1: Tổng số phòng -->
+                <Border Grid.Column="0" Margin="0,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                        CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="🏠 Tổng số phòng" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                        <TextBlock Text="{Binding Stats.TotalRooms}" FontSize="32" FontWeight="Bold" Foreground="#0078D4"/>
+                        <TextBlock Text="Phòng nội trú" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Thẻ 2: Phòng còn trống -->
+                <Border Grid.Column="1" Margin="8,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                        CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="✨ Phòng còn trống" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                        <TextBlock Text="{Binding Stats.AvailableRooms}" FontSize="32" FontWeight="Bold" Foreground="#107C41"/>
+                        <TextBlock Text="Sẵn sàng tiếp nhận" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Thẻ 3: Sinh viên nội trú -->
+                <Border Grid.Column="2" Margin="8,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                        CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="🎓 Sinh viên đang ở" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                        <TextBlock Text="{Binding Stats.TotalStudents}" FontSize="32" FontWeight="Bold" Foreground="#5C2D91"/>
+                        <TextBlock Text="Sinh viên chính quy" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Thẻ 4: Hóa đơn chưa thanh toán -->
+                <Border Grid.Column="3" Margin="8,0,0,0" Background="{DynamicResource SystemAltHighColor}"
+                        CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="⚠️ Hóa đơn chưa thu" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                        <TextBlock Text="{Binding Stats.UnpaidBillsCount}" FontSize="32" FontWeight="Bold" Foreground="#D83B01"/>
+                        <TextBlock Text="Cần đôn đốc đóng tiền" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Khối chi tiết: Tỷ lệ lấp đầy & Doanh thu -->
+            <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                <!-- Tỷ lệ lấp đầy -->
+                <Border Grid.Column="0" Margin="0,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                        CornerRadius="8" Padding="20" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="📊 Tỷ lệ lấp đầy KTX" FontSize="16" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Stats.OccupancyRate, StringFormat='{}{0:F1}%'}" FontSize="36" FontWeight="Bold" Foreground="#0078D4"/>
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Stats.OccupancyRate}" Height="10" CornerRadius="5"/>
+                        <TextBlock Text="Công suất sử dụng giường hiện tại" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Hợp đồng và doanh thu -->
+                <Border Grid.Column="1" Margin="8,0,0,0" Background="{DynamicResource SystemAltHighColor}"
+                        CornerRadius="8" Padding="20" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="💰 Doanh thu thu được tháng này" FontSize="16" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Stats.MonthlyRevenue, StringFormat='{}{0:N0} đ'}" FontSize="36" FontWeight="Bold" Foreground="#107C41"/>
+                        <TextBlock Text="{Binding Stats.ActiveContractsCount, StringFormat='Số hợp đồng đang hiệu lực: {0}'}" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                        <Button Content="🔄 Làm mới số liệu" Command="{Binding LoadStatsCommand}" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

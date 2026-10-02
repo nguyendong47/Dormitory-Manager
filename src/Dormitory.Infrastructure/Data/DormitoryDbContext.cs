@@ -1,0 +1,161 @@
+using Dormitory.Application.Interfaces;
+using Dormitory.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace Dormitory.Infrastructure.Data;
+
+/// <summary>
+/// Entity Framework Core DbContext quản trị toàn bộ dữ liệu Ký túc xá
+/// </summary>
+public class DormitoryDbContext : DbContext, IDormitoryDbContext
+{
+    public DormitoryDbContext()
+    {
+    }
+
+    public DormitoryDbContext(DbContextOptions<DormitoryDbContext> options)
+        : base(options)
+    {
+    }
+
+    /// <summary>
+    /// Bảng quản lý phòng ký túc xá
+    /// </summary>
+    public DbSet<Room> Rooms => Set<Room>();
+
+    /// <summary>
+    /// Bảng hồ sơ sinh viên
+    /// </summary>
+    public DbSet<Student> Students => Set<Student>();
+
+    /// <summary>
+    /// Bảng hợp đồng thuê phòng
+    /// </summary>
+    public DbSet<Contract> Contracts => Set<Contract>();
+
+    /// <summary>
+    /// Bảng hóa đơn điện nước và dịch vụ hàng tháng
+    /// </summary>
+    public DbSet<Bill> Bills => Set<Bill>();
+
+    /// <summary>
+    /// Bảng thông tin nhân viên
+    /// </summary>
+    public DbSet<Employee> Employees => Set<Employee>();
+
+    /// <summary>
+    /// Bảng tài khoản người dùng đăng nhập hệ thống
+    /// </summary>
+    public DbSet<User> Users => Set<User>();
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            // Mặc định sử dụng SQLite database lưu tại thư mục thực thi hoặc root
+            optionsBuilder.UseSqlite("Data Source=dormitory.db");
+        }
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Cấu hình bảng Room
+        modelBuilder.Entity<Room>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.RoomNumber).IsRequired().HasMaxLength(20);
+            entity.Property(r => r.Building).IsRequired().HasMaxLength(50);
+            entity.Property(r => r.PricePerMonth).HasPrecision(18, 2);
+            entity.HasIndex(r => new { r.Building, r.RoomNumber }).IsUnique();
+        });
+
+        // Cấu hình bảng Student
+        modelBuilder.Entity<Student>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.StudentCode).IsRequired().HasMaxLength(20);
+            entity.Property(s => s.FullName).IsRequired().HasMaxLength(100);
+            entity.Property(s => s.IdentityCard).IsRequired().HasMaxLength(20);
+            entity.Property(s => s.PhoneNumber).HasMaxLength(15);
+            entity.Property(s => s.ClassName).HasMaxLength(50);
+            entity.Property(s => s.Faculty).HasMaxLength(100);
+            entity.HasIndex(s => s.StudentCode).IsUnique();
+            entity.HasIndex(s => s.IdentityCard).IsUnique();
+
+            // Quan hệ với phòng hiện tại
+            entity.HasOne(s => s.CurrentRoom)
+                .WithMany()
+                .HasForeignKey(s => s.CurrentRoomId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Cấu hình bảng Contract
+        modelBuilder.Entity<Contract>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.ContractNumber).IsRequired().HasMaxLength(50);
+            entity.Property(c => c.DepositAmount).HasPrecision(18, 2);
+            entity.Property(c => c.MonthlyRate).HasPrecision(18, 2);
+            entity.HasIndex(c => c.ContractNumber).IsUnique();
+
+            entity.HasOne(c => c.Student)
+                .WithMany(s => s.Contracts)
+                .HasForeignKey(c => c.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(c => c.Room)
+                .WithMany(r => r.Contracts)
+                .HasForeignKey(c => c.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Cấu hình bảng Bill
+        modelBuilder.Entity<Bill>(entity =>
+        {
+            entity.HasKey(b => b.Id);
+            entity.Property(b => b.BillCode).IsRequired().HasMaxLength(50);
+            entity.Property(b => b.RoomFee).HasPrecision(18, 2);
+            entity.Property(b => b.OldElectricIndex).HasPrecision(18, 2);
+            entity.Property(b => b.NewElectricIndex).HasPrecision(18, 2);
+            entity.Property(b => b.ElectricRate).HasPrecision(18, 2);
+            entity.Property(b => b.OldWaterIndex).HasPrecision(18, 2);
+            entity.Property(b => b.NewWaterIndex).HasPrecision(18, 2);
+            entity.Property(b => b.WaterRate).HasPrecision(18, 2);
+            entity.Property(b => b.OtherServiceFee).HasPrecision(18, 2);
+            entity.HasIndex(b => b.BillCode).IsUnique();
+
+            entity.HasOne(b => b.Room)
+                .WithMany(r => r.Bills)
+                .HasForeignKey(b => b.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Cấu hình bảng Employee
+        modelBuilder.Entity<Employee>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.EmployeeCode).IsRequired().HasMaxLength(20);
+            entity.Property(e => e.FullName).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.IdentityCard).IsRequired().HasMaxLength(20);
+            entity.HasIndex(e => e.EmployeeCode).IsUnique();
+
+            entity.HasOne(e => e.User)
+                .WithOne()
+                .HasForeignKey<Employee>(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Cấu hình bảng User
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
+            entity.Property(u => u.PasswordHash).IsRequired().HasMaxLength(255);
+            entity.Property(u => u.FullName).IsRequired().HasMaxLength(100);
+            entity.Property(u => u.Email).HasMaxLength(100);
+            entity.HasIndex(u => u.Username).IsUnique();
+        });
+    }
+}

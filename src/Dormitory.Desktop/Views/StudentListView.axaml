@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             x:Class="Dormitory.Desktop.Views.StudentListView"
+             x:DataType="vm:StudentListViewModel">
+
+    <Grid RowDefinitions="Auto,*" Margin="24">
+        <!-- Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Quản Lý Sinh Viên" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Hồ sơ sinh viên nội trú, lớp học, thông tin cá nhân và phòng đang ở" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBox Width="240" Watermark="Tìm kiếm họ tên, mã SV, CCCD..." Text="{Binding SearchQuery}"/>
+                <Button Content="🔍 Tìm" Command="{Binding SearchCommand}"/>
+                <Button Content="🔄 Làm mới" Command="{Binding LoadStudentsCommand}"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Main DataGrid -->
+        <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+            <DataGrid ItemsSource="{Binding Students}"
+                      SelectedItem="{Binding SelectedStudent}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      GridLinesVisibility="Horizontal"
+                      CanUserResizeColumns="True"
+                      BorderThickness="0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Mã sinh viên" Binding="{Binding StudentCode}" Width="120"/>
+                    <DataGridTextColumn Header="Họ và tên" Binding="{Binding FullName}" Width="160"/>
+                    <DataGridTextColumn Header="Phòng đang ở" Binding="{Binding CurrentRoomNumber}" Width="110"/>
+                    <DataGridTextColumn Header="Giới tính" Binding="{Binding Gender}" Width="80"/>
+                    <DataGridTextColumn Header="Lớp" Binding="{Binding ClassName}" Width="110"/>
+                    <DataGridTextColumn Header="Khoa" Binding="{Binding Faculty}" Width="160"/>
+                    <DataGridTextColumn Header="Số điện thoại" Binding="{Binding PhoneNumber}" Width="110"/>
+                    <DataGridTextColumn Header="Số CCCD/CMND" Binding="{Binding IdentityCard}" Width="130"/>
+                    <DataGridTextColumn Header="Quê quán" Binding="{Binding HomeTown}" Width="120"/>
+                    <DataGridTextColumn Header="Người giám hộ" Binding="{Binding ParentName}" Width="140"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>
