@@ -29,16 +29,16 @@
                       CanUserResizeColumns="True"
                       BorderThickness="0">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber}" Width="110"/>
-                    <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building}" Width="150"/>
-                    <DataGridTextColumn Header="Tầng" Binding="{Binding Floor}" Width="70"/>
-                    <DataGridTextColumn Header="Sức chứa" Binding="{Binding Capacity}" Width="90"/>
-                    <DataGridTextColumn Header="Đang ở" Binding="{Binding CurrentOccupancy}" Width="90"/>
-                    <DataGridTextColumn Header="Giá thuê (đ/tháng)" Binding="{Binding PricePerMonth, StringFormat='{}{0:N0}'}" Width="140"/>
-                    <DataGridTextColumn Header="Loại phòng" Binding="{Binding Type}" Width="120"/>
-                    <DataGridTextColumn Header="Dành cho" Binding="{Binding AllowedGender}" Width="100"/>
-                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="120"/>
-                    <DataGridTextColumn Header="Mô tả cơ sở vật chất" Binding="{Binding Description}" Width="*"/>
+                    <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber, Mode=OneWay}" Width="110"/>
+                    <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building, Mode=OneWay}" Width="150"/>
+                    <DataGridTextColumn Header="Tầng" Binding="{Binding Floor, Mode=OneWay}" Width="70"/>
+                    <DataGridTextColumn Header="Sức chứa" Binding="{Binding Capacity, Mode=OneWay}" Width="90"/>
+                    <DataGridTextColumn Header="Đang ở" Binding="{Binding CurrentOccupancy, Mode=OneWay}" Width="90"/>
+                    <DataGridTextColumn Header="Giá thuê (đ/tháng)" Binding="{Binding PricePerMonth, StringFormat='{}{0:N0}', Mode=OneWay}" Width="140"/>
+                    <DataGridTextColumn Header="Loại phòng" Binding="{Binding Type, Mode=OneWay}" Width="120"/>
+                    <DataGridTextColumn Header="Dành cho" Binding="{Binding AllowedGender, Mode=OneWay}" Width="100"/>
+                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status, Mode=OneWay}" Width="120"/>
+                    <DataGridTextColumn Header="Mô tả cơ sở vật chất" Binding="{Binding Description, Mode=OneWay}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

@@ -30,17 +30,17 @@
                       CanUserResizeColumns="True"
                       BorderThickness="0">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Số hợp đồng" Binding="{Binding ContractNumber}" Width="150"/>
-                    <DataGridTextColumn Header="Họ tên sinh viên" Binding="{Binding StudentName}" Width="160"/>
-                    <DataGridTextColumn Header="Mã sinh viên" Binding="{Binding StudentCode}" Width="120"/>
-                    <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber}" Width="90"/>
-                    <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building}" Width="130"/>
-                    <DataGridTextColumn Header="Ngày bắt đầu" Binding="{Binding StartDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="120"/>
-                    <DataGridTextColumn Header="Ngày kết thúc" Binding="{Binding EndDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="120"/>
-                    <DataGridTextColumn Header="Tiền cọc (đ)" Binding="{Binding DepositAmount, StringFormat='{}{0:N0}'}" Width="120"/>
-                    <DataGridTextColumn Header="Giá thuê (đ/th)" Binding="{Binding MonthlyRate, StringFormat='{}{0:N0}'}" Width="130"/>
-                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="110"/>
-                    <DataGridTextColumn Header="Ghi chú" Binding="{Binding Notes}" Width="*"/>
+                    <DataGridTextColumn Header="Số hợp đồng" Binding="{Binding ContractNumber, Mode=OneWay}" Width="150"/>
+                    <DataGridTextColumn Header="Họ tên sinh viên" Binding="{Binding StudentName, Mode=OneWay}" Width="160"/>
+                    <DataGridTextColumn Header="Mã sinh viên" Binding="{Binding StudentCode, Mode=OneWay}" Width="120"/>
+                    <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber, Mode=OneWay}" Width="90"/>
+                    <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building, Mode=OneWay}" Width="130"/>
+                    <DataGridTextColumn Header="Ngày bắt đầu" Binding="{Binding StartDate, StringFormat='{}{0:dd/MM/yyyy}', Mode=OneWay}" Width="120"/>
+                    <DataGridTextColumn Header="Ngày kết thúc" Binding="{Binding EndDate, StringFormat='{}{0:dd/MM/yyyy}', Mode=OneWay}" Width="120"/>
+                    <DataGridTextColumn Header="Tiền cọc (đ)" Binding="{Binding DepositAmount, StringFormat='{}{0:N0}', Mode=OneWay}" Width="120"/>
+                    <DataGridTextColumn Header="Giá thuê (đ/th)" Binding="{Binding MonthlyRate, StringFormat='{}{0:N0}', Mode=OneWay}" Width="130"/>
+                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status, Mode=OneWay}" Width="110"/>
+                    <DataGridTextColumn Header="Ghi chú" Binding="{Binding Notes, Mode=OneWay}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

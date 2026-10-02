@@ -31,16 +31,16 @@
                       CanUserResizeColumns="True"
                       BorderThickness="0">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Mã sinh viên" Binding="{Binding StudentCode}" Width="120"/>
-                    <DataGridTextColumn Header="Họ và tên" Binding="{Binding FullName}" Width="160"/>
-                    <DataGridTextColumn Header="Phòng đang ở" Binding="{Binding CurrentRoomNumber}" Width="110"/>
-                    <DataGridTextColumn Header="Giới tính" Binding="{Binding Gender}" Width="80"/>
-                    <DataGridTextColumn Header="Lớp" Binding="{Binding ClassName}" Width="110"/>
-                    <DataGridTextColumn Header="Khoa" Binding="{Binding Faculty}" Width="160"/>
-                    <DataGridTextColumn Header="Số điện thoại" Binding="{Binding PhoneNumber}" Width="110"/>
-                    <DataGridTextColumn Header="Số CCCD/CMND" Binding="{Binding IdentityCard}" Width="130"/>
-                    <DataGridTextColumn Header="Quê quán" Binding="{Binding HomeTown}" Width="120"/>
-                    <DataGridTextColumn Header="Người giám hộ" Binding="{Binding ParentName}" Width="140"/>
+                    <DataGridTextColumn Header="Mã sinh viên" Binding="{Binding StudentCode, Mode=OneWay}" Width="120"/>
+                    <DataGridTextColumn Header="Họ và tên" Binding="{Binding FullName, Mode=OneWay}" Width="160"/>
+                    <DataGridTextColumn Header="Phòng đang ở" Binding="{Binding CurrentRoomNumber, Mode=OneWay}" Width="110"/>
+                    <DataGridTextColumn Header="Giới tính" Binding="{Binding Gender, Mode=OneWay}" Width="80"/>
+                    <DataGridTextColumn Header="Lớp" Binding="{Binding ClassName, Mode=OneWay}" Width="110"/>
+                    <DataGridTextColumn Header="Khoa" Binding="{Binding Faculty, Mode=OneWay}" Width="160"/>
+                    <DataGridTextColumn Header="Số điện thoại" Binding="{Binding PhoneNumber, Mode=OneWay}" Width="110"/>
+                    <DataGridTextColumn Header="Số CCCD/CMND" Binding="{Binding IdentityCard, Mode=OneWay}" Width="130"/>
+                    <DataGridTextColumn Header="Quê quán" Binding="{Binding HomeTown, Mode=OneWay}" Width="120"/>
+                    <DataGridTextColumn Header="Người giám hộ" Binding="{Binding ParentName, Mode=OneWay}" Width="140"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
