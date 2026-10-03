@@ -1,0 +1,153 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        xmlns:dto="using:Dormitory.Application.DTOs"
+        x:Class="Dormitory.Desktop.Views.ContractDialogWindow"
+        x:DataType="vm:ContractDialogViewModel"
+        Title="{Binding Title}"
+        Width="520"
+        Height="580"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="24" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+            <!-- Tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="Điền thông tin sinh viên, phòng ở và các điều khoản hợp đồng bên dưới" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" 
+                           FontSize="13"/>
+            </StackPanel>
+
+            <!-- Thông báo lỗi nghiệp vụ / xác thực -->
+            <Border Grid.Row="1"
+                    Background="#FDE7E9"
+                    BorderBrush="#D13438"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10"
+                    Margin="0,0,0,14"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="⚠️" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#A80000"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Biểu mẫu nhập liệu -->
+            <ScrollViewer Grid.Row="2">
+                <StackPanel Spacing="14">
+                    <!-- Sinh viên ký hợp đồng -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Sinh viên ký hợp đồng *" FontWeight="Medium" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding Students}"
+                                  SelectedItem="{Binding SelectedStudent}"
+                                  HorizontalAlignment="Stretch"
+                                  PlaceholderText="-- Chọn sinh viên --">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="dto:StudentDto">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding FullName}" FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding StudentCode, StringFormat='(MSSV: {0})'}" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Phòng ở -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Phòng ở (còn chỗ trống) *" FontWeight="Medium" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding Rooms}"
+                                  SelectedItem="{Binding SelectedRoom}"
+                                  HorizontalAlignment="Stretch"
+                                  PlaceholderText="-- Chọn phòng còn trống --">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="dto:RoomDto">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding RoomNumber, StringFormat='Phòng {0}'}" FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding Building, StringFormat='- {0}'}"/>
+                                        <TextBlock Text="{Binding PricePerMonth, StringFormat='({0:N0} đ/tháng)'}" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Ngày bắt đầu và Ngày kết thúc -->
+                    <Grid ColumnDefinitions="*,16,*">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Ngày bắt đầu *" FontWeight="Medium" FontSize="13"/>
+                            <DatePicker SelectedDate="{Binding StartDate}" HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="Ngày kết thúc *" FontWeight="Medium" FontSize="13"/>
+                            <DatePicker SelectedDate="{Binding EndDate}" HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Đơn giá thuê tháng và Tiền cọc -->
+                    <Grid ColumnDefinitions="*,16,*">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Đơn giá thuê (đ/tháng) *" FontWeight="Medium" FontSize="13"/>
+                            <NumericUpDown Value="{Binding MonthlyRate}" 
+                                           Minimum="0" 
+                                           Increment="50000" 
+                                           FormatString="{}{0:N0}"
+                                           HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="Tiền đặt cọc (đ)" FontWeight="Medium" FontSize="13"/>
+                            <NumericUpDown Value="{Binding DepositAmount}" 
+                                           Minimum="0" 
+                                           Increment="50000" 
+                                           FormatString="{}{0:N0}"
+                                           HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Ghi chú điều khoản hợp đồng -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Ghi chú điều khoản hợp đồng" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Notes}"
+                                 AcceptsReturn="True"
+                                 Height="70"
+                                 TextWrapping="Wrap"
+                                 Watermark="VD: Sinh viên cam kết chấp hành nghiêm chỉnh nội quy ký túc xá..."/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Thanh nút tác vụ -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="12"
+                        Margin="0,16,0,0">
+                <Button Content="❌ Hủy bỏ"
+                        Command="{Binding CancelCommand}"
+                        Width="100"
+                        Height="34"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+                <Button Content="📝 Ký hợp đồng"
+                        Command="{Binding SaveCommand}"
+                        Width="140"
+                        Height="34"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
