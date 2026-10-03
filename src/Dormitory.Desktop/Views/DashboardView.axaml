@@ -177,6 +177,29 @@
                     </Grid>
                 </StackPanel>
             </Border>
+
+            <!-- Card biểu đồ: Xu hướng doanh thu & tiện ích 6 tháng gần nhất -->
+            <Border Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,10,0,0"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="16">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="📈 Doanh Thu &amp; Tiện Ích 6 Tháng Gần Nhất" FontSize="16" FontWeight="SemiBold"/>
+                        <TextBlock Text="Xu hướng thu tiền phòng và chi phí dịch vụ điện nước"
+                                   FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    </StackPanel>
+
+                    <lvc:CartesianChart Series="{Binding RevenueTrendSeries}"
+                                        XAxes="{Binding RevenueXAxes}"
+                                        YAxes="{Binding RevenueYAxes}"
+                                        LegendPosition="Top"
+                                        Height="280"
+                                        Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>
