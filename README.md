@@ -16,22 +16,25 @@
    - Thống kê thời gian thực: Tổng số phòng, số phòng trống, số sinh viên đang cư trú, hợp đồng hiệu lực.
    - Theo dõi tỷ lệ lấp đầy KTX (Occupancy Rate) với thanh tiến trình trực quan.
    - Thống kê doanh thu tiền phòng và điện nước đã thu trong tháng hiện tại.
-   - Cảnh báo các hóa đơn chưa thu cần đôn đốc.
+   - Thẻ cảnh báo thông minh: Tự động phát hiện và cảnh báo các hợp đồng sắp hết hạn (trong vòng 30 ngày) và hóa đơn chưa thanh toán; tự động ẩn khi không có cảnh báo.
 
 2. **🏠 Quản Lý Phòng Ở (`Room`)**:
    - Quản lý danh mục phòng theo tòa nhà, số tầng, loại phòng (Tiêu chuẩn, Premium, VIP).
    - Phân chia giới tính phòng (Phòng Nam / Phòng Nữ) và tự động cập nhật sức chứa (`Available`, `Occupied`, `Maintenance`).
    - Hộp thoại **Thêm mới**, **Chỉnh sửa** phòng ở và **Xóa an toàn** có xác nhận người dùng.
+   - **Xuất Excel**: Xuất toàn bộ danh sách phòng sang định dạng `.xlsx` chuyên nghiệp với ClosedXML.
 
 3. **🎓 Quản Lý Hồ Sơ Sinh Viên (`Student`)**:
    - Quản lý đầy đủ thông tin: Mã sinh viên, họ tên, CCCD/CMND, quê quán, lớp, khoa, số điện thoại và thông tin liên hệ phụ huynh khẩn cấp.
    - Tìm kiếm nhanh đa tiêu chí (tên, mã số, CCCD, lớp, quê quán).
    - Hộp thoại **Thêm mới**, **Sửa hồ sơ** và **Xóa sinh viên** đồng bộ thời gian thực.
+   - **Xuất Excel**: Xuất danh bạ hồ sơ sinh viên sang tệp `.xlsx` hỗ trợ báo cáo nhà trường.
 
 4. **📝 Quản Lý Hợp Đồng Thuê Phòng (`Contract`)**:
    - Lập hợp đồng mới với ràng buộc tự động: Kiểm tra phòng còn chỗ, kiểm tra giới tính sinh viên phù hợp, đảm bảo sinh viên chưa có hợp đồng hiệu lực trùng lặp.
    - Tự động tăng/giảm sĩ số phòng khi ký hoặc thanh lý hợp đồng.
    - Chức năng **Ký hợp đồng mới**, **Gia hạn hợp đồng** và **Thanh lý hợp đồng** giải phóng sinh viên.
+   - **Bộ lọc nâng cao**: Lọc hợp đồng theo trạng thái (*Tất cả, Đang hiệu lực, Hết hạn, Đã chấm dứt*).
 
 5. **💵 Lập Hóa Đơn & Thu Tiền Dịch Vụ (`Bill`)**:
    - Hộp thoại lập hóa đơn trực quan với công thức tính điện nước tức thì (real-time meter calculation).
@@ -39,28 +42,38 @@
    - Tự động tính tiền nước theo mét khối và đơn giá (15.000 đ/m³).
    - Cộng dồn tiền phòng và phụ phí vệ sinh, internet vào tổng tiền thanh toán.
    - Thao tác **Thu tiền (Đã thanh toán)** cập nhật trạng thái `Paid` và tăng doanh thu tháng.
+   - **Bộ lọc trạng thái**: Lọc nhanh hóa đơn theo trạng thái (*Tất cả, Chưa thanh toán, Đã thanh toán*).
+   - **Xuất Excel**: Xuất sổ chi tiết hóa đơn dịch vụ hàng tháng sang bảng tính `.xlsx`.
 
 6. **👥 Quản Lý Đội Ngũ Nhân Viên KTX (`Employee`)**:
    - Quản lý hồ sơ nhân sự vận hành: Mã NV, họ tên, chức vụ (Quản lý, Bảo vệ, Tạp vụ, Kỹ thuật,...), số điện thoại, email, CCCD, mức lương cơ bản và ngày vào làm.
    - Tìm kiếm đa tiêu chí theo tên, mã nhân viên, chức danh hoặc số điện thoại.
    - Đầy đủ thao tác **Thêm nhân viên mới**, **Chỉnh sửa thông tin** và **Xóa nhân viên** với hộp thoại xác nhận.
+   - **Bảo mật phân quyền**: Chỉ tài khoản Quản trị viên (`Admin`) mới có quyền truy cập phân hệ này.
 
-7. **🪟 Hạ Tầng Dialog & Xác Nhận Chuẩn Mực (`IDialogService`)**:
-   - Tách biệt tầng ViewModel và View thông qua dịch vụ hộp thoại phi tập trung.
+7. **🔐 Xác Thực & Quản Lý Phiên Làm Việc (Authentication & Session)**:
+   - Màn hình đăng nhập hiện đại với xác thực mật khẩu băm an toàn (BCrypt).
+   - Quản lý phiên làm việc (`IUserSession`), hiển thị thông tin tài khoản và vai trò trên giao diện.
+   - Chức năng **Đăng xuất an toàn** đưa người dùng trở về màn hình đăng nhập.
+   - Phân quyền theo vai trò (RBAC): `Admin` có toàn quyền hệ thống; `Manager` quản lý vận hành thường nhật.
+
+8. **🪟 Hạ Tầng Dialog, Xuất Báo Cáo & Xác Nhận Chuẩn Mực**:
+   - Dịch vụ hộp thoại phi tập trung (`IDialogService`) và chọn tệp lưu trữ (`IFileService`).
    - Cửa sổ xác nhận an toàn (`ConfirmDialogWindow`) và thông báo (`MessageDialogWindow`) ngăn chặn xóa nhầm dữ liệu.
 
 ---
 
-## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (CRUD Matrix)
+## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature & CRUD Matrix - Phase 1)
 
-| Phân hệ Nghiệp Vụ | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Trạng Thái |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Bảng Điều Khiển (Dashboard)** | ✅ | — | — | — | ✅ (Thống kê Live) | **Hoàn thành** |
-| **Phòng Ở (Rooms)** | ✅ | ✅ (`RoomDialog`) | ✅ (`RoomDialog`) | ✅ (Xác nhận an toàn) | ✅ | **Hoàn thành** |
-| **Sinh Viên (Students)** | ✅ | ✅ (`StudentDialog`) | ✅ (`StudentDialog`) | ✅ (Xác nhận an toàn) | ✅ (Đa tiêu chí) | **Hoàn thành** |
-| **Hợp Đồng (Contracts)** | ✅ | ✅ (`ContractDialog`) | ✅ (Gia hạn HĐ) | ✅ (Thanh lý & Giải phóng) | ✅ | **Hoàn thành** |
-| **Hóa Đơn & Điện Nước (Bills)** | ✅ | ✅ (`BillDialog` tự động) | — | — | ✅ (Xác nhận thu tiền) | **Hoàn thành** |
-| **Nhân Viên KTX (Employees)** | ✅ | ✅ (`EmployeeDialog`) | ✅ (`EmployeeDialog`) | ✅ (Xác nhận an toàn) | ✅ (Đa tiêu chí) | **Hoàn thành** |
+| Phân hệ Nghiệp Vụ | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel | Phân Quyền | Trạng Thái |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Xác thực & Phiên (Auth)** | ✅ | — | — | — | — | — | Admin / Manager | **Hoàn thành (Phase 1)** |
+| **Bảng Điều Khiển (Dashboard)** | ✅ | — | — | — | ✅ (Cảnh báo Live) | — | Tất cả | **Hoàn thành (Phase 1)** |
+| **Phòng Ở (Rooms)** | ✅ | ✅ (`RoomDialog`) | ✅ (`RoomDialog`) | ✅ (Xác nhận an toàn) | ✅ | ✅ (`.xlsx`) | Tất cả | **Hoàn thành (Phase 1)** |
+| **Sinh Viên (Students)** | ✅ | ✅ (`StudentDialog`) | ✅ (`StudentDialog`) | ✅ (Xác nhận an toàn) | ✅ (Đa tiêu chí) | ✅ (`.xlsx`) | Tất cả | **Hoàn thành (Phase 1)** |
+| **Hợp Đồng (Contracts)** | ✅ | ✅ (`ContractDialog`) | ✅ (Gia hạn HĐ) | ✅ (Thanh lý & Giải phóng) | ✅ (Lọc trạng thái) | — | Tất cả | **Hoàn thành (Phase 1)** |
+| **Hóa Đơn & Điện Nước (Bills)** | ✅ | ✅ (`BillDialog` tự động) | — | — | ✅ (Lọc trạng thái) | ✅ (`.xlsx`) | Tất cả | **Hoàn thành (Phase 1)** |
+| **Nhân Viên KTX (Employees)** | ✅ | ✅ (`EmployeeDialog`) | ✅ (`EmployeeDialog`) | ✅ (Xác nhận an toàn) | ✅ (Đa tiêu chí) | — | **Chỉ Admin** | **Hoàn thành (Phase 1)** |
 
 ---
 
@@ -125,7 +138,7 @@ Dormitory-Manager/
 │   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs
 │
 ├── tests/
-│   └── Dormitory.UnitTests/          # Kiểm thử tự động xUnit (20/20 Passed)
+│   └── Dormitory.UnitTests/          # Kiểm thử tự động xUnit (25/25 Passed)
 │
 ├── Dormitory.sln                     # .NET 8 Solution
 └── README.md
@@ -161,10 +174,10 @@ dotnet run --project src/Dormitory.Desktop
 
 ## 🧪 Chạy Kiểm Thử Tự Động (Unit Tests)
 
-Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ các logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên và mã hóa mật khẩu:
+Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ các logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu và dịch vụ xuất file Excel ClosedXML:
 
 ```bash
 dotnet test tests/Dormitory.UnitTests
 ```
 
-Kết quả: **20/20 Tests Passed** (100% Pass).
+Kết quả: **25/25 Tests Passed** (100% Pass).

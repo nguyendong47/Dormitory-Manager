@@ -15,7 +15,8 @@
 
             <!-- Card cảnh báo nổi bật: Hạn hợp đồng & Hóa đơn chưa thanh toán -->
             <Border Background="#FFF8E1" BorderBrush="#FFA000" BorderThickness="1.5"
-                    CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                    CornerRadius="8" Padding="16" Margin="0,0,0,16"
+                    IsVisible="{Binding HasAlert}">
                 <StackPanel Spacing="12">
                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                         <TextBlock Text="⚠️" FontSize="20" VerticalAlignment="Center"/>

@@ -1,177 +1,206 @@
 # 📖 Hướng Dẫn Sử Dụng: Hệ Thống Quản Lý Ký Túc Xá (Dormitory Manager)
 
-Chào mừng bạn đến với tài liệu hướng dẫn sử dụng Hệ Thống Quản Lý Ký Túc Xá. Ứng dụng Desktop được phát triển trên nền tảng **.NET 8** và **Avalonia UI 11**, hỗ trợ giao diện Fluent hiện đại, đồng bộ dữ liệu thời gian thực và đầy đủ các thao tác Thêm / Sửa / Xóa (CRUD) với hộp thoại trực quan.
+Chào mừng bạn đến với tài liệu hướng dẫn sử dụng Hệ Thống Quản Lý Ký Túc Xá. Ứng dụng Desktop được phát triển trên nền tảng **.NET 8** và **Avalonia UI 11**, hỗ trợ giao diện Fluent hiện đại, đồng bộ dữ liệu thời gian thực, quản lý phiên và phân quyền người dùng, cảnh báo hạn thông minh cùng khả năng xuất báo cáo Excel chuyên nghiệp.
 
 ---
 
-## 1. Khởi Động Ứng Dụng
+## 1. Khởi Động & Đăng Nhập Hệ Thống
 
+### 1.1. Khởi động ứng dụng
 1. Mở Terminal tại thư mục gốc `Dormitory-Manager`.
 2. Chạy lệnh:
    ```bash
    dotnet run --project src/Dormitory.Desktop
    ```
-3. Hệ thống sẽ khởi chạy và hiển thị cửa sổ làm việc chính với thanh điều hướng (Sidebar) bên trái và màn hình Tổng quan (Dashboard).
+3. Hệ thống sẽ mở màn hình **Đăng Nhập** (`LoginView`).
 
-### Tài khoản quản trị mặc định:
-- **Quản trị viên (Admin)**: `admin` / `Admin@123456`
-- **Quản lý (Manager)**: `manager` / `Manager@123`
+### 1.2. Màn hình Đăng nhập & Xác thực
+- Giao diện đăng nhập cung cấp hai trường thông tin: **Tên đăng nhập** và **Mật khẩu**.
+- Hỗ trợ phím tắt **Enter** để gửi yêu cầu đăng nhập nhanh chóng.
+- Hệ thống bảo mật mật khẩu bằng thuật toán băm **BCrypt**, ngăn chặn nguy cơ lộ lọt thông tin.
+
+### 1.3. Tài khoản đăng nhập mặc định
+Hệ thống được khởi tạo sẵn hai tài khoản phục vụ vận hành:
+- **Quản trị viên (Admin)**:
+  - Tên đăng nhập: `admin`
+  - Mật khẩu: `Admin@123456`
+  - *Quyền hạn*: Toàn quyền trên mọi phân hệ, bao gồm quản lý danh mục nhân viên KTX.
+- **Quản lý (Manager)**:
+  - Tên đăng nhập: `manager`
+  - Mật khẩu: `Manager@123`
+  - *Quyền hạn*: Quản lý phòng ở, sinh viên, hợp đồng và hóa đơn dịch vụ hàng ngày.
+
+### 1.4. Quản lý phiên làm việc & Đăng xuất
+- Khi đăng nhập thành công, góc dưới cùng của thanh điều hướng bên trái sẽ hiển thị thông tin phiên:
+  - **Họ và tên** cùng **Tên đăng nhập** của người dùng.
+  - Huy hiệu phân quyền: `Quản trị viên` hoặc `Quản lý`.
+- Nút **"Đăng xuất"**: Cho phép kết thúc phiên làm việc an toàn, xóa thông tin phiên trong bộ nhớ và quay trở lại màn hình Đăng nhập.
 
 ---
 
-## 2. Thanh Điều Hướng (Navigation Bar)
+## 2. Thanh Điều Hướng & Phân Quyền Vai Trò (RBAC)
 
 Thanh menu bên trái giúp chuyển đổi linh hoạt giữa các phân hệ:
-- 📊 **Bảng điều khiển**: Thống kê tổng quan số liệu KTX.
-- 🏠 **Phòng ở**: Quản lý danh mục phòng, tình trạng và giá thuê.
-- 🎓 **Sinh viên**: Hồ sơ thông tin cá nhân và lớp của sinh viên.
-- 📝 **Hợp đồng**: Lập mới, gia hạn và thanh lý hợp đồng thuê.
-- 💵 **Hóa đơn**: Lập phiếu thu điện, nước, dịch vụ và xác nhận nộp tiền.
-- 👥 **Nhân viên**: Quản lý đội ngũ nhân sự vận hành KTX.
+- 📊 **Bảng điều khiển**: Thống kê tổng quan số liệu KTX và cảnh báo công việc.
+- 🏠 **Phòng ở**: Quản lý danh mục phòng, tình trạng, giá thuê và xuất Excel.
+- 🎓 **Sinh viên**: Quản lý hồ sơ cá nhân sinh viên và xuất danh bạ Excel.
+- 📝 **Hợp đồng**: Lập mới, gia hạn, thanh lý hợp đồng và bộ lọc trạng thái.
+- 💵 **Hóa đơn**: Lập phiếu thu điện nước, xác nhận thu tiền, lọc trạng thái và xuất Excel.
+- 👥 **Nhân viên**: Quản lý đội ngũ nhân sự vận hành KTX (**Chỉ dành cho Quản trị viên**).
+
+> 🔒 **Cơ chế phân quyền**: Với tài khoản vai trò `Manager`, mục **Nhân viên** sẽ tự động được ẩn hoàn toàn khỏi thanh điều hướng để đảm bảo tính bảo mật nội bộ.
 
 ---
 
-## 3. Chi Tiết Các Phân Hệ & Thao Tác CRUD
+## 3. Chi Tiết Các Phân Hệ & Thao Tác Nghiệp Vụ
 
-### 3.1. Bảng Điều Khiển (Dashboard)
-- **Thẻ thống kê nhanh**:
-  - *Tổng số phòng* & *Số phòng còn trống*.
-  - *Số sinh viên đang ở* & *Số hợp đồng đang có hiệu lực*.
-  - *Doanh thu tháng*: Tổng số tiền phòng và tiền dịch vụ đã thu trong tháng hiện tại.
-  - *Hóa đơn chưa thu*: Cảnh báo các phòng chưa thanh toán để đôn đốc.
-- **Tỷ lệ lấp đầy**: Thanh tiến trình thể hiện % công suất sử dụng phòng.
-- **Nút "Làm mới"**: Cập nhật lại toàn bộ chỉ số từ cơ sở dữ liệu.
+### 3.1. Bảng Điều Khiển (Dashboard) & Cảnh Báo Thông Minh
+
+Bảng điều khiển cung cấp cái nhìn toàn diện về hoạt động của ký túc xá:
+
+1. **Thẻ Cảnh Báo Thông Minh (Smart Alert Card)**:
+   - Nổi bật ở đầu trang với tông màu vàng cam cảnh báo khi hệ thống phát hiện có việc cần xử lý.
+   - Nội dung cảnh báo tổng hợp: *"Có X hợp đồng sắp hết hạn (trong 30 ngày) và Y hóa đơn chưa thanh toán cần xử lý!"*.
+   - **Bảng danh sách ngắn hợp đồng sắp hết hạn**: Hiển thị trực tiếp Mã HĐ, Họ tên sinh viên, Mã phòng và Ngày hết hạn giúp ban quản lý chủ động liên hệ gia hạn hoặc chuẩn bị bàn giao phòng.
+   - **Cơ chế tự động ẩn (`HasAlert`)**: Khi không có hợp đồng nào sắp hết hạn trong 30 ngày tới và toàn bộ hóa đơn đã được thu tiền, thẻ cảnh báo sẽ tự động ẩn đi để giữ giao diện thoáng gọn.
+2. **Thẻ Thống Kê Nhanh**:
+   - *Tổng số phòng* & *Số phòng còn trống* (Sẵn sàng tiếp nhận sinh viên).
+   - *Sinh viên đang ở* & *Hóa đơn chưa thu* (Cần đôn đốc đóng tiền).
+3. **Chỉ Số Vận Hành**:
+   - *Tỷ lệ lấp đầy KTX*: Biểu đồ thanh tiến trình trực quan thể hiện công suất phòng.
+   - *Doanh thu tháng*: Tổng số tiền phòng và dịch vụ điện nước đã thu trong tháng hiện tại.
+   - Nút **"🔄 Làm mới số liệu"**: Đồng bộ lại toàn bộ số liệu thời gian thực từ cơ sở dữ liệu.
 
 ---
 
 ### 3.2. Quản Lý Phòng Ở (`Room`)
+
 Giao diện hiển thị danh sách phòng theo bảng với các cột: Mã phòng, Tòa nhà, Tầng, Loại phòng, Giới tính quy định, Sức chứa / Đang ở, Đơn giá và Trạng thái.
 
 #### Các chức năng chính:
 1. **Thêm phòng mới (`+ Thêm phòng`)**:
-   - Nhấn nút **"+ Thêm phòng"** trên thanh công cụ.
-   - Hộp thoại `RoomDialogWindow` xuất hiện:
-     - **Mã phòng**: Nhập mã duy nhất (ví dụ: `A101`, `B204`).
-     - **Tòa nhà & Tầng**: Chọn tòa nhà (A, B, C...) và số tầng tương ứng.
-     - **Loại phòng**: Tiêu chuẩn (Standard), Tiện nghi (Deluxe), VIP.
-     - **Giới tính**: Nam, Nữ, hoặc Hỗn hợp/Không quy định.
-     - **Sức chứa tối đa**: Số lượng sinh viên tối đa phòng có thể nhận (mặc định 4 hoặc 6).
-     - **Đơn giá thuê (VND)**: Đơn giá phòng hàng tháng.
-     - **Ghi chú**: Tình trạng tiện nghi (điều hòa, nóng lạnh, ban công,...).
-   - Bấm **"Lưu thay đổi"** để tạo phòng.
+   - Nhấn nút **"+ Thêm phòng"** trên thanh công cụ để mở hộp thoại `RoomDialogWindow`.
+   - Nhập thông tin: Mã phòng (ví dụ `A101`), Tòa nhà, Tầng, Loại phòng (Standard, Deluxe, VIP), Giới tính quy định (Nam/Nữ), Sức chứa tối đa, Đơn giá thuê tháng và Ghi chú tiện nghi.
+   - Bấm **"Lưu thay đổi"** để tạo mới.
 2. **Chỉnh sửa thông tin phòng (`Sửa`)**:
    - Chọn một dòng phòng trên danh sách và bấm **"Sửa"**.
-   - Hộp thoại mở ra chứa sẵn thông tin hiện tại của phòng. Tiến hành chỉnh sửa đơn giá, loại phòng hoặc ghi chú rồi bấm **"Lưu thay đổi"**.
-3. **Xóa phòng (`Xóa`)**:
+   - Cập nhật đơn giá, loại phòng hoặc ghi chú rồi bấm **"Lưu thay đổi"**.
+3. **Xóa phòng an toàn (`Xóa`)**:
    - Chọn phòng cần xóa và bấm nút **"Xóa"**.
-   - Hộp thoại xác nhận sẽ hỏi: *"Bạn có chắc chắn muốn xóa phòng này không?"*.
-   - *Ràng buộc an toàn*: Hệ thống không cho phép xóa các phòng đang có sinh viên cư trú hoặc đang có hợp đồng hiệu lực gắn liền.
+   - Hộp thoại xác nhận an toàn sẽ hiển thị.
+   - *Ràng buộc an toàn*: Hệ thống chặn xóa đối với phòng đang có sinh viên cư trú hoặc đang có hợp đồng hiệu lực.
+4. **Xuất danh sách phòng ra Excel (`📊 Xuất Excel`)**:
+   - Bấm nút **"📊 Xuất Excel"** trên thanh công cụ.
+   - Hộp thoại lưu tệp hệ thống hiển thị, gợi ý tên tệp dạng `DanhSachPhong_yyyyMMdd_HHmmss.xlsx`.
+   - Tệp Excel xuất ra chuẩn ClosedXML với giao diện đẹp mắt: Header xanh đậm, viền bảng mảnh, căn chỉnh số liệu, định dạng tiền tệ VNĐ và tự động căn độ rộng cột.
 
 ---
 
 ### 3.3. Quản Lý Hồ Sơ Sinh Viên (`Student`)
-Quản lý chi tiết lý lịch sinh viên cư trú trong KTX.
+
+Quản lý thông tin chi tiết của sinh viên lưu trú trong ký túc xá.
 
 #### Các chức năng chính:
-1. **Tìm kiếm sinh viên**:
+1. **Tìm kiếm đa tiêu chí**:
    - Nhập từ khóa vào ô tìm kiếm (họ tên, mã sinh viên, CCCD, lớp, quê quán) và bấm **"Tìm"**.
-   - Bấm nút tìm kiếm lại với chuỗi trống để nạp lại danh sách đầy đủ.
+   - Nhập chuỗi trống hoặc bấm tìm kiếm lại để nạp danh sách đầy đủ.
 2. **Thêm sinh viên mới (`+ Thêm sinh viên`)**:
-   - Bấm **"+ Thêm sinh viên"** để mở hộp thoại `StudentDialogWindow`.
-   - Nhập các trường thông tin:
-     - **Mã sinh viên** (bắt buộc, không trùng lặp).
-     - **Họ và tên** (bắt buộc).
-     - **Số CCCD / CMND** (bắt buộc).
-     - **Ngày sinh & Giới tính**.
-     - **Lớp, Khoa, Trường**.
-     - **Quê quán**.
-     - **Số điện thoại sinh viên** & **SĐT phụ huynh khẩn cấp**.
-     - **Email liên hệ**.
+   - Bấm **"+ Thêm sinh viên"** mở hộp thoại `StudentDialogWindow`.
+   - Nhập đầy đủ: Mã sinh viên, Họ và tên, CCCD/CMND, Ngày sinh, Giới tính, Lớp, Khoa, Quê quán, Số điện thoại sinh viên, Số điện thoại phụ huynh và Email.
    - Bấm **"Lưu thay đổi"** để hoàn tất.
 3. **Chỉnh sửa hồ sơ sinh viên (`Sửa`)**:
-   - Chọn sinh viên trong bảng và bấm **"Sửa"**. Cập nhật thông tin liên hệ mới, lớp học hoặc địa chỉ rồi lưu lại.
+   - Chọn sinh viên cần sửa, bấm **"Sửa"**, cập nhật thông tin và lưu lại.
 4. **Xóa sinh viên (`Xóa`)**:
-   - Chọn sinh viên và bấm **"Xóa"**. Xác nhận qua hộp thoại để xóa hồ sơ khỏi hệ thống.
+   - Chọn sinh viên và bấm **"Xóa"** với hộp thoại xác nhận an toàn.
+5. **Xuất danh bạ sinh viên ra Excel (`📊 Xuất Excel`)**:
+   - Bấm nút **"📊 Xuất Excel"** để xuất toàn bộ danh sách hồ sơ sinh viên ra tệp `.xlsx`.
+   - Phục vụ in ấn, báo cáo cho phòng công tác sinh viên hoặc gửi cơ quan công an địa phương.
 
 ---
 
 ### 3.4. Quản Lý Hợp Đồng Thuê (`Contract`)
-Quản lý chu kỳ thuê phòng của sinh viên từ lúc vào ở đến khi chuyển đi.
+
+Quản lý toàn bộ chu kỳ thuê phòng của sinh viên từ lúc bắt đầu nhận phòng đến khi thanh lý.
 
 #### Các chức năng chính:
-1. **Lập hợp đồng mới (`+ Ký hợp đồng mới`)**:
+1. **Bộ lọc trạng thái nâng cao**:
+   - Sử dụng hộp chọn **"Trạng thái:"** trên thanh công cụ để lọc danh sách:
+     - **Tất cả**: Hiển thị toàn bộ hợp đồng trong hệ thống.
+     - **Đang hiệu lực (Active)**: Chỉ hiển thị các hợp đồng đang thuê phòng.
+     - **Hết hạn (Expired)**: Các hợp đồng đã qua ngày kết thúc nhưng chưa làm thủ tục thanh lý/gia hạn.
+     - **Đã thanh lý (Terminated)**: Các hợp đồng đã hoàn tất thủ tục bàn giao và chấm dứt.
+2. **Lập hợp đồng mới (`+ Ký hợp đồng mới`)**:
    - Bấm **"+ Ký hợp đồng mới"** mở hộp thoại `ContractDialogWindow`.
-   - **Chọn Sinh viên**: Danh sách chọn sinh viên khả dụng (chưa có hợp đồng đang hiệu lực).
-   - **Chọn Phòng**: Danh sách các phòng còn chỗ trống và đúng giới tính quy định.
-   - **Thời hạn thuê**: Ngày bắt đầu và ngày kết thúc hợp đồng (mặc định 6 tháng hoặc 1 năm).
-   - **Tiền đặt cọc**: Số tiền cọc quy định theo loại phòng.
-   - **Ghi chú**: Các điều khoản hoặc thỏa thuận đặc biệt.
-   - Bấm **"Xác nhận ký HĐ"**: Hệ thống sẽ tạo hợp đồng mới, tự động tăng số lượng người ở hiện tại của phòng lên +1 và cập nhật trạng thái phòng sang `Occupied` nếu đã đủ người.
-2. **Gia hạn hợp đồng (`Gia hạn HĐ`)**:
+   - **Chọn Sinh viên**: Chỉ hiển thị những sinh viên chưa có hợp đồng hiệu lực.
+   - **Chọn Phòng**: Tự động lọc các phòng còn chỗ trống và phù hợp giới tính của sinh viên.
+   - Nhập thời hạn thuê, tiền đặt cọc và ghi chú.
+   - Bấm **"Xác nhận ký HĐ"**: Hệ thống tạo hợp đồng, tự động tăng sĩ số phòng +1 và cập nhật trạng thái phòng sang `Occupied` nếu phòng đã đủ người.
+3. **Gia hạn hợp đồng (`Gia hạn HĐ`)**:
    - Chọn hợp đồng sắp hết hạn và bấm **"Gia hạn HĐ"**.
-   - Hộp thoại yêu cầu chọn ngày kết thúc mới. Sau khi lưu, trạng thái hợp đồng được tiếp tục duy trì hiệu lực.
-3. **Thanh lý / Chấm dứt hợp đồng (`Thanh lý HĐ`)**:
-   - Khi sinh viên trả phòng hoặc tốt nghiệp: Chọn hợp đồng và bấm **"Thanh lý HĐ"**.
-   - Xác nhận thanh lý: Hệ thống chuyển trạng thái hợp đồng sang `Terminated`, tự động giảm số người ở của phòng đi 1 và giải phóng sinh viên khỏi phòng.
+   - Nhập ngày kết thúc mới và lưu lại để duy trì hiệu lực hợp đồng.
+4. **Thanh lý hợp đồng (`Thanh lý HĐ`)**:
+   - Khi sinh viên chuyển đi hoặc tốt nghiệp: Chọn hợp đồng và bấm **"Thanh lý HĐ"**.
+   - Xác nhận thanh lý: Hệ thống chuyển trạng thái hợp đồng sang `Terminated`, tự động giảm số người trong phòng đi 1 và giải phóng sinh viên khỏi phòng.
 
 ---
 
 ### 3.5. Quản Lý Hóa Đơn & Điện Nước (`Bill`)
-Hỗ trợ tính toán chi phí hàng tháng cho từng phòng một cách minh bạch, tự động và chính xác.
 
-#### Công thức tính tự động trên hộp thoại:
+Tính toán chi phí dịch vụ hàng tháng một cách minh bạch, tự động và chính xác.
+
+#### Công thức tính tiền tự động:
 - **Lượng điện tiêu thụ** = `Chỉ số điện mới` - `Chỉ số điện cũ` (kWh).
-- **Tiền điện** = `Lượng điện tiêu thụ` × `Đơn giá điện` (mặc định 3.500 đ/kWh).
+- **Tiền điện** = `Lượng điện tiêu thụ` × `Đơn giá điện` (3.500 đ/kWh).
 - **Lượng nước tiêu thụ** = `Chỉ số nước mới` - `Chỉ số nước cũ` (m³).
-- **Tiền nước** = `Lượng nước tiêu thụ` × `Đơn giá nước` (mặc định 15.000 đ/m³).
+- **Tiền nước** = `Lượng nước tiêu thụ` × `Đơn giá nước` (15.000 đ/m³).
 - **Tổng tiền thanh toán** = `Tiền phòng` + `Tiền điện` + `Tiền nước` + `Internet` + `Vệ sinh`.
 
 #### Các thao tác chính:
-1. **Lập hóa đơn mới (`+ Lập hóa đơn`)**:
+1. **Bộ lọc trạng thái hóa đơn**:
+   - Sử dụng hộp chọn **"Trạng thái:"** trên thanh công cụ để lọc:
+     - **Tất cả**: Toàn bộ hóa đơn các tháng.
+     - **Chưa thanh toán (Unpaid)**: Các hóa đơn cần thu tiền.
+     - **Đã thanh toán (Paid)**: Các hóa đơn đã hoàn tất nộp tiền.
+2. **Lập hóa đơn mới (`+ Lập hóa đơn`)**:
    - Bấm **"+ Lập hóa đơn"** mở hộp thoại `BillDialogWindow`.
-   - **Chọn phòng**: Tiền phòng cơ bản sẽ tự động được điền theo đơn giá phòng đã chọn.
-   - **Tháng & Năm thu**: Chọn kỳ thanh toán (ví dụ: Tháng 10 / 2026).
-   - **Chỉ số điện**: Nhập chỉ số cũ và chỉ số mới. Tiền điện được tính tự động ngay khi gõ.
-   - **Chỉ số nước**: Nhập chỉ số cũ và chỉ số mới. Tiền nước tự động hiển thị tức thì.
-   - **Phụ phí dịch vụ**: Mặc định Internet (100.000 đ) và Dịch vụ vệ sinh chung (50.000 đ). Người dùng có thể điều chỉnh linh hoạt.
-   - **Hạn nộp**: Ngày kết thúc hạn thanh toán.
-   - Hộp thoại hiển thị thẻ nổi bật **"TỔNG CỘNG TIỀN PHẢI THU"** được cập nhật theo thời gian thực (real-time).
+   - Chọn phòng: Tiền phòng cơ bản tự động nạp theo đơn giá phòng.
+   - Nhập chỉ số điện cũ/mới và chỉ số nước cũ/mới: Tiền điện nước và **Tổng tiền phải thu** được tính toán và hiển thị ngay lập tức (real-time).
+   - Tùy chỉnh phụ phí Internet, Vệ sinh và Ngày hạn nộp.
    - Bấm **"Lưu hóa đơn"** để phát hành.
-2. **Thu tiền hóa đơn (`Thu tiền (Đã thanh toán)`)**:
-   - Khi phòng hoàn thành nộp tiền: Chọn hóa đơn và bấm **"Thu tiền (Đã thanh toán)"**.
-   - Trạng thái hóa đơn chuyển sang `Paid`, số tiền này được tự động cộng vào chỉ số **Doanh thu tháng** trên Dashboard.
+3. **Thu tiền hóa đơn (`Thu tiền (Đã thanh toán)`)**:
+   - Khi phòng nộp tiền: Chọn hóa đơn và bấm **"Thu tiền (Đã thanh toán)"**.
+   - Hóa đơn chuyển trạng thái sang `Paid`, số tiền thu được tự động hạch toán vào Doanh thu tháng trên Dashboard.
+4. **Xuất sổ hóa đơn ra Excel (`📊 Xuất Excel`)**:
+   - Bấm nút **"📊 Xuất Excel"** trên thanh công cụ.
+   - Lưu tệp `DanhSachHoaDon_yyyyMMdd_HHmmss.xlsx` với đầy đủ chi tiết: Mã HĐ, Phòng, Tháng/Năm, Tiền phòng, Chỉ số & Tiền điện, Chỉ số & Tiền nước, Phụ phí và Tổng tiền.
 
 ---
 
 ### 3.6. Quản Lý Nhân Viên KTX (`Employee`)
-Phân hệ chuyên trách quản lý thông tin đội ngũ nhân sự vận hành ký túc xá (quản lý, giám sát, bảo vệ, tạp vụ, kỹ thuật viên).
+
+Phân hệ dành riêng cho Quản trị viên (`Admin`) quản lý đội ngũ nhân sự vận hành ký túc xá (quản lý, giám sát, bảo vệ, tạp vụ, kỹ thuật viên).
 
 #### Các chức năng chính:
 1. **Danh sách & Tìm kiếm nhân viên**:
-   - Bảng thông tin hiển thị: Mã nhân viên, Họ tên, Chức vụ / Vị trí, Số điện thoại, Email, Số CCCD, Lương cơ bản, Ngày vào làm và Trạng thái làm việc.
-   - Thanh tìm kiếm: Nhập từ khóa (tên nhân viên, mã NV, chức vụ, số điện thoại) và bấm **"Tìm"** để lọc nhanh.
+   - Hiển thị đầy đủ: Mã NV, Họ tên, Chức vụ, SĐT, Email, CCCD, Lương cơ bản, Ngày vào làm và Trạng thái làm việc.
+   - Thanh tìm kiếm: Lọc nhanh theo tên, mã NV, chức vụ hoặc số điện thoại.
 2. **Thêm nhân viên mới (`+ Thêm nhân viên`)**:
-   - Bấm **"+ Thêm nhân viên"** mở hộp thoại `EmployeeDialogWindow`.
-   - Nhập thông tin:
-     - **Mã nhân viên**: Mã định danh (ví dụ: `NV001`, `BV002`).
-     - **Họ và tên**: Họ tên đầy đủ nhân viên.
-     - **Chức vụ**: Chọn hoặc nhập vị trí công tác (Quản lý, Bảo vệ, Kỹ thuật, Tạp vụ,...).
-     - **Số điện thoại & Email**: Kênh liên lạc chính.
-     - **Số CCCD / CMND**: Thông tin căn cước công dân.
-     - **Mức lương cơ bản (VND)**: Lương thỏa thuận hàng tháng.
-     - **Ngày tuyển dụng / vào làm**.
-     - **Trạng thái**: Tích chọn "Đang làm việc" hoặc hủy kích hoạt.
-   - Bấm **"Lưu thay đổi"** để tạo hồ sơ nhân viên.
+   - Mở hộp thoại `EmployeeDialogWindow`, nhập thông tin nhân sự và bấm **"Lưu thay đổi"**.
 3. **Chỉnh sửa thông tin nhân viên (`Sửa`)**:
-   - Chọn nhân viên từ bảng danh sách và bấm **"Sửa"**.
-   - Cập nhật số điện thoại, mức lương, chức vụ hoặc trạng thái công tác rồi bấm **"Lưu thay đổi"**.
+   - Chọn nhân viên, bấm **"Sửa"**, cập nhật mức lương, chức vụ hoặc thông tin liên hệ và lưu lại.
 4. **Xóa nhân viên (`Xóa`)**:
-   - Chọn nhân viên và bấm nút **"Xóa"**.
-   - Hộp thoại xác nhận yêu cầu kiểm tra kỹ trước khi xóa khỏi danh bạ nhân sự.
+   - Xóa hồ sơ nhân sự với hộp thoại xác nhận an toàn.
 
 ---
 
-## 4. Các Lưu Ý Về An Toàn Dữ Liệu & Ràng Buộc
-- **Tính toàn vẹn khóa ngoại**: Không xóa phòng đang có sinh viên đang cư trú hoặc đang có hợp đồng chưa thanh lý.
-- **Ràng buộc giới tính**: Khi xếp phòng qua hợp đồng, hệ thống ngăn chặn việc xếp sinh viên nam vào phòng quy định nữ và ngược lại.
-- **Tính toán chỉ số**: Chỉ số mới điện/nước phải luôn lớn hơn hoặc bằng chỉ số cũ. Nếu nhập sai, hệ thống cảnh báo và giữ nguyên tính toán hợp lệ.
+## 4. Các Lưu Ý Về An Toàn Dữ Liệu & Ràng Buộc Hệ Thống
+
+1. **Bảo mật và phân quyền**:
+   - Luôn đăng xuất khỏi hệ thống khi rời khỏi máy làm việc để bảo vệ dữ liệu nội trú và tài chính.
+   - Tài khoản vai trò `Manager` không thể xem hoặc chỉnh sửa danh sách nhân viên KTX.
+2. **Tính toàn vẹn dữ liệu**:
+   - Không cho phép xóa các phòng đang có sinh viên cư trú hoặc đang có hợp đồng chưa thanh lý.
+   - Ràng buộc giới tính tự động ngăn chặn việc xếp nhầm sinh viên nam vào phòng quy định nữ và ngược lại.
+3. **Xuất file Excel an toàn**:
+   - Hệ thống sử dụng bộ chọn tệp native của hệ điều hành (`IFileService` kết hợp Avalonia `StorageProvider`), đảm bảo tính tương thích cao và không xảy ra xung đột quyền ghi đĩa.
+   - Khi xuất file, có thể mở trực tiếp bằng Microsoft Excel, Google Sheets hoặc LibreOffice mà không bị lỗi font hay định dạng.

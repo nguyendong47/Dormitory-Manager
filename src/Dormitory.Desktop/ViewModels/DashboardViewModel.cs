@@ -38,6 +38,9 @@ public partial class DashboardViewModel : ViewModelBase
     private bool _hasExpiringContracts;
 
     [ObservableProperty]
+    private bool _hasAlert;
+
+    [ObservableProperty]
     private bool _isLoading;
 
     public DashboardViewModel(
@@ -61,6 +64,7 @@ public partial class DashboardViewModel : ViewModelBase
     {
         AlertMessage = $"Có {ExpiringContractsCount} hợp đồng sắp hết hạn (trong 30 ngày) và {UnpaidBillsCount} hóa đơn chưa thanh toán cần xử lý!";
         HasExpiringContracts = ExpiringContractsCount > 0;
+        HasAlert = ExpiringContractsCount > 0 || UnpaidBillsCount > 0;
     }
 
     /// <summary>
