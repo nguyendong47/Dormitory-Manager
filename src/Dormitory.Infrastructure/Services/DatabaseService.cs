@@ -45,8 +45,10 @@ public class DatabaseService : IDatabaseService
             return Path.GetFullPath(_customDbPath);
         }
 
-        // 2. Lấy chuỗi kết nối từ IConfiguration nếu có
-        string? connStr = _configuration?.GetConnectionString("DefaultConnection")
+        // 2. Lấy chuỗi kết nối từ IConfiguration nếu có (ưu tiên DormitoryDb)
+        string? connStr = _configuration?.GetConnectionString("DormitoryDb")
+            ?? _configuration?.GetConnectionString("DefaultConnection")
+            ?? _configuration?["ConnectionStrings:DormitoryDb"]
             ?? _configuration?["ConnectionStrings:DefaultConnection"]
             ?? _configuration?["Database:ConnectionString"];
 
@@ -56,7 +58,7 @@ public class DatabaseService : IDatabaseService
             connStr = dbContext.Database.GetConnectionString();
         }
 
-        // 4. Giá trị mặc định nếu không có cấu hình
+        // 4. Giá trị mặc định nếu không có cấu hình hoặc chuỗi kết nối rỗng
         if (string.IsNullOrWhiteSpace(connStr))
         {
             connStr = "Data Source=dormitory.db";
