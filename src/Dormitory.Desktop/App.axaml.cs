@@ -11,6 +11,7 @@ using Dormitory.Infrastructure.Data;
 using Dormitory.Infrastructure.Security;
 using Dormitory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dormitory.Desktop;
@@ -28,9 +29,17 @@ public partial class App : Avalonia.Application
     {
         var services = new ServiceCollection();
 
-        // 1. Cấu hình DbContext SQLite
+        // 0. Cấu hình IConfiguration từ appsettings.json (hỗ trợ cấu hình động)
+        var config = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .Build();
+        services.AddSingleton<IConfiguration>(config);
+
+        // 1. Cấu hình DbContext SQLite với chuỗi kết nối động từ configuration (fallback: dormitory.db)
+        var connectionString = config.GetConnectionString("DormitoryDb") ?? "Data Source=dormitory.db";
         services.AddDbContext<DormitoryDbContext>(options =>
-            options.UseSqlite("Data Source=dormitory.db"));
+            options.UseSqlite(connectionString));
 
         services.AddScoped<IDormitoryDbContext>(provider =>
             provider.GetRequiredService<DormitoryDbContext>());
