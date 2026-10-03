@@ -74,6 +74,11 @@ public class FileService : IFileService
             await _dialogService.ShowMessageAsync("Thành công", "Xuất file Excel thành công!");
             return true;
         }
+        catch (IOException ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi lưu file", $"Không thể ghi file. Nếu file đang được mở trong Excel hoặc ứng dụng khác, vui lòng đóng lại và thử lại.\n\nChi tiết: {ex.Message}");
+            return false;
+        }
         catch (Exception ex)
         {
             await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi lưu file: {ex.Message}");

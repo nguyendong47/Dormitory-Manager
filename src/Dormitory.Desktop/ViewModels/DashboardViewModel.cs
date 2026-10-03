@@ -25,6 +25,7 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly IBillService _billService;
     private readonly IExportService _exportService;
     private readonly IFileService _fileService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private DashboardStatsDto _stats = new();
@@ -70,13 +71,15 @@ public partial class DashboardViewModel : ViewModelBase
         IContractService contractService,
         IBillService billService,
         IExportService exportService,
-        IFileService fileService)
+        IFileService fileService,
+        IDialogService dialogService)
     {
         _dashboardService = dashboardService;
         _contractService = contractService;
         _billService = billService;
         _exportService = exportService;
         _fileService = fileService;
+        _dialogService = dialogService;
         LoadStatsCommand = new AsyncRelayCommand(LoadStatsAsync);
         ExportDashboardReportCommand = new AsyncRelayCommand(ExportDashboardReportAsync);
         UpdateAlertMessage();
@@ -97,6 +100,10 @@ public partial class DashboardViewModel : ViewModelBase
             var trends = await _dashboardService.GetRevenueTrendsAsync(6);
             var bytes = await _exportService.ExportDashboardSummaryToExcelAsync(Stats, buildings, trends);
             await _fileService.SaveFileAsync("BaoCao_TongQuan_KTX", "xlsx", "Excel Files (*.xlsx)|*.xlsx", bytes);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi xuất báo cáo", $"Đã xảy ra lỗi khi tạo báo cáo: {ex.Message}");
         }
         finally
         {
