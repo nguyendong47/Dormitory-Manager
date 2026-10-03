@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -71,7 +72,10 @@ public class FileService : IFileService
         {
             await using var stream = await file.OpenWriteAsync();
             await stream.WriteAsync(content);
-            await _dialogService.ShowMessageAsync("Thành công", "Xuất file Excel thành công!");
+            string successMsg = cleanExtension.Equals("xlsx", StringComparison.OrdinalIgnoreCase)
+                ? "Xuất file Excel thành công!"
+                : "Lưu file thành công!";
+            await _dialogService.ShowMessageAsync("Thành công", successMsg);
             return true;
         }
         catch (IOException ex)
@@ -84,5 +88,42 @@ public class FileService : IFileService
             await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi lưu file: {ex.Message}");
             return false;
         }
+    }
+
+    /// <inheritdoc/>
+    public async Task<byte[]?> OpenFileAsync(string title, string[] extensions)
+    {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            return await Dispatcher.UIThread.InvokeAsync(() => OpenFileAsync(title, extensions));
+        }
+
+        var mainWindow = GetMainWindow();
+        if (mainWindow == null)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", "Không tìm thấy cửa sổ chính để mở hộp thoại chọn file.");
+            return null;
+        }
+
+        var options = new FilePickerOpenOptions
+        {
+            Title = title,
+            AllowMultiple = false,
+            FileTypeFilter = new[]
+            {
+                new FilePickerFileType("Database Backup Files")
+                {
+                    Patterns = extensions.Select(ext => $"*.{ext.TrimStart('.')}").ToArray()
+                }
+            }
+        };
+
+        var files = await mainWindow.StorageProvider.OpenFilePickerAsync(options);
+        if (files == null || files.Count == 0) return null;
+
+        await using var stream = await files[0].OpenReadAsync();
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        return memoryStream.ToArray();
     }
 }

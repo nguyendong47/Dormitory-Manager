@@ -16,12 +16,16 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ContractListViewModel _contractListVm;
     private readonly BillListViewModel _billListVm;
     private readonly EmployeeListViewModel _employeeListVm;
+    private readonly SystemSettingsViewModel _systemSettingsVm;
     private readonly IUserSession _userSession;
 
     public LoginViewModel LoginVm { get; }
 
     [ObservableProperty]
     private bool _isLoggedIn;
+
+    [ObservableProperty]
+    private bool _isAdmin;
 
     [ObservableProperty]
     private string _currentUserName = string.Empty;
@@ -42,6 +46,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ContractListViewModel contractListVm,
         BillListViewModel billListVm,
         EmployeeListViewModel employeeListVm,
+        SystemSettingsViewModel systemSettingsVm,
         LoginViewModel loginVm,
         IUserSession userSession)
     {
@@ -51,6 +56,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _contractListVm = contractListVm;
         _billListVm = billListVm;
         _employeeListVm = employeeListVm;
+        _systemSettingsVm = systemSettingsVm;
         LoginVm = loginVm;
         _userSession = userSession;
 
@@ -66,6 +72,7 @@ public partial class MainWindowViewModel : ViewModelBase
         NavigateToContractsCommand = new RelayCommand(NavigateToContracts);
         NavigateToBillsCommand = new RelayCommand(NavigateToBills);
         NavigateToEmployeesCommand = new RelayCommand(NavigateToEmployees);
+        NavigateToSettingsCommand = new AsyncRelayCommand(NavigateToSettingsAsync);
         LogoutCommand = new RelayCommand(Logout);
 
         // Khởi tạo trạng thái đăng nhập
@@ -73,11 +80,13 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             UpdateUserInfo();
             IsLoggedIn = true;
+            IsAdmin = _userSession.IsAdmin;
             _ = _dashboardVm.LoadStatsAsync();
         }
         else
         {
             IsLoggedIn = false;
+            IsAdmin = false;
         }
     }
 
@@ -87,6 +96,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public IRelayCommand NavigateToContractsCommand { get; }
     public IRelayCommand NavigateToBillsCommand { get; }
     public IRelayCommand NavigateToEmployeesCommand { get; }
+    public IAsyncRelayCommand NavigateToSettingsCommand { get; }
     public IRelayCommand LogoutCommand { get; }
 
     /// <summary>
@@ -114,11 +124,13 @@ public partial class MainWindowViewModel : ViewModelBase
                 UserRole.Staff => "Nhân viên (Staff)",
                 _ => _userSession.CurrentUser.Role.ToString()
             };
+            IsAdmin = _userSession.IsAdmin;
         }
         else
         {
             CurrentUserName = string.Empty;
             CurrentUserRole = string.Empty;
+            IsAdmin = false;
         }
     }
 
@@ -129,6 +141,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         _userSession.ClearSession();
         IsLoggedIn = false;
+        IsAdmin = false;
         CurrentUserName = string.Empty;
         CurrentUserRole = string.Empty;
         LoginVm.Password = string.Empty;
@@ -175,5 +188,12 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentView = _employeeListVm;
         ActiveMenu = "Employees";
         _ = _employeeListVm.LoadEmployeesAsync();
+    }
+
+    public async Task NavigateToSettingsAsync()
+    {
+        CurrentView = _systemSettingsVm;
+        ActiveMenu = "Settings";
+        await _systemSettingsVm.LoadDatabaseInfoCommand.ExecuteAsync(null);
     }
 }

@@ -1,0 +1,147 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             x:Class="Dormitory.Desktop.Views.SystemSettingsView"
+             x:DataType="vm:SystemSettingsViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" Spacing="20">
+            <!-- Header -->
+            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="Cài Đặt Hệ Thống &amp; Quản Trị CSDL" FontSize="24" FontWeight="SemiBold"/>
+                    <TextBlock Text="Quản lý sao lưu, phục hồi dữ liệu và thông tin cơ sở dữ liệu SQLite" 
+                               Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+                </StackPanel>
+
+                <!-- Status indicator when loading -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsLoading}" Width="120" Height="4" VerticalAlignment="Center"/>
+                    <Button Content="🔄 Làm mới thông tin" 
+                            Command="{Binding LoadDatabaseInfoCommand}"
+                            Padding="12,8"
+                            CornerRadius="6"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Status Message Bar -->
+            <Border Background="#EBF3FC" BorderBrush="#0078D4" BorderThickness="1" CornerRadius="6" Padding="12,8"
+                    IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="#0078D4" FontSize="13" FontWeight="Medium"/>
+            </Border>
+
+            <!-- Card 1: Thông Tin Cơ Sở Dữ Liệu -->
+            <Border Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="💾" FontSize="18" VerticalAlignment="Center"/>
+                        <TextBlock Text="Thông Tin Cơ Sở Dữ Liệu" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="8,0,0,0">
+                        <!-- Đường dẫn tệp CSDL -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Đường dẫn file:" FontWeight="Medium"
+                                   Foreground="{DynamicResource SystemBaseMediumColor}" Margin="0,4,16,4"/>
+                        <SelectableTextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DatabaseInfo.DatabasePath}"
+                                             FontFamily="Consolas, Menlo, Monospace" FontSize="13"
+                                             TextWrapping="Wrap" Margin="0,4,0,4"/>
+
+                        <!-- Dung lượng tệp -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Dung lượng:" FontWeight="Medium"
+                                   Foreground="{DynamicResource SystemBaseMediumColor}" Margin="0,4,16,4"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DatabaseInfo.FormattedFileSize}"
+                                   FontWeight="SemiBold" Margin="0,4,0,4"/>
+
+                        <!-- Tổng số bản ghi -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Tổng số bản ghi:" FontWeight="Medium"
+                                   Foreground="{DynamicResource SystemBaseMediumColor}" Margin="0,4,16,4"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DatabaseInfo.TotalRecords, StringFormat='{}{0:N0} bản ghi'}"
+                                   FontWeight="SemiBold" Foreground="#0078D4" Margin="0,4,0,4"/>
+
+                        <!-- Cập nhật lần cuối -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Cập nhật lần cuối:" FontWeight="Medium"
+                                   Foreground="{DynamicResource SystemBaseMediumColor}" Margin="0,4,16,4"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1"
+                                   Text="{Binding DatabaseInfo.LastModified, StringFormat='{}{0:dd/MM/yyyy HH:mm:ss}', Mode=OneWay}"
+                                   Margin="0,4,0,4"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Card 2: Sao Lưu Dữ Liệu (Backup) -->
+            <Border Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="📦" FontSize="18" VerticalAlignment="Center"/>
+                        <TextBlock Text="Sao Lưu Dữ Liệu (Backup)" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Tạo bản sao lưu an toàn của cơ sở dữ liệu ký túc xá dưới dạng tệp .bak hoặc .db. Bản sao lưu bao gồm toàn bộ dữ liệu phòng, sinh viên, hợp đồng, hóa đơn và tài khoản."
+                               Foreground="{DynamicResource SystemBaseMediumColor}"
+                               TextWrapping="Wrap"
+                               FontSize="13"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button Content="💾  Tạo bản sao lưu (.bak)"
+                                Command="{Binding BackupCommand}"
+                                Background="#0078D4"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                CornerRadius="6"
+                                Padding="16,10"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Card 3: Phục Hồi Dữ Liệu (Restore) -->
+            <Border Background="#FFF8E1"
+                    BorderBrush="#FFA000"
+                    BorderThickness="1.5"
+                    CornerRadius="8"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="⚠️" FontSize="18" VerticalAlignment="Center"/>
+                        <TextBlock Text="Phục Hồi Dữ Liệu (Restore)" FontSize="16" FontWeight="SemiBold" Foreground="#B78103" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Khối cảnh báo an toàn -->
+                    <Border Background="#FFF3CD" BorderBrush="#FFEBAA" BorderThickness="1" CornerRadius="6" Padding="12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="CẢNH BÁO NGUY HIỂM:" FontWeight="Bold" Foreground="#D83B01"/>
+                            <TextBlock Text="Chỉ dành cho Quản trị viên (Admin). Thao tác này sẽ ghi đè toàn bộ dữ liệu hiện tại trong hệ thống bằng dữ liệu từ tệp sao lưu. Vui lòng đảm bảo bạn đã tạo bản sao lưu dữ liệu mới nhất trước khi thực hiện."
+                                       Foreground="#856404"
+                                       TextWrapping="Wrap"
+                                       FontSize="13"/>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                        <Button Content="🔄  Khôi phục CSDL từ file..."
+                                Command="{Binding RestoreCommand}"
+                                Background="#D83B01"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                CornerRadius="6"
+                                Padding="16,10"
+                                IsEnabled="{Binding IsAdmin}"/>
+
+                        <TextBlock Text="⚠️ Bạn cần quyền Quản trị viên (Admin) để phục hồi"
+                                   IsVisible="{Binding !IsAdmin}"
+                                   Foreground="#D83B01"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

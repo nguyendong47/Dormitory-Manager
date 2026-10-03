@@ -94,7 +94,8 @@ public class DatabaseService : IDatabaseService
             var connStr = new SqliteConnectionStringBuilder
             {
                 DataSource = dbFilePath,
-                Mode = SqliteOpenMode.ReadOnly
+                Mode = SqliteOpenMode.ReadOnly,
+                Pooling = false
             }.ToString();
 
             using var connection = new SqliteConnection(connStr);
