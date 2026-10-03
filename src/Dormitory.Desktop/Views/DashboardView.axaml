@@ -9,11 +9,23 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="24" Spacing="20">
             <!-- Header -->
-            <StackPanel Spacing="4">
-                <TextBlock Text="Tổng Quan Ký Túc Xá" FontSize="26" FontWeight="SemiBold"/>
-                <TextBlock Text="Báo cáo số liệu phòng ở, sinh viên, hợp đồng và doanh thu tháng hiện tại" 
-                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="14"/>
-            </StackPanel>
+            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="Tổng Quan Ký Túc Xá" FontSize="26" FontWeight="SemiBold"/>
+                    <TextBlock Text="Báo cáo số liệu phòng ở, sinh viên, hợp đồng và doanh thu tháng hiện tại" 
+                               Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="14"/>
+                </StackPanel>
+                <Button Grid.Column="1"
+                        Content="📊  Xuất báo cáo tổng hợp" 
+                        Command="{Binding ExportDashboardReportCommand}" 
+                        Background="#107C41" 
+                        Foreground="White" 
+                        FontWeight="SemiBold" 
+                        CornerRadius="6" 
+                        Padding="12,8" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center"/>
+            </Grid>
 
             <!-- Card cảnh báo nổi bật: Hạn hợp đồng & Hóa đơn chưa thanh toán -->
             <Border Background="#FFF8E1" BorderBrush="#FFA000" BorderThickness="1.5"

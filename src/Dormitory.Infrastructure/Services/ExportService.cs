@@ -11,7 +11,9 @@ namespace Dormitory.Infrastructure.Services;
 public class ExportService : IExportService
 {
     private static readonly XLColor HeaderBackgroundColor = XLColor.FromArgb(0x00, 0x78, 0xD4); // #0078D4
+    private static readonly XLColor DashboardHeaderColor = XLColor.FromArgb(0x10, 0x7C, 0x41); // #107C41
     private const string CurrencyFormat = "#,##0";
+    private const string CurrencyWithSuffixFormat = "#,##0 đ";
     private const string DateFormat = "dd/MM/yyyy";
 
     /// <summary>
@@ -335,11 +337,185 @@ public class ExportService : IExportService
         return Task.FromResult(stream.ToArray());
     }
 
-    private static void ApplyHeaderStyle(IXLRange headerRange)
+    /// <summary>
+    /// Xuất báo cáo tổng hợp Dashboard (chỉ số KPI, tỷ lệ lấp đầy theo tòa nhà và xu hướng doanh thu) ra file Excel
+    /// </summary>
+    public Task<byte[]> ExportDashboardSummaryToExcelAsync(
+        DashboardStatsDto stats,
+        List<BuildingOccupancyDto> buildings,
+        List<MonthlyRevenueTrendDto> trends)
+    {
+        using var workbook = new XLWorkbook();
+
+        // 1. Worksheet 1: "Tổng quan KPI & Tòa nhà"
+        var wsKpi = workbook.Worksheets.Add("Tổng quan KPI & Tòa nhà");
+
+        // Khối KPI tổng quan (A1:B6)
+        wsKpi.Cell(1, 1).SetValue("Tổng số phòng");
+        wsKpi.Cell(1, 2).SetValue(stats.TotalRooms);
+
+        wsKpi.Cell(2, 1).SetValue("Phòng còn trống");
+        wsKpi.Cell(2, 2).SetValue(stats.AvailableRooms);
+
+        wsKpi.Cell(3, 1).SetValue("Sinh viên nội trú");
+        wsKpi.Cell(3, 2).SetValue(stats.TotalStudents);
+
+        wsKpi.Cell(4, 1).SetValue("Hợp đồng hiệu lực");
+        wsKpi.Cell(4, 2).SetValue(stats.ActiveContractsCount);
+
+        wsKpi.Cell(5, 1).SetValue("Hóa đơn chưa thu");
+        wsKpi.Cell(5, 2).SetValue(stats.UnpaidBillsCount);
+
+        wsKpi.Cell(6, 1).SetValue("Tỷ lệ lấp đầy");
+        wsKpi.Cell(6, 2).SetValue($"{stats.OccupancyRate:F1}%");
+
+        for (var r = 1; r <= 6; r++)
+        {
+            wsKpi.Row(r).Height = 22;
+            wsKpi.Cell(r, 1).Style.Font.Bold = true;
+            wsKpi.Cell(r, 1).Style.Fill.BackgroundColor = XLColor.FromArgb(0xF2, 0xF4, 0xF7);
+            wsKpi.Cell(r, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+            wsKpi.Cell(r, 2).Style.Font.Bold = true;
+            wsKpi.Cell(r, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+            wsKpi.Cell(r, 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+        }
+
+        var kpiRange = wsKpi.Range(1, 1, 6, 2);
+        kpiRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        kpiRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+        // Khối Bảng số liệu từng tòa nhà (từ hàng 8)
+        wsKpi.Cell(8, 1).SetValue("BÁO CÁO TỶ LỆ LẤP ĐẦY THEO TÒA NHÀ");
+        wsKpi.Cell(8, 1).Style.Font.Bold = true;
+        wsKpi.Cell(8, 1).Style.Font.FontSize = 13;
+        wsKpi.Cell(8, 1).Style.Font.FontColor = DashboardHeaderColor;
+
+        var buildingHeaders = new[]
+        {
+            "Tên tòa",
+            "Tổng số phòng",
+            "Phòng đã ở",
+            "Phòng còn trống",
+            "Tổng số chỗ",
+            "Chỗ đã ở",
+            "Tỷ lệ lấp đầy (%)"
+        };
+
+        wsKpi.Row(9).Height = 26;
+        for (var col = 0; col < buildingHeaders.Length; col++)
+        {
+            wsKpi.Cell(9, col + 1).SetValue(buildingHeaders[col]);
+        }
+        var bHeaderRange = wsKpi.Range(9, 1, 9, buildingHeaders.Length);
+        ApplyHeaderStyle(bHeaderRange, DashboardHeaderColor);
+
+        var bRow = 10;
+        for (var i = 0; i < buildings.Count; i++)
+        {
+            var b = buildings[i];
+            wsKpi.Row(bRow).Height = 20;
+
+            wsKpi.Cell(bRow, 1).SetValue(b.BuildingName);
+            wsKpi.Cell(bRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            wsKpi.Cell(bRow, 2).SetValue(b.TotalRooms);
+            wsKpi.Cell(bRow, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            wsKpi.Cell(bRow, 3).SetValue(b.OccupiedRooms);
+            wsKpi.Cell(bRow, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            wsKpi.Cell(bRow, 4).SetValue(b.AvailableRooms);
+            wsKpi.Cell(bRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            wsKpi.Cell(bRow, 5).SetValue(b.TotalBeds);
+            wsKpi.Cell(bRow, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            wsKpi.Cell(bRow, 6).SetValue(b.OccupiedBeds);
+            wsKpi.Cell(bRow, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            wsKpi.Cell(bRow, 7).SetValue($"{b.OccupancyRate:F1}%");
+            wsKpi.Cell(bRow, 7).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            bRow++;
+        }
+
+        if (buildings.Count > 0)
+        {
+            var bDataRange = wsKpi.Range(10, 1, 9 + buildings.Count, buildingHeaders.Length);
+            ApplyDataStyle(bDataRange);
+        }
+
+        wsKpi.Columns().AdjustToContents();
+
+        // 2. Worksheet 2: "Xu hướng doanh thu"
+        var wsTrend = workbook.Worksheets.Add("Xu hướng doanh thu");
+
+        // Tiêu đề
+        wsTrend.Cell(1, 1).SetValue("XU HƯỚNG DOANH THU & TIỆN ÍCH 6 THÁNG GẦN NHẤT");
+        wsTrend.Cell(1, 1).Style.Font.Bold = true;
+        wsTrend.Cell(1, 1).Style.Font.FontSize = 13;
+        wsTrend.Cell(1, 1).Style.Font.FontColor = DashboardHeaderColor;
+
+        var trendHeaders = new[]
+        {
+            "Tháng/Năm",
+            "Doanh thu tiền phòng (VND)",
+            "Doanh thu điện nước/dịch vụ (VND)",
+            "Tổng doanh thu (VND)"
+        };
+
+        wsTrend.Row(3).Height = 26;
+        for (var col = 0; col < trendHeaders.Length; col++)
+        {
+            wsTrend.Cell(3, col + 1).SetValue(trendHeaders[col]);
+        }
+        var tHeaderRange = wsTrend.Range(3, 1, 3, trendHeaders.Length);
+        ApplyHeaderStyle(tHeaderRange, DashboardHeaderColor);
+
+        var tRow = 4;
+        for (var i = 0; i < trends.Count; i++)
+        {
+            var t = trends[i];
+            wsTrend.Row(tRow).Height = 20;
+
+            wsTrend.Cell(tRow, 1).SetValue(string.IsNullOrWhiteSpace(t.Label) ? $"{t.Month:D2}/{t.Year}" : t.Label);
+            wsTrend.Cell(tRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            wsTrend.Cell(tRow, 2).SetValue(t.RoomFeeRevenue);
+            wsTrend.Cell(tRow, 2).Style.NumberFormat.Format = CurrencyWithSuffixFormat;
+            wsTrend.Cell(tRow, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            wsTrend.Cell(tRow, 3).SetValue(t.UtilityFeeRevenue);
+            wsTrend.Cell(tRow, 3).Style.NumberFormat.Format = CurrencyWithSuffixFormat;
+            wsTrend.Cell(tRow, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            wsTrend.Cell(tRow, 4).SetValue(t.TotalRevenue);
+            wsTrend.Cell(tRow, 4).Style.NumberFormat.Format = CurrencyWithSuffixFormat;
+            wsTrend.Cell(tRow, 4).Style.Font.Bold = true;
+            wsTrend.Cell(tRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            tRow++;
+        }
+
+        if (trends.Count > 0)
+        {
+            var tDataRange = wsTrend.Range(4, 1, 3 + trends.Count, trendHeaders.Length);
+            ApplyDataStyle(tDataRange);
+        }
+
+        wsTrend.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return Task.FromResult(stream.ToArray());
+    }
+
+    private static void ApplyHeaderStyle(IXLRange headerRange, XLColor? backgroundColor = null)
     {
         headerRange.Style.Font.Bold = true;
         headerRange.Style.Font.FontColor = XLColor.White;
-        headerRange.Style.Fill.BackgroundColor = HeaderBackgroundColor;
+        headerRange.Style.Fill.BackgroundColor = backgroundColor ?? HeaderBackgroundColor;
         headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
         headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
         headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;

@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Dormitory.Application.DTOs;
 using Dormitory.Application.Interfaces;
 using Dormitory.Core.Enums;
+using Dormitory.Desktop.Services;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -22,6 +23,8 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly IDashboardService _dashboardService;
     private readonly IContractService _contractService;
     private readonly IBillService _billService;
+    private readonly IExportService _exportService;
+    private readonly IFileService _fileService;
 
     [ObservableProperty]
     private DashboardStatsDto _stats = new();
@@ -65,16 +68,33 @@ public partial class DashboardViewModel : ViewModelBase
     public DashboardViewModel(
         IDashboardService dashboardService,
         IContractService contractService,
-        IBillService billService)
+        IBillService billService,
+        IExportService exportService,
+        IFileService fileService)
     {
         _dashboardService = dashboardService;
         _contractService = contractService;
         _billService = billService;
+        _exportService = exportService;
+        _fileService = fileService;
         LoadStatsCommand = new AsyncRelayCommand(LoadStatsAsync);
+        ExportDashboardReportCommand = new AsyncRelayCommand(ExportDashboardReportAsync);
         UpdateAlertMessage();
     }
 
     public IAsyncRelayCommand LoadStatsCommand { get; }
+    public IAsyncRelayCommand ExportDashboardReportCommand { get; }
+
+    /// <summary>
+    /// Xuất báo cáo tổng hợp Dashboard ra file Excel (.xlsx) và lưu thông qua FileService
+    /// </summary>
+    public async Task ExportDashboardReportAsync()
+    {
+        var buildings = BuildingStats.ToList();
+        var trends = await _dashboardService.GetRevenueTrendsAsync(6);
+        var bytes = await _exportService.ExportDashboardSummaryToExcelAsync(Stats, buildings, trends);
+        await _fileService.SaveFileAsync("BaoCao_TongQuan_KTX", "xlsx", "Excel Files (*.xlsx)|*.xlsx", bytes);
+    }
 
     /// <summary>
     /// Cập nhật thông điệp cảnh báo hiển thị trên giao diện

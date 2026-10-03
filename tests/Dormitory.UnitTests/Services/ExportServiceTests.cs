@@ -302,4 +302,111 @@ public class ExportServiceTests
         worksheet.Cell(1, 2).GetString().Should().Be("Số phòng");
         worksheet.LastRowUsed()?.RowNumber().Should().Be(1);
     }
+
+    [Fact]
+    public async Task ExportDashboardSummaryToExcelAsync_ShouldGenerateValidExcelWorkbook()
+    {
+        // Sắp đặt dữ liệu mẫu cho KPI, Tòa nhà và Xu hướng doanh thu
+        var stats = new DashboardStatsDto
+        {
+            TotalRooms = 50,
+            OccupiedRooms = 40,
+            AvailableRooms = 10,
+            TotalStudents = 120,
+            ActiveContractsCount = 38,
+            UnpaidBillsCount = 5,
+            MonthlyRevenue = 75000000m
+        };
+
+        var buildings = new List<BuildingOccupancyDto>
+        {
+            new()
+            {
+                BuildingName = "Tòa A",
+                TotalRooms = 25,
+                OccupiedRooms = 20,
+                AvailableRooms = 5,
+                TotalBeds = 100,
+                OccupiedBeds = 80
+            },
+            new()
+            {
+                BuildingName = "Tòa B",
+                TotalRooms = 25,
+                OccupiedRooms = 20,
+                AvailableRooms = 5,
+                TotalBeds = 100,
+                OccupiedBeds = 70
+            }
+        };
+
+        var trends = new List<MonthlyRevenueTrendDto>
+        {
+            new()
+            {
+                Month = 5,
+                Year = 2024,
+                Label = "T05/2024",
+                RoomFeeRevenue = 50000000m,
+                UtilityFeeRevenue = 15000000m
+            },
+            new()
+            {
+                Month = 6,
+                Year = 2024,
+                Label = "T06/2024",
+                RoomFeeRevenue = 55000000m,
+                UtilityFeeRevenue = 16000000m
+            }
+        };
+
+        // Thực hiện
+        var result = await _exportService.ExportDashboardSummaryToExcelAsync(stats, buildings, trends);
+
+        // Kiểm tra
+        result.Should().NotBeNull();
+        result.Length.Should().BeGreaterThan(0);
+
+        using var stream = new MemoryStream(result);
+        using var workbook = new XLWorkbook(stream);
+
+        workbook.Worksheets.Count.Should().BeGreaterThanOrEqualTo(2);
+
+        // Kiểm tra Sheet 1: Tổng quan KPI & Tòa nhà
+        var kpiSheet = workbook.Worksheet("Tổng quan KPI & Tòa nhà");
+        kpiSheet.Should().NotBeNull();
+        kpiSheet.Cell(1, 1).GetString().Should().Be("Tổng số phòng");
+        kpiSheet.Cell(1, 2).GetDouble().Should().Be(50);
+        kpiSheet.Cell(2, 1).GetString().Should().Be("Phòng còn trống");
+        kpiSheet.Cell(2, 2).GetDouble().Should().Be(10);
+        kpiSheet.Cell(3, 1).GetString().Should().Be("Sinh viên nội trú");
+        kpiSheet.Cell(3, 2).GetDouble().Should().Be(120);
+        kpiSheet.Cell(4, 1).GetString().Should().Be("Hợp đồng hiệu lực");
+        kpiSheet.Cell(4, 2).GetDouble().Should().Be(38);
+        kpiSheet.Cell(5, 1).GetString().Should().Be("Hóa đơn chưa thu");
+        kpiSheet.Cell(5, 2).GetDouble().Should().Be(5);
+        kpiSheet.Cell(6, 1).GetString().Should().Be("Tỷ lệ lấp đầy");
+
+        // Kiểm tra bảng tòa nhà
+        kpiSheet.Cell(8, 1).GetString().Should().Contain("BÁO CÁO TỶ LỆ LẤP ĐẦY THEO TÒA NHÀ");
+        kpiSheet.Cell(9, 1).GetString().Should().Be("Tên tòa");
+        kpiSheet.Cell(9, 2).GetString().Should().Be("Tổng số phòng");
+        kpiSheet.Cell(10, 1).GetString().Should().Be("Tòa A");
+        kpiSheet.Cell(10, 2).GetDouble().Should().Be(25);
+        kpiSheet.Cell(11, 1).GetString().Should().Be("Tòa B");
+
+        // Kiểm tra Sheet 2: Xu hướng doanh thu
+        var trendSheet = workbook.Worksheet("Xu hướng doanh thu");
+        trendSheet.Should().NotBeNull();
+        trendSheet.Cell(1, 1).GetString().Should().Contain("XU HƯỚNG DOANH THU & TIỆN ÍCH 6 THÁNG GẦN NHẤT");
+        trendSheet.Cell(3, 1).GetString().Should().Be("Tháng/Năm");
+        trendSheet.Cell(3, 2).GetString().Should().Be("Doanh thu tiền phòng (VND)");
+        trendSheet.Cell(3, 3).GetString().Should().Be("Doanh thu điện nước/dịch vụ (VND)");
+        trendSheet.Cell(3, 4).GetString().Should().Be("Tổng doanh thu (VND)");
+
+        trendSheet.Cell(4, 1).GetString().Should().Be("T05/2024");
+        trendSheet.Cell(4, 2).GetDouble().Should().Be(50000000);
+        trendSheet.Cell(4, 3).GetDouble().Should().Be(15000000);
+        trendSheet.Cell(4, 4).GetDouble().Should().Be(65000000);
+    }
 }

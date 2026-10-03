@@ -27,4 +27,16 @@ public interface IExportService
     /// <param name="bills">Danh sách thông tin hóa đơn</param>
     /// <returns>Mảng byte của file Excel (.xlsx)</returns>
     Task<byte[]> ExportBillsToExcelAsync(List<BillDto> bills);
+
+    /// <summary>
+    /// Xuất báo cáo tổng hợp Dashboard (chỉ số KPI, tỷ lệ lấp đầy theo tòa nhà và xu hướng doanh thu) ra file Excel
+    /// </summary>
+    /// <param name="stats">Số liệu thống kê tổng quan</param>
+    /// <param name="buildings">Danh sách tỷ lệ lấp đầy theo từng tòa nhà</param>
+    /// <param name="trends">Danh sách xu hướng doanh thu theo các tháng gần nhất</param>
+    /// <returns>Mảng byte của file Excel (.xlsx)</returns>
+    Task<byte[]> ExportDashboardSummaryToExcelAsync(
+        DashboardStatsDto stats,
+        List<BuildingOccupancyDto> buildings,
+        List<MonthlyRevenueTrendDto> trends);
 }
