@@ -17,4 +17,15 @@ public interface IAuthService
 public interface IDashboardService
 {
     Task<DashboardStatsDto> GetStatsAsync();
+
+    /// <summary>
+    /// Thống kê tỷ lệ lấp đầy phòng và giường theo từng tòa nhà
+    /// </summary>
+    Task<List<BuildingOccupancyDto>> GetBuildingOccupancyAsync();
+
+    /// <summary>
+    /// Thống kê xu hướng doanh thu theo N tháng gần nhất
+    /// </summary>
+    Task<List<MonthlyRevenueTrendDto>> GetRevenueTrendsAsync(int months = 6);
 }
+

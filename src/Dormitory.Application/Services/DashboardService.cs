@@ -51,4 +51,71 @@ public class DashboardService : IDashboardService
             MonthlyRevenue = monthlyRevenue
         };
     }
+
+    /// <summary>
+    /// Thống kê tỷ lệ lấp đầy phòng và giường theo từng tòa nhà
+    /// </summary>
+    public async Task<List<BuildingOccupancyDto>> GetBuildingOccupancyAsync()
+    {
+        var rooms = await _context.Rooms.ToListAsync();
+
+        return rooms
+            .GroupBy(r => string.IsNullOrWhiteSpace(r.Building) ? "Chưa phân tòa" : r.Building.Trim())
+            .Select(g => new BuildingOccupancyDto
+            {
+                BuildingName = g.Key,
+                TotalRooms = g.Count(),
+                OccupiedRooms = g.Count(r => r.Status == RoomStatus.Occupied),
+                AvailableRooms = g.Count(r => r.Status == RoomStatus.Available),
+                TotalBeds = g.Sum(r => r.Capacity),
+                OccupiedBeds = g.Sum(r => r.CurrentOccupancy)
+            })
+            .OrderBy(b => b.BuildingName)
+            .ToList();
+    }
+
+    /// <summary>
+    /// Thống kê xu hướng doanh thu theo N tháng gần nhất (tiền phòng và dịch vụ điện nước)
+    /// </summary>
+    public async Task<List<MonthlyRevenueTrendDto>> GetRevenueTrendsAsync(int months = 6)
+    {
+        if (months <= 0)
+        {
+            months = 6;
+        }
+
+        var now = DateTime.UtcNow;
+        var targetMonths = new List<(int Year, int Month)>();
+        for (int i = months - 1; i >= 0; i--)
+        {
+            var date = now.AddMonths(-i);
+            targetMonths.Add((date.Year, date.Month));
+        }
+
+        var minYear = targetMonths.Min(t => t.Year);
+        var maxYear = targetMonths.Max(t => t.Year);
+
+        var paidBills = await _context.Bills
+            .Where(b => b.Status == BillStatus.Paid && b.Year >= minYear && b.Year <= maxYear)
+            .ToListAsync();
+
+        var trends = new List<MonthlyRevenueTrendDto>();
+        foreach (var (year, month) in targetMonths)
+        {
+            var billsInMonth = paidBills.Where(b => b.Year == year && b.Month == month).ToList();
+            var roomFee = billsInMonth.Sum(b => b.RoomFee);
+            var utilityFee = billsInMonth.Sum(b => b.ElectricFee + b.WaterFee + b.OtherServiceFee);
+
+            trends.Add(new MonthlyRevenueTrendDto
+            {
+                Month = month,
+                Year = year,
+                Label = $"T{month:D2}/{year}",
+                RoomFeeRevenue = roomFee,
+                UtilityFeeRevenue = utilityFee
+            });
+        }
+
+        return trends;
+    }
 }
