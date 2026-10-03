@@ -7,6 +7,10 @@ using CommunityToolkit.Mvvm.Input;
 using Dormitory.Application.DTOs;
 using Dormitory.Application.Interfaces;
 using Dormitory.Core.Enums;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 
 namespace Dormitory.Desktop.ViewModels;
 
@@ -21,6 +25,12 @@ public partial class DashboardViewModel : ViewModelBase
 
     [ObservableProperty]
     private DashboardStatsDto _stats = new();
+
+    [ObservableProperty]
+    private ISeries[] _buildingOccupancySeries = Array.Empty<ISeries>();
+
+    [ObservableProperty]
+    private ObservableCollection<BuildingOccupancyDto> _buildingStats = new();
 
     [ObservableProperty]
     private int _expiringContractsCount;
@@ -92,6 +102,36 @@ public partial class DashboardViewModel : ViewModelBase
             // Tải danh sách hóa đơn chưa thanh toán
             var unpaidBills = await _billService.GetAllBillsAsync(status: BillStatus.Unpaid);
             UnpaidBillsCount = unpaidBills.Count;
+
+            // Tải danh sách thống kê công suất theo từng tòa nhà
+            var buildings = await _dashboardService.GetBuildingOccupancyAsync();
+            BuildingStats = new ObservableCollection<BuildingOccupancyDto>(buildings);
+
+            if (buildings.Count > 0)
+            {
+                SKColor[] palette = new[]
+                {
+                    SKColor.Parse("#0078D4"),
+                    SKColor.Parse("#107C41"),
+                    SKColor.Parse("#D83B01"),
+                    SKColor.Parse("#5C2D91"),
+                    SKColor.Parse("#FFB900"),
+                    SKColor.Parse("#00B7C3"),
+                    SKColor.Parse("#E3008C")
+                };
+
+                BuildingOccupancySeries = buildings.Select((b, i) => (ISeries)new PieSeries<int>
+                {
+                    Name = b.BuildingName,
+                    Values = new int[] { b.OccupiedBeds > 0 ? b.OccupiedBeds : (b.TotalBeds > 0 ? 0 : 1) },
+                    Fill = new SolidColorPaint(palette[i % palette.Length]),
+                    ToolTipLabelFormatter = point => $"{b.BuildingName}: {b.OccupiedBeds}/{b.TotalBeds} chỗ ({b.OccupancyRate:F1}%)"
+                }).ToArray();
+            }
+            else
+            {
+                BuildingOccupancySeries = Array.Empty<ISeries>();
+            }
 
             UpdateAlertMessage();
         }

@@ -1,6 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             xmlns:dto="using:Dormitory.Application.DTOs"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              x:Class="Dormitory.Desktop.Views.DashboardView"
              x:DataType="vm:DashboardViewModel">
     
@@ -118,6 +120,63 @@
                     </StackPanel>
                 </Border>
             </Grid>
+
+            <!-- Card biểu đồ: Tỷ lệ lấp đầy theo Tòa nhà -->
+            <Border Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,10,0,0"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="16">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="🏢 Tỷ lệ lấp đầy theo Tòa nhà" FontSize="16" FontWeight="SemiBold"/>
+                        <TextBlock Text="Phân bổ số lượng chỗ ở và tỷ lệ khai thác công suất từng tòa nhà ký túc xá"
+                                   FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+                        <!-- Biểu đồ tròn LiveCharts2 -->
+                        <Border Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center">
+                            <lvc:PieChart Series="{Binding BuildingOccupancySeries}"
+                                          LegendPosition="Right"
+                                          Height="260"/>
+                        </Border>
+
+                        <!-- Bảng tóm tắt số liệu từng tòa -->
+                        <Border Grid.Column="1" Margin="12,0,0,0"
+                                Background="{DynamicResource SystemChromeLowColor}"
+                                CornerRadius="6"
+                                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                                BorderThickness="1">
+                            <DataGrid ItemsSource="{Binding BuildingStats}"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      MaxHeight="260"
+                                      GridLinesVisibility="Horizontal"
+                                      CanUserResizeColumns="True"
+                                      BorderThickness="0">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Tòa nhà" Binding="{Binding BuildingName, Mode=OneWay}" Width="100"/>
+                                    <DataGridTextColumn Header="Tổng phòng" Binding="{Binding TotalRooms, Mode=OneWay}" Width="95"/>
+                                    <DataGridTemplateColumn Header="Chỗ đã ở / Tổng chỗ" Width="150">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate DataType="dto:BuildingOccupancyDto">
+                                                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" Margin="12,0">
+                                                    <TextBlock Text="{Binding OccupiedBeds, Mode=OneWay}" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="/" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                                    <TextBlock Text="{Binding TotalBeds, Mode=OneWay}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Tỷ lệ lấp đầy" Binding="{Binding OccupancyRate, StringFormat='{}{0:F1}%', Mode=OneWay}" Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>
