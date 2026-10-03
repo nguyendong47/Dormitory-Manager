@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,6 +21,17 @@ public partial class ContractListViewModel : ViewModelBase
     private readonly IStudentService _studentService;
     private readonly IRoomService _roomService;
     private readonly IDialogService _dialogService;
+
+    public ObservableCollection<string> FilterOptions { get; } = new()
+    {
+        "Tất cả",
+        "Đang hiệu lực",
+        "Sắp hết hạn (30 ngày)",
+        "Đã kết thúc"
+    };
+
+    [ObservableProperty]
+    private string _selectedFilter = "Tất cả";
 
     [ObservableProperty]
     private ObservableCollection<ContractDto> _contracts = new();
@@ -48,6 +60,14 @@ public partial class ContractListViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Xử lý khi bộ lọc hợp đồng thay đổi: tự động nạp lại danh sách hợp đồng
+    /// </summary>
+    partial void OnSelectedFilterChanged(string value)
+    {
+        _ = LoadContractsAsync();
+    }
+
+    /// <summary>
     /// Điều kiện để kích hoạt thao tác chấm dứt hợp đồng (chỉ áp dụng khi hợp đồng đang hiệu lực)
     /// </summary>
     private bool CanTerminateContract => SelectedContract != null && SelectedContract.Status == ContractStatus.Active;
@@ -58,7 +78,7 @@ public partial class ContractListViewModel : ViewModelBase
     private bool CanRenewContract => SelectedContract != null && SelectedContract.Status != ContractStatus.Terminated;
 
     /// <summary>
-    /// Tải danh sách hợp đồng từ cơ sở dữ liệu
+    /// Tải danh sách hợp đồng từ cơ sở dữ liệu dựa trên bộ lọc đã chọn
     /// </summary>
     [RelayCommand]
     public async Task LoadContractsAsync()
@@ -66,7 +86,37 @@ public partial class ContractListViewModel : ViewModelBase
         IsLoading = true;
         try
         {
-            var list = await _contractService.GetAllContractsAsync(SelectedStatus);
+            List<ContractDto> list;
+            var today = DateTime.Today;
+            var maxDate = today.AddDays(30);
+
+            switch (SelectedFilter)
+            {
+                case "Đang hiệu lực":
+                    SelectedStatus = ContractStatus.Active;
+                    list = await _contractService.GetAllContractsAsync(ContractStatus.Active);
+                    break;
+                case "Sắp hết hạn (30 ngày)":
+                    SelectedStatus = ContractStatus.Active;
+                    var activeList = await _contractService.GetAllContractsAsync(ContractStatus.Active);
+                    list = activeList
+                        .Where(c => c.Status == ContractStatus.Active && c.EndDate <= maxDate && c.EndDate >= today)
+                        .ToList();
+                    break;
+                case "Đã kết thúc":
+                    SelectedStatus = null;
+                    var allForEnd = await _contractService.GetAllContractsAsync();
+                    list = allForEnd
+                        .Where(c => c.Status == ContractStatus.Terminated || c.Status == ContractStatus.Expired)
+                        .ToList();
+                    break;
+                case "Tất cả":
+                default:
+                    SelectedStatus = null;
+                    list = await _contractService.GetAllContractsAsync();
+                    break;
+            }
+
             Contracts = new ObservableCollection<ContractDto>(list);
         }
         finally

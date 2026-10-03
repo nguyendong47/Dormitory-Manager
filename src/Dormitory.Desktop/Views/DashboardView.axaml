@@ -13,6 +13,43 @@
                            Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="14"/>
             </StackPanel>
 
+            <!-- Card cảnh báo nổi bật: Hạn hợp đồng & Hóa đơn chưa thanh toán -->
+            <Border Background="#FFF8E1" BorderBrush="#FFA000" BorderThickness="1.5"
+                    CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <TextBlock Text="⚠️" FontSize="20" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding AlertMessage}" 
+                                   FontSize="15" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#B78103" 
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Danh sách ngắn các hợp đồng sắp hết hạn -->
+                    <Border Background="{DynamicResource SystemAltHighColor}"
+                            CornerRadius="6"
+                            BorderBrush="#FFE082"
+                            BorderThickness="1"
+                            IsVisible="{Binding HasExpiringContracts}">
+                        <DataGrid ItemsSource="{Binding ExpiringContracts}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  MaxHeight="180"
+                                  GridLinesVisibility="Horizontal"
+                                  CanUserResizeColumns="True"
+                                  BorderThickness="0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Mã HĐ" Binding="{Binding ContractNumber, Mode=OneWay}" Width="150"/>
+                                <DataGridTextColumn Header="Sinh viên" Binding="{Binding StudentName, Mode=OneWay}" Width="160"/>
+                                <DataGridTextColumn Header="Phòng" Binding="{Binding RoomNumber, Mode=OneWay}" Width="100"/>
+                                <DataGridTextColumn Header="Ngày hết hạn" Binding="{Binding EndDate, StringFormat='{}{0:dd/MM/yyyy}', Mode=OneWay}" Width="130"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
             <!-- Cards Grid: Thống kê nhanh -->
             <Grid ColumnDefinitions="*,*,*,*" Margin="0,10,0,0">
                 <!-- Thẻ 1: Tổng số phòng -->

@@ -21,7 +21,7 @@
         <!-- Main Content (Toolbar + DataGrid) -->
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
             <!-- Toolbar thao tác hóa đơn -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12" VerticalAlignment="Center">
                 <Button Content="➕ Lập hóa đơn mới" 
                         Command="{Binding CreateBillCommand}"
                         Background="#0078D4" 
@@ -33,6 +33,12 @@
                         Command="{Binding DeleteBillCommand}"/>
                 <Button Content="📊  Xuất Excel" 
                         Command="{Binding ExportToExcelCommand}"/>
+
+                <TextBlock Text="Lọc trạng thái:" VerticalAlignment="Center" Margin="12,0,0,0" FontWeight="Medium"/>
+                <ComboBox ItemsSource="{Binding StatusFilterOptions}"
+                          SelectedItem="{Binding SelectedStatusFilter}"
+                          Width="220"
+                          VerticalAlignment="Center"/>
             </StackPanel>
 
             <!-- Main DataGrid -->

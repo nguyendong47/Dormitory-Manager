@@ -23,6 +23,16 @@ public partial class BillListViewModel : ViewModelBase
     private readonly IExportService _exportService;
     private readonly IFileService _fileService;
 
+    public ObservableCollection<string> StatusFilterOptions { get; } = new()
+    {
+        "Tất cả",
+        "Chưa thanh toán (Còn nợ)",
+        "Đã thanh toán"
+    };
+
+    [ObservableProperty]
+    private string _selectedStatusFilter = "Tất cả";
+
     [ObservableProperty]
     private ObservableCollection<BillDto> _bills = new();
 
@@ -55,9 +65,14 @@ public partial class BillListViewModel : ViewModelBase
         _dialogService = dialogService;
         _exportService = exportService;
         _fileService = fileService;
+    }
 
-        SelectedMonth = DateTime.UtcNow.Month;
-        SelectedYear = DateTime.UtcNow.Year;
+    /// <summary>
+    /// Xử lý khi bộ lọc trạng thái hóa đơn thay đổi: tự động nạp lại danh sách hóa đơn
+    /// </summary>
+    partial void OnSelectedStatusFilterChanged(string value)
+    {
+        _ = LoadBillsAsync();
     }
 
     /// <summary>
@@ -94,7 +109,7 @@ public partial class BillListViewModel : ViewModelBase
     private bool CanDeleteBill => SelectedBill != null;
 
     /// <summary>
-    /// Tải danh sách hóa đơn theo tháng, năm và trạng thái
+    /// Tải danh sách hóa đơn theo tháng, năm và trạng thái thanh toán
     /// </summary>
     [RelayCommand]
     public async Task LoadBillsAsync()
@@ -102,7 +117,15 @@ public partial class BillListViewModel : ViewModelBase
         IsLoading = true;
         try
         {
-            var list = await _billService.GetAllBillsAsync(month: SelectedMonth, year: SelectedYear, status: SelectedStatus);
+            BillStatus? status = SelectedStatusFilter switch
+            {
+                "Chưa thanh toán (Còn nợ)" => BillStatus.Unpaid,
+                "Đã thanh toán" => BillStatus.Paid,
+                _ => null
+            };
+            SelectedStatus = status;
+
+            var list = await _billService.GetAllBillsAsync(roomId: null, month: SelectedMonth, year: SelectedYear, status: SelectedStatus);
             Bills = new ObservableCollection<BillDto>(list);
         }
         finally

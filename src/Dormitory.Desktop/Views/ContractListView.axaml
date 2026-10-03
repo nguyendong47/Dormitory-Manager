@@ -21,7 +21,7 @@
         <!-- Main Content (Toolbar + DataGrid) -->
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
             <!-- Toolbar thao tác hợp đồng -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12" VerticalAlignment="Center">
                 <Button Content="➕ Lập hợp đồng mới" 
                         Command="{Binding CreateContractCommand}"
                         Background="#0078D4" 
@@ -31,6 +31,12 @@
                         Command="{Binding TerminateContractCommand}"/>
                 <Button Content="🔄 Gia hạn hợp đồng" 
                         Command="{Binding RenewContractCommand}"/>
+
+                <TextBlock Text="Lọc trạng thái:" VerticalAlignment="Center" Margin="12,0,0,0" FontWeight="Medium"/>
+                <ComboBox ItemsSource="{Binding FilterOptions}"
+                          SelectedItem="{Binding SelectedFilter}"
+                          Width="200"
+                          VerticalAlignment="Center"/>
             </StackPanel>
 
             <!-- Main DataGrid -->
