@@ -47,8 +47,9 @@ Thanh menu bên trái giúp chuyển đổi linh hoạt giữa các phân hệ:
 - 📝 **Hợp đồng**: Lập mới, gia hạn, thanh lý hợp đồng và bộ lọc trạng thái.
 - 💵 **Hóa đơn**: Lập phiếu thu điện nước, xác nhận thu tiền, lọc trạng thái và xuất Excel.
 - 👥 **Nhân viên**: Quản lý đội ngũ nhân sự vận hành KTX (**Chỉ dành cho Quản trị viên**).
+- ⚙️ **Cài đặt**: Quản trị CSDL (sao lưu, phục hồi, kiểm tra toàn vẹn), cấu hình chuỗi kết nối và thông tin hệ thống (**Chỉ dành cho Quản trị viên**).
 
-> 🔒 **Cơ chế phân quyền**: Với tài khoản vai trò `Manager`, mục **Nhân viên** sẽ tự động được ẩn hoàn toàn khỏi thanh điều hướng để đảm bảo tính bảo mật nội bộ.
+> 🔒 **Cơ chế phân quyền**: Với tài khoản vai trò `Manager`, hai phân hệ **Nhân viên** và **Cài đặt** sẽ tự động được ẩn hoàn toàn khỏi thanh điều hướng để đảm bảo tính an toàn hạ tầng và bảo mật thông tin nội bộ.
 
 ---
 
@@ -220,14 +221,78 @@ Phân hệ dành riêng cho Quản trị viên (`Admin`) quản lý đội ngũ 
 
 ---
 
+### 3.7. Cài Đặt Hệ Thống & Quản Trị Cơ Sở Dữ Liệu (`SystemSettings`)
+
+Phân hệ dành riêng cho **Quản trị viên (Admin)** để theo dõi tình trạng tệp cơ sở dữ liệu SQLite, thực hiện sao lưu dự phòng định kỳ, phục hồi dữ liệu khi có sự cố và quản trị cấu hình hệ thống.
+
+#### 1. Xem thông số & trạng thái Cơ sở dữ liệu:
+- **Đường dẫn tệp CSDL**: Hiển thị đường dẫn tệp `dormitory.db` mà ứng dụng đang kết nối.
+- **Dung lượng tệp (Size)**: Kích thước vật lý thực tế của file cơ sở dữ liệu trên ổ đĩa (định dạng `KB` hoặc `MB`).
+- **Tổng số bản ghi (Total Records)**: Tổng số lượng bản ghi thực tế được tổng hợp theo thời gian thực từ toàn bộ các bảng trong hệ thống: Phòng ở (`Rooms`), Sinh viên (`Students`), Hợp đồng (`Contracts`), Hóa đơn (`Bills`), Nhân viên (`Employees`) và Người dùng (`Users`).
+- **Cập nhật lần cuối**: Thời điểm tệp CSDL được ghi đĩa lần gần nhất.
+- Nút **"🔄 Làm mới thông tin"**: Truy vấn lại thông số CSDL từ ổ đĩa và cập nhật ngay lên giao diện.
+
+#### 2. Sao lưu Cơ sở dữ liệu định kỳ (Database Backup):
+- **Mục đích**: Bảo vệ an toàn dữ liệu quản lý ký túc xá, phòng ngừa rủi ro hỏng ổ cứng, sự cố hệ điều hành hoặc mất mát dữ liệu ngoài ý muốn.
+- **Công nghệ an toàn**: Sử dụng cơ chế SQLite Online Backup API (`VACUUM INTO` / snapshot an toàn) cho phép trích xuất bản sao lưu nguyên vẹn mà **không làm gián đoạn** hay khóa giao dịch đọc/ghi của các phiên làm việc khác.
+- **Các bước thực hiện**:
+  1. Nhấn nút **"💾 Tạo bản sao lưu (.bak)"** trên thẻ *Sao Lưu Dữ Liệu*.
+  2. Hộp thoại lưu tệp hệ thống xuất hiện, tự động gợi ý tên tệp theo thời gian thực: `dormitory_backup_yyyyMMdd_HHmmss.bak`.
+  3. Chọn thư mục lưu trữ an toàn (ví dụ: ổ cứng ngoài, USB sao lưu hoặc thư mục đồng bộ đám mây như OneDrive/Google Drive).
+  4. Nhấn **Save**: Hệ thống thực hiện snapshot dữ liệu và thông báo *"Sao lưu cơ sở dữ liệu thành công"*.
+
+#### 3. Quy trình phục hồi Cơ sở dữ liệu an toàn (Database Restore):
+- **Mục đích**: Khôi phục toàn bộ dữ liệu KTX từ một bản sao lưu `.bak` hoặc `.db` đã lưu trữ trước đó.
+- **Cơ chế bảo vệ đa lớp**:
+  - **Phân quyền Quản trị viên (RBAC)**: Chỉ tài khoản có vai trò `Admin` mới được phép kích hoạt tính năng này.
+  - **Hộp thoại cảnh báo nguy hiểm (`ConfirmDialogWindow`)**: Nhắc nhở rõ ràng rằng toàn bộ dữ liệu hiện tại trong hệ thống sẽ bị thay thế hoàn toàn bởi bản sao lưu.
+  - **Kiểm tra tính toàn vẹn dữ liệu (Integrity Check)**: Trước khi tiến hành ghi đè CSDL, hệ thống tự động kiểm tra định dạng SQLite hợp lệ và chạy lệnh `PRAGMA integrity_check` trên tệp sao lưu. Nếu tệp sao lưu bị lỗi, biến dạng hoặc hỏng cấu trúc, hệ thống sẽ **hủy bỏ thao tác ngay lập tức** và giữ nguyên vẹn dữ liệu hiện tại.
+- **Các bước thực hiện**:
+  1. Nhấn nút **"🔄 Khôi phục CSDL từ file..."** trên thẻ *Phục Hồi Dữ Liệu*.
+  2. Chọn tệp sao lưu hợp lệ (`.bak` hoặc `.db`).
+  3. Đọc kỹ nội dung cảnh báo xác nhận trong hộp thoại: *"CẢNH BÁO: Toàn bộ dữ liệu hiện tại trong hệ thống sẽ được thay thế bằng dữ liệu từ tệp sao lưu này. Bạn có chắc chắn muốn tiếp tục?"*.
+  4. Bấm **"Đồng ý"** để tiến hành phục hồi.
+  5. Sau khi nhận thông báo thành công, chuyển đổi giữa các tab danh mục hoặc khởi động lại ứng dụng để toàn bộ giao diện nạp lại dữ liệu mới nhất.
+
+#### 4. Cấu hình chuỗi kết nối động qua `appsettings.json`:
+- Ứng dụng hỗ trợ cấu hình động thông qua tệp `appsettings.json` đặt cùng thư mục với tệp thực thi:
+  ```json
+  {
+    "ConnectionStrings": {
+      "DormitoryDb": "Data Source=dormitory.db"
+    },
+    "DatabaseProvider": "Sqlite",
+    "AppSettings": {
+      "AppName": "Dormitory Manager",
+      "Version": "2.0.0",
+      "AutoBackupOnExit": false
+    }
+  }
+  ```
+- **Lợi ích**: Quản trị viên có thể thay đổi vị trí lưu trữ file CSDL (ví dụ: chuyển sang phân vùng ổ đĩa chuyên dụng hoặc thư mục mạng nội bộ) mà không cần phải biên dịch lại mã nguồn chương trình.
+- **Cơ chế dự phòng an toàn (Safe Fallback)**: Nếu tệp `appsettings.json` bị xóa nhầm hoặc chuỗi kết nối để trống, hệ thống sẽ tự động chuyển về chuỗi kết nối mặc định `Data Source=dormitory.db` nhằm đảm bảo ứng dụng luôn khởi chạy ổn định.
+
+#### 5. Hướng dẫn Đóng gói và Cài đặt Đa nền tảng:
+- Để biết chi tiết các bước cài đặt và phân phối ứng dụng cho người dùng cuối trên các hệ điều hành khác nhau, vui lòng tham khảo tài liệu:
+  👉 [**Hướng Dẫn Đóng Gói Và Triển Khai Đa Nền Tảng (Cross-Platform Packaging & Deployment)**](packaging-and-deployment.md)
+  - **macOS**: Cài đặt dạng App Bundle và tệp ảnh đĩa `.dmg` (hỗ trợ cả Apple Silicon ARM64 và Intel x64).
+  - **Windows**: Chạy tệp đơn độc lập `.exe` (Single-File Executable) trong gói nén `.zip` (không yêu cầu cài trước .NET Runtime).
+  - **Linux**: Giải nén và thực thi gói self-contained `.tar.gz` tương thích các bản phân phối Ubuntu, Debian, Fedora, Arch.
+
+---
+
 ## 4. Các Lưu Ý Về An Toàn Dữ Liệu & Ràng Buộc Hệ Thống
 
 1. **Bảo mật và phân quyền**:
    - Luôn đăng xuất khỏi hệ thống khi rời khỏi máy làm việc để bảo vệ dữ liệu nội trú và tài chính.
-   - Tài khoản vai trò `Manager` không thể xem hoặc chỉnh sửa danh sách nhân viên KTX.
+   - Tài khoản vai trò `Manager` không thể xem hoặc chỉnh sửa danh sách nhân viên KTX cũng như không thể truy cập phân hệ Cài đặt hệ thống.
 2. **Tính toàn vẹn dữ liệu**:
    - Không cho phép xóa các phòng đang có sinh viên cư trú hoặc đang có hợp đồng chưa thanh lý.
    - Ràng buộc giới tính tự động ngăn chặn việc xếp nhầm sinh viên nam vào phòng quy định nữ và ngược lại.
-3. **Xuất file Excel an toàn**:
+3. **Sao lưu dữ liệu định kỳ**:
+   - Quản trị viên nên tạo bản sao lưu dữ liệu `.bak` ít nhất một lần mỗi tuần hoặc trước các kỳ quyết toán tài chính, bàn giao phòng đầu/cuối năm học.
+   - Lưu trữ các tệp sao lưu tại các thiết bị lưu trữ ngoài hoặc dịch vụ lưu trữ đám mây có bảo mật.
+4. **Xuất file Excel an toàn**:
    - Hệ thống sử dụng bộ chọn tệp native của hệ điều hành (`IFileService` kết hợp Avalonia `StorageProvider`), đảm bảo tính tương thích cao và không xảy ra xung đột quyền ghi đĩa.
    - Khi xuất file, có thể mở trực tiếp bằng Microsoft Excel, Google Sheets hoặc LibreOffice mà không bị lỗi font hay định dạng.
+

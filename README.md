@@ -60,13 +60,27 @@
    - Chức năng **Đăng xuất an toàn** đưa người dùng trở về màn hình đăng nhập.
    - Phân quyền theo vai trò (RBAC): `Admin` có toàn quyền hệ thống; `Manager` quản lý vận hành thường nhật.
 
-8. **🪟 Hạ Tầng Dialog, Xuất Báo Cáo & Xác Nhận Chuẩn Mực**:
-   - Dịch vụ hộp thoại phi tập trung (`IDialogService`) và chọn tệp lưu trữ (`IFileService`).
-   - Cửa sổ xác nhận an toàn (`ConfirmDialogWindow`) và thông báo (`MessageDialogWindow`) ngăn chặn xóa nhầm dữ liệu.
+8. **⚙️ Cài Đặt Hệ Thống & Sao Lưu/Phục Hồi CSDL (System Settings & Backup)**:
+   - Giám sát trạng thái file CSDL SQLite thời gian thực: đường dẫn, dung lượng đĩa, tổng số bản ghi từ toàn bộ các bảng trong hệ thống.
+   - Sao lưu snapshot CSDL an toàn ra file `.bak` sử dụng SQLite Online Backup API không làm gián đoạn các giao dịch đọc/ghi.
+   - Phục hồi CSDL an toàn với cơ chế kiểm tra tính toàn vẹn (`PRAGMA integrity_check`) và hộp thoại xác nhận.
+   - Cấu hình chuỗi kết nối động qua `appsettings.json` với cơ chế dự phòng an toàn (Safe Fallback).
+   - Phân quyền Quản trị viên (RBAC): Chỉ `Admin` mới có quyền truy cập và thao tác phục hồi dữ liệu.
+
+9. **📦 Đóng Gói & Triển Khai Đa Nền Tảng (Cross-Platform Packaging)**:
+   - Bộ kịch bản tự động đóng gói ứng dụng độc lập (Self-Contained Deployment), người dùng tải về chạy ngay (Zero Setup).
+   - **macOS**: App Bundle chuẩn (`DormitoryManager.app`) & tệp ảnh đĩa `.dmg` (hỗ trợ cả Apple Silicon ARM64 và Intel x64).
+   - **Windows**: Single-File Executable `.exe` đóng gói trong tệp `.zip` tiện dụng.
+   - **Linux**: Gói nhị phân độc lập `.tar.gz` kèm native libraries tương thích các bản phân phối Ubuntu, Debian, Fedora.
+   - Hướng dẫn triển khai và mẫu GitHub Actions CI/CD hoàn chỉnh tại [docs/packaging-and-deployment.md](docs/packaging-and-deployment.md).
+
+10. **🪟 Hạ Tầng Dialog, Xuất Báo Cáo & Xác Nhận Chuẩn Mực**:
+    - Dịch vụ hộp thoại phi tập trung (`IDialogService`) và chọn tệp lưu trữ (`IFileService`).
+    - Cửa sổ xác nhận an toàn (`ConfirmDialogWindow`) và thông báo (`MessageDialogWindow`) ngăn chặn xóa nhầm dữ liệu.
 
 ---
 
-## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature & CRUD Matrix - Phase 1 & 2)
+## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature & CRUD Matrix - Hoàn Thành 100% 3 Giai Đoạn)
 
 | Phân hệ Nghiệp Vụ | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel | Phân Quyền | Trạng Thái |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -77,6 +91,8 @@
 | **Hợp Đồng (Contracts)** | ✅ | ✅ (`ContractDialog`) | ✅ (Gia hạn HĐ) | ✅ (Thanh lý & Giải phóng) | ✅ (Lọc trạng thái) | — | Tất cả | **Hoàn thành (Phase 1)** |
 | **Hóa Đơn & Điện Nước (Bills)** | ✅ | ✅ (`BillDialog` tự động) | — | — | ✅ (Lọc trạng thái) | ✅ (`.xlsx`) | Tất cả | **Hoàn thành (Phase 1)** |
 | **Nhân Viên KTX (Employees)** | ✅ | ✅ (`EmployeeDialog`) | ✅ (`EmployeeDialog`) | ✅ (Xác nhận an toàn) | ✅ (Đa tiêu chí) | — | **Chỉ Admin** | **Hoàn thành (Phase 1)** |
+| **Cài Đặt Hệ Thống & Quản Trị CSDL** | ✅ | ✅ (Sao lưu `.bak`) | ✅ (Phục hồi CSDL) | — | ✅ (Kiểm tra toàn vẹn) | — | **Chỉ Admin** | **Hoàn thành (Phase 3 - Infrastructure & Packaging)** |
+| **Đóng Gói & Triển Khai Đa Nền Tảng** | ✅ | ✅ (macOS DMG) | ✅ (Win ZIP / Exe) | ✅ (Linux Tar.gz) | — | — | DevOps / Admin | **Hoàn thành (Phase 3 - Infrastructure & Packaging)** |
 
 ---
 
@@ -128,20 +144,28 @@ graph TD
 
 ```
 Dormitory-Manager/
+├── dist/                             # Thư mục chứa gói xuất bản thành phẩm (DMG, ZIP, TAR.GZ)
 ├── docs/                             # Tài liệu kỹ thuật, hướng dẫn sử dụng & ảnh chụp
 │   ├── images/                       # Ảnh chụp giao diện dashboard
+│   ├── packaging-and-deployment.md   # Hướng dẫn đóng gói và triển khai đa nền tảng
 │   ├── spec-modernization.md         # Đặc tả kiến trúc hiện đại hóa
 │   ├── user-guide.md                 # Hướng dẫn sử dụng chi tiết các phân hệ
 │   └── superpowers/plans/            # Kế hoạch triển khai kỹ thuật
 │
+├── scripts/
+│   └── package/                      # Bộ kịch bản tự động đóng gói đa nền tảng
+│       ├── build-macos.sh            # Đóng gói macOS App Bundle & tệp DMG (ARM64 & x64)
+│       ├── build-windows.sh          # Đóng gói Windows Single-File EXE & ZIP (win-x64)
+│       └── build-linux.sh            # Đóng gói Linux Self-Contained Binary & Tar.gz
+│
 ├── src/
 │   ├── Dormitory.Core/               # Domain: Thực thể và Enums nghiệp vụ (Room, Student, Contract, Bill, Employee, User)
 │   ├── Dormitory.Application/        # Application: DTOs, Services, Interfaces, Business Logic
-│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, Migrations, BCrypt, DataSeeder
-│   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs
+│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, Migrations, BCrypt, DataSeeder, DatabaseService
+│   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs, appsettings.json
 │
 ├── tests/
-│   └── Dormitory.UnitTests/          # Kiểm thử tự động xUnit (33/33 Passed)
+│   └── Dormitory.UnitTests/          # Kiểm thử tự động xUnit (46/46 Passed - 100%)
 │
 ├── Dormitory.sln                     # .NET 8 Solution
 └── README.md
@@ -152,10 +176,10 @@ Dormitory-Manager/
 ## 🚀 Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
 
 ### Yêu Cầu Môi Trường
-- **.NET 8 SDK** (hoặc mới hơn) cài đặt trên máy.
+- **.NET 8 SDK** (hoặc mới hơn) cài đặt trên máy phát triển.
 - Hệ điều hành: **macOS** (Apple Silicon / Intel), **Windows 10/11**, hoặc **Linux**.
 
-### Khởi Chạy Ứng Dụng Desktop
+### Khởi Chạy Ứng Dụng Desktop (Môi Trường Phát Triển)
 
 Chỉ cần mở Terminal tại thư mục gốc dự án và chạy:
 
@@ -173,14 +197,33 @@ dotnet run --project src/Dormitory.Desktop
 - **Quản trị viên (Admin)**: `admin` / `Admin@123456`
 - **Quản lý (Manager)**: `manager` / `Manager@123`
 
+### 📦 Đóng Gói Ứng Dụng Đa Nền Tảng (Cross-Platform Packaging)
+
+Hệ thống cung cấp sẵn các kịch bản đóng gói tự động thành các gói phần mềm độc lập (Self-Contained Deployment - SCD), không yêu cầu người dùng cuối cài đặt trước .NET Runtime:
+
+```bash
+# 1. Đóng gói cho macOS (tự nhận diện chip Apple Silicon hoặc Intel, tạo DormitoryManager.app & .dmg):
+./scripts/package/build-macos.sh
+
+# 2. Đóng gói cho Windows (tạo Single-File Dormitory.Desktop.exe & file nén .zip):
+./scripts/package/build-windows.sh
+
+# 3. Đóng gói cho Linux (tạo gói nhị phân độc lập DormitoryManager-...-Linux-x64.tar.gz):
+./scripts/package/build-linux.sh
+```
+
+Thành phẩm sau khi đóng gói sẽ nằm tại thư mục `dist/`.
+> 📖 Tham khảo hướng dẫn cài đặt và triển khai chi tiết cho từng hệ điều hành tại [**docs/packaging-and-deployment.md**](docs/packaging-and-deployment.md).
+
 ---
 
 ## 🧪 Chạy Kiểm Thử Tự Động (Unit Tests)
 
-Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ các logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu và dịch vụ xuất file Excel ClosedXML:
+Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, và dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`):
 
 ```bash
 dotnet test tests/Dormitory.UnitTests
 ```
 
-Kết quả: **33/33 Tests Passed** (100% Pass).
+Kết quả: **46/46 Tests Passed** (100% Pass).
+
