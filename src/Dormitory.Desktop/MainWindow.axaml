@@ -24,6 +24,9 @@
         <DataTemplate DataType="{x:Type vm:BillListViewModel}">
             <views:BillListView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EmployeeListViewModel}">
+            <views:EmployeeListView/>
+        </DataTemplate>
     </Window.DataTemplates>
 
     <Grid ColumnDefinitions="240,*">
@@ -61,6 +64,11 @@
 
                     <Button Content="💵  Hóa đơn &amp; Dịch vụ"
                             Command="{Binding NavigateToBillsCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Padding="12,10" CornerRadius="6"/>
+
+                    <Button Content="👤  Nhân viên"
+                            Command="{Binding NavigateToEmployeesCommand}"
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                             Padding="12,10" CornerRadius="6"/>
                 </StackPanel>

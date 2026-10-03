@@ -1,0 +1,68 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             x:Class="Dormitory.Desktop.Views.EmployeeListView"
+             x:DataType="vm:EmployeeListViewModel">
+
+    <Grid RowDefinitions="Auto,*" Margin="24">
+        <!-- Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Quản Lý Nhân Viên" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Hồ sơ nhân sự ký túc xá, chức vụ, bộ phận và thông tin liên hệ" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <ComboBox ItemsSource="{Binding Departments}" 
+                          SelectedItem="{Binding SelectedDepartment}" 
+                          Width="190"/>
+                <TextBox Width="240" 
+                         Watermark="Tìm kiếm họ tên, mã NV, CCCD, SĐT..." 
+                         Text="{Binding SearchQuery}"/>
+                <Button Content="🔍 Tìm" Command="{Binding SearchCommand}"/>
+                <Button Content="🔄 Làm mới" Command="{Binding LoadEmployeesCommand}"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Main Content (Toolbar + DataGrid) -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            <!-- Toolbar thao tác CRUD -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
+                <Button Content="➕ Thêm nhân viên" 
+                        Command="{Binding AddEmployeeCommand}"
+                        Background="#0078D4" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"/>
+                <Button Content="✏️ Chỉnh sửa" 
+                        Command="{Binding EditEmployeeCommand}"/>
+                <Button Content="🗑️ Xóa nhân viên" 
+                        Command="{Binding DeleteEmployeeCommand}"/>
+            </StackPanel>
+
+            <!-- Main DataGrid -->
+            <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding Employees}"
+                          SelectedItem="{Binding SelectedEmployee}"
+                          DoubleTapped="OnDataGridDoubleTapped"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          CanUserResizeColumns="True"
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Mã nhân viên" Binding="{Binding EmployeeCode, Mode=OneWay}" Width="120"/>
+                        <DataGridTextColumn Header="Họ và tên" Binding="{Binding FullName, Mode=OneWay}" Width="170"/>
+                        <DataGridTextColumn Header="Giới tính" Binding="{Binding Gender, Mode=OneWay}" Width="90"/>
+                        <DataGridTextColumn Header="Chức vụ" Binding="{Binding Position, Mode=OneWay}" Width="140"/>
+                        <DataGridTextColumn Header="Phòng ban" Binding="{Binding Department, Mode=OneWay}" Width="180"/>
+                        <DataGridTextColumn Header="Số điện thoại" Binding="{Binding PhoneNumber, Mode=OneWay}" Width="120"/>
+                        <DataGridTextColumn Header="Số CCCD/CMND" Binding="{Binding IdentityCard, Mode=OneWay}" Width="130"/>
+                        <DataGridTextColumn Header="Địa chỉ" Binding="{Binding Address, Mode=OneWay}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

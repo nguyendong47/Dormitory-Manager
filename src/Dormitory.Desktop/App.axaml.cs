@@ -42,6 +42,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IBillService, BillService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddSingleton<IDialogService, DialogService>();
 
         // 3. Cấu hình ViewModels
@@ -50,6 +51,7 @@ public partial class App : Avalonia.Application
         services.AddTransient<StudentListViewModel>();
         services.AddTransient<ContractListViewModel>();
         services.AddTransient<BillListViewModel>();
+        services.AddTransient<EmployeeListViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
         // 4. Cấu hình Views

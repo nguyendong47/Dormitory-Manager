@@ -13,6 +13,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly StudentListViewModel _studentListVm;
     private readonly ContractListViewModel _contractListVm;
     private readonly BillListViewModel _billListVm;
+    private readonly EmployeeListViewModel _employeeListVm;
 
     [ObservableProperty]
     private ViewModelBase _currentView;
@@ -25,13 +26,15 @@ public partial class MainWindowViewModel : ViewModelBase
         RoomListViewModel roomListVm,
         StudentListViewModel studentListVm,
         ContractListViewModel contractListVm,
-        BillListViewModel billListVm)
+        BillListViewModel billListVm,
+        EmployeeListViewModel employeeListVm)
     {
         _dashboardVm = dashboardVm;
         _roomListVm = roomListVm;
         _studentListVm = studentListVm;
         _contractListVm = contractListVm;
         _billListVm = billListVm;
+        _employeeListVm = employeeListVm;
 
         // Khởi tạo màn hình mặc định là Dashboard
         _currentView = _dashboardVm;
@@ -41,6 +44,7 @@ public partial class MainWindowViewModel : ViewModelBase
         NavigateToStudentsCommand = new RelayCommand(NavigateToStudents);
         NavigateToContractsCommand = new RelayCommand(NavigateToContracts);
         NavigateToBillsCommand = new RelayCommand(NavigateToBills);
+        NavigateToEmployeesCommand = new RelayCommand(NavigateToEmployees);
 
         // Nạp số liệu Dashboard
         _ = _dashboardVm.LoadStatsAsync();
@@ -51,6 +55,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public IRelayCommand NavigateToStudentsCommand { get; }
     public IRelayCommand NavigateToContractsCommand { get; }
     public IRelayCommand NavigateToBillsCommand { get; }
+    public IRelayCommand NavigateToEmployeesCommand { get; }
 
     public void NavigateToDashboard()
     {
@@ -85,5 +90,12 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentView = _billListVm;
         ActiveMenu = "Bills";
         _ = _billListVm.LoadBillsAsync();
+    }
+
+    public void NavigateToEmployees()
+    {
+        CurrentView = _employeeListVm;
+        ActiveMenu = "Employees";
+        _ = _employeeListVm.LoadEmployeesAsync();
     }
 }

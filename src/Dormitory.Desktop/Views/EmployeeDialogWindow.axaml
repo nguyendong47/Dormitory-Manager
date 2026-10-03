@@ -1,0 +1,131 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        x:Class="Dormitory.Desktop.Views.EmployeeDialogWindow"
+        x:DataType="vm:EmployeeDialogViewModel"
+        Title="{Binding Title}"
+        Width="520"
+        Height="560"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="24" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+            <!-- Tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="Nhập đầy đủ thông tin hồ sơ nhân viên bên dưới" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" 
+                           FontSize="13"/>
+            </StackPanel>
+
+            <!-- Thông báo lỗi nghiệp vụ / xác thực -->
+            <Border Grid.Row="1"
+                    Background="#FDE7E9"
+                    BorderBrush="#D13438"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10"
+                    Margin="0,0,0,14"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="⚠️" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#A80000"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Biểu mẫu nhập liệu 2 cột -->
+            <ScrollViewer Grid.Row="2">
+                <Grid ColumnDefinitions="*,16,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                    <!-- Cột 1, Dòng 0: Mã nhân viên -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Mã nhân viên *" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding EmployeeCode}" 
+                                 IsReadOnly="{Binding IsEditMode}"
+                                 Watermark="VD: NV001"/>
+                    </StackPanel>
+
+                    <!-- Cột 2, Dòng 0: Họ và tên -->
+                    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Họ và tên *" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding FullName}" Watermark="VD: Nguyễn Văn A"/>
+                    </StackPanel>
+
+                    <!-- Cột 1, Dòng 1: Ngày sinh -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Ngày sinh *" FontWeight="Medium" FontSize="13"/>
+                        <DatePicker SelectedDate="{Binding DateOfBirth}" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Cột 2, Dòng 1: Giới tính -->
+                    <StackPanel Grid.Row="1" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Giới tính" FontWeight="Medium" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding Genders}"
+                                  SelectedItem="{Binding SelectedGender}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Cột 1, Dòng 2: Số điện thoại -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Số điện thoại" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding PhoneNumber}" Watermark="VD: 0987654321"/>
+                    </StackPanel>
+
+                    <!-- Cột 2, Dòng 2: Số CCCD/CMND -->
+                    <StackPanel Grid.Row="2" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Số CCCD/CMND *" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding IdentityCard}" Watermark="VD: 001085001234"/>
+                    </StackPanel>
+
+                    <!-- Cột 1, Dòng 3: Chức vụ -->
+                    <StackPanel Grid.Row="3" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Chức vụ" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Position}" Watermark="VD: Quản lý / Bảo vệ"/>
+                    </StackPanel>
+
+                    <!-- Cột 2, Dòng 3: Phòng ban -->
+                    <StackPanel Grid.Row="3" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Phòng ban" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Department}" Watermark="VD: Ban Quản lý Ký túc xá"/>
+                    </StackPanel>
+
+                    <!-- Cột 1+2, Dòng 4: Địa chỉ liên hệ -->
+                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Địa chỉ liên hệ" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Address}" Watermark="VD: Số 123 Đường Cầu Giấy, Hà Nội"/>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- Thanh nút tác vụ -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="12"
+                        Margin="0,16,0,0">
+                <Button Content="❌ Hủy bỏ"
+                        Command="{Binding CancelCommand}"
+                        Width="100"
+                        Height="34"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+                <Button Content="💾 Lưu nhân viên"
+                        Command="{Binding SaveCommand}"
+                        Width="140"
+                        Height="34"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
