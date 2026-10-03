@@ -53,6 +53,9 @@ public partial class RoomDialogViewModel : ViewModelBase
     private string? _description;
 
     [ObservableProperty]
+    private bool _isBusy;
+
+    [ObservableProperty]
     private string? _errorMessage;
 
     /// <summary>
@@ -111,48 +114,51 @@ public partial class RoomDialogViewModel : ViewModelBase
     [RelayCommand]
     public async Task SaveAsync()
     {
-        // 1. Kiểm tra validation bắt buộc
-        if (string.IsNullOrWhiteSpace(RoomNumber))
-        {
-            ErrorMessage = "Vui lòng nhập số phòng.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(Building))
-        {
-            ErrorMessage = "Vui lòng nhập tên tòa nhà.";
-            return;
-        }
-
-        if (Capacity <= 0)
-        {
-            ErrorMessage = "Sức chứa phòng phải lớn hơn 0.";
-            return;
-        }
-
-        if (PricePerMonth < 0)
-        {
-            ErrorMessage = "Đơn giá thuê tháng phải lớn hơn hoặc bằng 0.";
-            return;
-        }
-
-        ErrorMessage = null;
-
-        // 2. Chuẩn bị request dữ liệu
-        var request = new CreateOrUpdateRoomRequest
-        {
-            RoomNumber = RoomNumber.Trim(),
-            Building = Building.Trim(),
-            Floor = Floor,
-            Capacity = Capacity,
-            PricePerMonth = PricePerMonth,
-            Type = SelectedType,
-            AllowedGender = SelectedGender,
-            Description = Description?.Trim()
-        };
+        if (IsBusy) return;
+        IsBusy = true;
 
         try
         {
+            // 1. Kiểm tra validation bắt buộc
+            if (string.IsNullOrWhiteSpace(RoomNumber))
+            {
+                ErrorMessage = "Vui lòng nhập số phòng.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Building))
+            {
+                ErrorMessage = "Vui lòng nhập tên tòa nhà.";
+                return;
+            }
+
+            if (Capacity <= 0)
+            {
+                ErrorMessage = "Sức chứa phòng phải lớn hơn 0.";
+                return;
+            }
+
+            if (PricePerMonth < 0)
+            {
+                ErrorMessage = "Đơn giá thuê tháng phải lớn hơn hoặc bằng 0.";
+                return;
+            }
+
+            ErrorMessage = null;
+
+            // 2. Chuẩn bị request dữ liệu
+            var request = new CreateOrUpdateRoomRequest
+            {
+                RoomNumber = RoomNumber.Trim(),
+                Building = Building.Trim(),
+                Floor = Floor,
+                Capacity = Capacity,
+                PricePerMonth = PricePerMonth,
+                Type = SelectedType,
+                AllowedGender = SelectedGender,
+                Description = Description?.Trim()
+            };
+
             if (IsEditMode && _roomId.HasValue)
             {
                 var updated = await _roomService.UpdateRoomAsync(_roomId.Value, request);
@@ -182,6 +188,10 @@ public partial class RoomDialogViewModel : ViewModelBase
         {
             // Hiển thị thông báo lỗi (ví dụ: trùng số phòng)
             ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 

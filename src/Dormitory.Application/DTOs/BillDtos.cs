@@ -28,6 +28,7 @@ public class BillDto
     public decimal OtherServiceFee { get; set; }
     public decimal TotalAmount => RoomFee + ElectricFee + WaterFee + OtherServiceFee;
     public BillStatus Status { get; set; }
+    public string? Note { get; set; }
     public DateTime DueDate { get; set; }
     public DateTime? PaidDate { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -49,5 +50,6 @@ public class CreateBillRequest
     public decimal NewWaterIndex { get; set; }
     public decimal WaterRate { get; set; } = 15000;
     public decimal OtherServiceFee { get; set; } = 50000;
+    public string? Note { get; set; }
     public DateTime DueDate { get; set; }
 }

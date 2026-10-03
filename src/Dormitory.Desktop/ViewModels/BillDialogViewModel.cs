@@ -77,6 +77,9 @@ public partial class BillDialogViewModel : ViewModelBase
     private string? _notes;
 
     [ObservableProperty]
+    private bool _isBusy;
+
+    [ObservableProperty]
     private string? _errorMessage;
 
     /// <summary>
@@ -148,99 +151,107 @@ public partial class BillDialogViewModel : ViewModelBase
     [RelayCommand]
     public async Task SaveAsync()
     {
-        // 1. Kiểm tra validation bắt buộc
-        if (SelectedRoom == null)
-        {
-            ErrorMessage = "Vui lòng chọn phòng cần lập hóa đơn.";
-            return;
-        }
-
-        if (Month < 1 || Month > 12)
-        {
-            ErrorMessage = "Tháng không hợp lệ (phải từ 1 đến 12).";
-            return;
-        }
-
-        if (Year < 2000 || Year > 2100)
-        {
-            ErrorMessage = "Năm không hợp lệ.";
-            return;
-        }
-
-        if (NewElectricIndex < OldElectricIndex)
-        {
-            ErrorMessage = "Chỉ số điện mới không được nhỏ hơn chỉ số cũ.";
-            return;
-        }
-
-        if (NewWaterIndex < OldWaterIndex)
-        {
-            ErrorMessage = "Chỉ số nước mới không được nhỏ hơn chỉ số cũ.";
-            return;
-        }
-
-        if (RoomFee < 0)
-        {
-            ErrorMessage = "Tiền phòng không được nhỏ hơn 0.";
-            return;
-        }
-
-        if (ElectricRate < 0)
-        {
-            ErrorMessage = "Đơn giá điện không được nhỏ hơn 0.";
-            return;
-        }
-
-        if (WaterRate < 0)
-        {
-            ErrorMessage = "Đơn giá nước không được nhỏ hơn 0.";
-            return;
-        }
-
-        if (OtherServiceFee < 0)
-        {
-            ErrorMessage = "Phí dịch vụ khác không được nhỏ hơn 0.";
-            return;
-        }
-
-        ErrorMessage = null;
-
-        // Ngày đến hạn mặc định là ngày 10 của tháng sau hoặc 15 ngày sau khi lập
-        DateTime dueDate;
-        try
-        {
-            dueDate = new DateTime(Year, Month, 1).AddMonths(1).AddDays(9);
-        }
-        catch
-        {
-            dueDate = DateTime.Today.AddDays(15);
-        }
-
-        // 2. Chuẩn bị request dữ liệu
-        var request = new CreateBillRequest
-        {
-            RoomId = SelectedRoom.Id,
-            Month = Month,
-            Year = Year,
-            RoomFee = RoomFee,
-            OldElectricIndex = OldElectricIndex,
-            NewElectricIndex = NewElectricIndex,
-            ElectricRate = ElectricRate,
-            OldWaterIndex = OldWaterIndex,
-            NewWaterIndex = NewWaterIndex,
-            WaterRate = WaterRate,
-            OtherServiceFee = OtherServiceFee,
-            DueDate = dueDate
-        };
+        if (IsBusy) return;
+        IsBusy = true;
 
         try
         {
+            // 1. Kiểm tra validation bắt buộc
+            if (SelectedRoom == null)
+            {
+                ErrorMessage = "Vui lòng chọn phòng cần lập hóa đơn.";
+                return;
+            }
+
+            if (Month < 1 || Month > 12)
+            {
+                ErrorMessage = "Tháng không hợp lệ (phải từ 1 đến 12).";
+                return;
+            }
+
+            if (Year < 2000 || Year > 2100)
+            {
+                ErrorMessage = "Năm không hợp lệ.";
+                return;
+            }
+
+            if (NewElectricIndex < OldElectricIndex)
+            {
+                ErrorMessage = "Chỉ số điện mới không được nhỏ hơn chỉ số cũ.";
+                return;
+            }
+
+            if (NewWaterIndex < OldWaterIndex)
+            {
+                ErrorMessage = "Chỉ số nước mới không được nhỏ hơn chỉ số cũ.";
+                return;
+            }
+
+            if (RoomFee < 0)
+            {
+                ErrorMessage = "Tiền phòng không được nhỏ hơn 0.";
+                return;
+            }
+
+            if (ElectricRate < 0)
+            {
+                ErrorMessage = "Đơn giá điện không được nhỏ hơn 0.";
+                return;
+            }
+
+            if (WaterRate < 0)
+            {
+                ErrorMessage = "Đơn giá nước không được nhỏ hơn 0.";
+                return;
+            }
+
+            if (OtherServiceFee < 0)
+            {
+                ErrorMessage = "Phí dịch vụ khác không được nhỏ hơn 0.";
+                return;
+            }
+
+            ErrorMessage = null;
+
+            // Ngày đến hạn mặc định là ngày 10 của tháng sau hoặc 15 ngày sau khi lập
+            DateTime dueDate;
+            try
+            {
+                dueDate = new DateTime(Year, Month, 1).AddMonths(1).AddDays(9);
+            }
+            catch
+            {
+                dueDate = DateTime.Today.AddDays(15);
+            }
+
+            // 2. Chuẩn bị request dữ liệu
+            var request = new CreateBillRequest
+            {
+                RoomId = SelectedRoom.Id,
+                Month = Month,
+                Year = Year,
+                RoomFee = RoomFee,
+                OldElectricIndex = OldElectricIndex,
+                NewElectricIndex = NewElectricIndex,
+                ElectricRate = ElectricRate,
+                OldWaterIndex = OldWaterIndex,
+                NewWaterIndex = NewWaterIndex,
+                WaterRate = WaterRate,
+                OtherServiceFee = OtherServiceFee,
+                Note = Notes,
+                DueDate = dueDate
+            };
+
             await _billService.CreateBillAsync(request);
             CloseAction?.Invoke(true);
         }
         catch (Exception ex)
         {
             ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 

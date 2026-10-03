@@ -53,9 +53,9 @@ public partial class ContractListViewModel : ViewModelBase
     private bool CanTerminateContract => SelectedContract != null && SelectedContract.Status == ContractStatus.Active;
 
     /// <summary>
-    /// Điều kiện để kích hoạt thao tác gia hạn hợp đồng (áp dụng khi đã chọn một hợp đồng)
+    /// Điều kiện để kích hoạt thao tác gia hạn hợp đồng (áp dụng khi đã chọn một hợp đồng chưa bị chấm dứt)
     /// </summary>
-    private bool CanRenewContract => SelectedContract != null;
+    private bool CanRenewContract => SelectedContract != null && SelectedContract.Status != ContractStatus.Terminated;
 
     /// <summary>
     /// Tải danh sách hợp đồng từ cơ sở dữ liệu
@@ -129,7 +129,7 @@ public partial class ContractListViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanRenewContract))]
     public async Task RenewContractAsync()
     {
-        if (SelectedContract == null) return;
+        if (SelectedContract == null || SelectedContract.Status == ContractStatus.Terminated) return;
 
         var newEndDate = SelectedContract.EndDate.AddMonths(6);
         var confirmed = await _dialogService.ShowConfirmAsync(

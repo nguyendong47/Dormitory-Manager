@@ -56,6 +56,9 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [ObservableProperty]
     private string? _errorMessage;
 
+    [ObservableProperty]
+    private bool _isBusy;
+
     /// <summary>
     /// Hành động đóng dialog trả về kết quả (true nếu lưu thành công, false nếu hủy)
     /// </summary>
@@ -105,50 +108,53 @@ public partial class EmployeeDialogViewModel : ViewModelBase
     [RelayCommand]
     public async Task SaveAsync()
     {
-        // 1. Kiểm tra validation bắt buộc
-        if (string.IsNullOrWhiteSpace(EmployeeCode))
-        {
-            ErrorMessage = "Vui lòng nhập mã nhân viên.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(FullName))
-        {
-            ErrorMessage = "Vui lòng nhập họ và tên nhân viên.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(IdentityCard))
-        {
-            ErrorMessage = "Vui lòng nhập số CCCD/CMND.";
-            return;
-        }
-
-        if (!DateOfBirth.HasValue)
-        {
-            ErrorMessage = "Vui lòng chọn ngày sinh.";
-            return;
-        }
-
-        ErrorMessage = null;
-
-        // 2. Chuẩn bị request dữ liệu
-        var request = new CreateOrUpdateEmployeeRequest
-        {
-            EmployeeCode = EmployeeCode.Trim(),
-            FullName = FullName.Trim(),
-            DateOfBirth = DateOfBirth.Value.DateTime,
-            Gender = SelectedGender,
-            PhoneNumber = PhoneNumber?.Trim() ?? string.Empty,
-            IdentityCard = IdentityCard.Trim(),
-            Position = Position?.Trim() ?? string.Empty,
-            Department = Department?.Trim() ?? string.Empty,
-            Address = string.IsNullOrWhiteSpace(Address) ? null : Address.Trim(),
-            UserId = _userId
-        };
+        if (IsBusy) return;
+        IsBusy = true;
 
         try
         {
+            // 1. Kiểm tra validation bắt buộc
+            if (string.IsNullOrWhiteSpace(EmployeeCode))
+            {
+                ErrorMessage = "Vui lòng nhập mã nhân viên.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(FullName))
+            {
+                ErrorMessage = "Vui lòng nhập họ và tên nhân viên.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(IdentityCard))
+            {
+                ErrorMessage = "Vui lòng nhập số CCCD/CMND.";
+                return;
+            }
+
+            if (!DateOfBirth.HasValue)
+            {
+                ErrorMessage = "Vui lòng chọn ngày sinh.";
+                return;
+            }
+
+            ErrorMessage = null;
+
+            // 2. Chuẩn bị request dữ liệu
+            var request = new CreateOrUpdateEmployeeRequest
+            {
+                EmployeeCode = EmployeeCode.Trim(),
+                FullName = FullName.Trim(),
+                DateOfBirth = DateOfBirth.Value.DateTime,
+                Gender = SelectedGender,
+                PhoneNumber = PhoneNumber?.Trim() ?? string.Empty,
+                IdentityCard = IdentityCard.Trim(),
+                Position = Position?.Trim() ?? string.Empty,
+                Department = Department?.Trim() ?? string.Empty,
+                Address = string.IsNullOrWhiteSpace(Address) ? null : Address.Trim(),
+                UserId = _userId
+            };
+
             if (IsEditMode && _employeeId.HasValue)
             {
                 var updated = await _employeeService.UpdateEmployeeAsync(_employeeId.Value, request);
@@ -170,6 +176,10 @@ public partial class EmployeeDialogViewModel : ViewModelBase
         {
             // Hiển thị thông báo lỗi (ví dụ: trùng mã nhân viên hoặc CCCD)
             ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 

@@ -51,6 +51,9 @@ public partial class ContractDialogViewModel : ViewModelBase
     [ObservableProperty]
     private string? _errorMessage;
 
+    [ObservableProperty]
+    private bool _isBusy;
+
     /// <summary>
     /// Hành động đóng dialog trả về kết quả (true nếu tạo thành công, false nếu hủy)
     /// </summary>
@@ -102,65 +105,68 @@ public partial class ContractDialogViewModel : ViewModelBase
     [RelayCommand]
     public async Task SaveAsync()
     {
-        // 1. Kiểm tra validation bắt buộc
-        if (SelectedStudent == null)
-        {
-            ErrorMessage = "Vui lòng chọn sinh viên ký hợp đồng.";
-            return;
-        }
-
-        if (SelectedRoom == null)
-        {
-            ErrorMessage = "Vui lòng chọn phòng ở.";
-            return;
-        }
-
-        if (!StartDate.HasValue)
-        {
-            ErrorMessage = "Vui lòng chọn ngày bắt đầu hợp đồng.";
-            return;
-        }
-
-        if (!EndDate.HasValue)
-        {
-            ErrorMessage = "Vui lòng chọn ngày kết thúc hợp đồng.";
-            return;
-        }
-
-        if (EndDate.Value <= StartDate.Value)
-        {
-            ErrorMessage = "Ngày kết thúc hợp đồng phải sau ngày bắt đầu.";
-            return;
-        }
-
-        if (MonthlyRate <= 0)
-        {
-            ErrorMessage = "Đơn giá thuê tháng phải lớn hơn 0.";
-            return;
-        }
-
-        if (DepositAmount < 0)
-        {
-            ErrorMessage = "Tiền đặt cọc không được nhỏ hơn 0.";
-            return;
-        }
-
-        ErrorMessage = null;
-
-        // 2. Chuẩn bị request dữ liệu tạo hợp đồng
-        var request = new CreateContractRequest
-        {
-            StudentId = SelectedStudent.Id,
-            RoomId = SelectedRoom.Id,
-            StartDate = StartDate.Value.DateTime,
-            EndDate = EndDate.Value.DateTime,
-            DepositAmount = DepositAmount,
-            MonthlyRate = MonthlyRate,
-            Notes = Notes?.Trim()
-        };
+        if (IsBusy) return;
+        IsBusy = true;
 
         try
         {
+            // 1. Kiểm tra validation bắt buộc
+            if (SelectedStudent == null)
+            {
+                ErrorMessage = "Vui lòng chọn sinh viên ký hợp đồng.";
+                return;
+            }
+
+            if (SelectedRoom == null)
+            {
+                ErrorMessage = "Vui lòng chọn phòng ở.";
+                return;
+            }
+
+            if (!StartDate.HasValue)
+            {
+                ErrorMessage = "Vui lòng chọn ngày bắt đầu hợp đồng.";
+                return;
+            }
+
+            if (!EndDate.HasValue)
+            {
+                ErrorMessage = "Vui lòng chọn ngày kết thúc hợp đồng.";
+                return;
+            }
+
+            if (EndDate.Value <= StartDate.Value)
+            {
+                ErrorMessage = "Ngày kết thúc hợp đồng phải sau ngày bắt đầu.";
+                return;
+            }
+
+            if (MonthlyRate <= 0)
+            {
+                ErrorMessage = "Đơn giá thuê tháng phải lớn hơn 0.";
+                return;
+            }
+
+            if (DepositAmount < 0)
+            {
+                ErrorMessage = "Tiền đặt cọc không được nhỏ hơn 0.";
+                return;
+            }
+
+            ErrorMessage = null;
+
+            // 2. Chuẩn bị request dữ liệu tạo hợp đồng
+            var request = new CreateContractRequest
+            {
+                StudentId = SelectedStudent.Id,
+                RoomId = SelectedRoom.Id,
+                StartDate = StartDate.Value.DateTime,
+                EndDate = EndDate.Value.DateTime,
+                DepositAmount = DepositAmount,
+                MonthlyRate = MonthlyRate,
+                Notes = Notes?.Trim()
+            };
+
             await _contractService.CreateContractAsync(request);
             CloseAction?.Invoke(true);
         }
@@ -168,6 +174,10 @@ public partial class ContractDialogViewModel : ViewModelBase
         {
             // Hiển thị thông báo lỗi nghiệp vụ từ backend (ví dụ: SV đã có HĐ, giới tính không hợp lệ,...)
             ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 

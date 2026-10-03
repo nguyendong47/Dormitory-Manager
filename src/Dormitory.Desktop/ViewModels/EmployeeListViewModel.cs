@@ -124,6 +124,7 @@ public partial class EmployeeListViewModel : ViewModelBase
             if (success)
             {
                 await LoadEmployeesAsync();
+                SelectedEmployee = null;
             }
             else
             {

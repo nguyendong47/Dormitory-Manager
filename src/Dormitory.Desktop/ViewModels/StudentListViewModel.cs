@@ -100,6 +100,7 @@ public partial class StudentListViewModel : ViewModelBase
             if (success)
             {
                 await LoadStudentsAsync();
+                SelectedStudent = null;
             }
             else
             {

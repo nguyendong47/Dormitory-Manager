@@ -3,7 +3,10 @@ using Dormitory.Application.Interfaces;
 using Dormitory.Application.Services;
 using Dormitory.Core.Entities;
 using Dormitory.Core.Enums;
+using Dormitory.Infrastructure.Data;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 
@@ -79,5 +82,59 @@ public class ContractServiceTests
 
         // Kiểm tra
         room.HasVacancy.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task RenewContractAsync_WhenContractIsTerminated_ShouldThrowInvalidOperationException()
+    {
+        // Sắp đặt kết nối SQLite In-Memory
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
+        var options = new Microsoft.EntityFrameworkCore.DbContextOptionsBuilder<Dormitory.Infrastructure.Data.DormitoryDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        using var context = new Dormitory.Infrastructure.Data.DormitoryDbContext(options);
+        context.Database.EnsureCreated();
+
+        var student = new Student
+        {
+            StudentCode = "SV001",
+            FullName = "Nguyễn Văn Test",
+            DateOfBirth = new DateTime(2002, 1, 1),
+            IdentityCard = "123456789012"
+        };
+        var room = new Room
+        {
+            RoomNumber = "101",
+            Building = "Tòa A",
+            Capacity = 4,
+            PricePerMonth = 500000m
+        };
+        context.Students.Add(student);
+        context.Rooms.Add(room);
+        await context.SaveChangesAsync();
+
+        var contract = new Contract
+        {
+            ContractNumber = "HD-TEST-001",
+            StudentId = student.Id,
+            RoomId = room.Id,
+            StartDate = new DateTime(2024, 1, 1),
+            EndDate = new DateTime(2024, 6, 30),
+            MonthlyRate = 500000m,
+            Status = ContractStatus.Terminated
+        };
+        context.Contracts.Add(contract);
+        await context.SaveChangesAsync();
+
+        var service = new ContractService(context);
+        var newEndDate = contract.EndDate.AddMonths(6);
+
+        // Thực hiện & Kiểm tra
+        var act = async () => await service.RenewContractAsync(contract.Id, newEndDate);
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*Không thể gia hạn hợp đồng đã bị chấm dứt*");
     }
 }

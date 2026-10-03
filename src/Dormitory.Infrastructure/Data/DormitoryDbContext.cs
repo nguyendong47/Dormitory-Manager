@@ -124,6 +124,7 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
             entity.Property(b => b.NewWaterIndex).HasPrecision(18, 2);
             entity.Property(b => b.WaterRate).HasPrecision(18, 2);
             entity.Property(b => b.OtherServiceFee).HasPrecision(18, 2);
+            entity.Property(b => b.Note).HasMaxLength(500);
             entity.HasIndex(b => b.BillCode).IsUnique();
 
             entity.HasOne(b => b.Room)

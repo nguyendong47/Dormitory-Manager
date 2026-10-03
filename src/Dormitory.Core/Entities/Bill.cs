@@ -108,6 +108,11 @@ public class Bill
     public BillStatus Status { get; set; } = BillStatus.Unpaid;
 
     /// <summary>
+    /// Ghi chú hóa đơn
+    /// </summary>
+    public string? Note { get; set; }
+
+    /// <summary>
     /// Ngày đến hạn thanh toán
     /// </summary>
     public DateTime DueDate { get; set; }

@@ -149,6 +149,7 @@ public partial class BillListViewModel : ViewModelBase
             if (success)
             {
                 await LoadBillsAsync();
+                SelectedBill = null;
             }
             else
             {

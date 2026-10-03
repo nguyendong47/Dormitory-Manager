@@ -69,6 +69,7 @@ public class BillService : IBillService
                 WaterRate = b.WaterRate,
                 OtherServiceFee = b.OtherServiceFee,
                 Status = b.Status,
+                Note = b.Note,
                 DueDate = b.DueDate,
                 PaidDate = b.PaidDate,
                 CreatedAt = b.CreatedAt
@@ -106,6 +107,7 @@ public class BillService : IBillService
             WaterRate = b.WaterRate,
             OtherServiceFee = b.OtherServiceFee,
             Status = b.Status,
+            Note = b.Note,
             DueDate = b.DueDate,
             PaidDate = b.PaidDate,
             CreatedAt = b.CreatedAt
@@ -157,6 +159,7 @@ public class BillService : IBillService
             WaterRate = request.WaterRate,
             OtherServiceFee = request.OtherServiceFee,
             Status = BillStatus.Unpaid,
+            Note = request.Note,
             DueDate = request.DueDate,
             CreatedAt = DateTime.UtcNow
         };
@@ -182,6 +185,7 @@ public class BillService : IBillService
             WaterRate = bill.WaterRate,
             OtherServiceFee = bill.OtherServiceFee,
             Status = bill.Status,
+            Note = bill.Note,
             DueDate = bill.DueDate,
             CreatedAt = bill.CreatedAt
         };

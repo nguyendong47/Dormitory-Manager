@@ -84,6 +84,9 @@ public partial class StudentDialogViewModel : ViewModelBase
     [ObservableProperty]
     private string? _errorMessage;
 
+    [ObservableProperty]
+    private bool _isBusy;
+
     /// <summary>
     /// Hành động đóng dialog trả về kết quả (true nếu lưu thành công, false nếu hủy)
     /// </summary>
@@ -138,53 +141,56 @@ public partial class StudentDialogViewModel : ViewModelBase
     [RelayCommand]
     public async Task SaveAsync()
     {
-        // 1. Kiểm tra validation bắt buộc
-        if (string.IsNullOrWhiteSpace(StudentCode))
-        {
-            ErrorMessage = "Vui lòng nhập mã sinh viên.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(FullName))
-        {
-            ErrorMessage = "Vui lòng nhập họ và tên sinh viên.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(IdentityCard))
-        {
-            ErrorMessage = "Vui lòng nhập số CCCD/CMND.";
-            return;
-        }
-
-        if (!DateOfBirth.HasValue)
-        {
-            ErrorMessage = "Vui lòng chọn ngày sinh.";
-            return;
-        }
-
-        ErrorMessage = null;
-
-        // 2. Chuẩn bị request dữ liệu
-        var request = new CreateOrUpdateStudentRequest
-        {
-            StudentCode = StudentCode.Trim(),
-            FullName = FullName.Trim(),
-            DateOfBirth = DateOfBirth.Value.DateTime,
-            Gender = SelectedGender,
-            IdentityCard = IdentityCard.Trim(),
-            PhoneNumber = PhoneNumber?.Trim() ?? string.Empty,
-            Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim(),
-            HomeTown = Hometown?.Trim() ?? string.Empty,
-            ClassName = ClassName?.Trim() ?? string.Empty,
-            Faculty = Faculty?.Trim() ?? string.Empty,
-            ParentName = ParentName?.Trim() ?? string.Empty,
-            ParentPhoneNumber = ParentPhoneNumber?.Trim() ?? string.Empty,
-            Address = Address?.Trim()
-        };
+        if (IsBusy) return;
+        IsBusy = true;
 
         try
         {
+            // 1. Kiểm tra validation bắt buộc
+            if (string.IsNullOrWhiteSpace(StudentCode))
+            {
+                ErrorMessage = "Vui lòng nhập mã sinh viên.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(FullName))
+            {
+                ErrorMessage = "Vui lòng nhập họ và tên sinh viên.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(IdentityCard))
+            {
+                ErrorMessage = "Vui lòng nhập số CCCD/CMND.";
+                return;
+            }
+
+            if (!DateOfBirth.HasValue)
+            {
+                ErrorMessage = "Vui lòng chọn ngày sinh.";
+                return;
+            }
+
+            ErrorMessage = null;
+
+            // 2. Chuẩn bị request dữ liệu
+            var request = new CreateOrUpdateStudentRequest
+            {
+                StudentCode = StudentCode.Trim(),
+                FullName = FullName.Trim(),
+                DateOfBirth = DateOfBirth.Value.DateTime,
+                Gender = SelectedGender,
+                IdentityCard = IdentityCard.Trim(),
+                PhoneNumber = PhoneNumber?.Trim() ?? string.Empty,
+                Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim(),
+                HomeTown = Hometown?.Trim() ?? string.Empty,
+                ClassName = ClassName?.Trim() ?? string.Empty,
+                Faculty = Faculty?.Trim() ?? string.Empty,
+                ParentName = ParentName?.Trim() ?? string.Empty,
+                ParentPhoneNumber = ParentPhoneNumber?.Trim() ?? string.Empty,
+                Address = Address?.Trim()
+            };
+
             if (IsEditMode && _studentId.HasValue)
             {
                 var updated = await _studentService.UpdateStudentAsync(_studentId.Value, request);
@@ -206,6 +212,10 @@ public partial class StudentDialogViewModel : ViewModelBase
         {
             // Hiển thị thông báo lỗi (ví dụ: trùng MSSV hoặc CCCD)
             ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 

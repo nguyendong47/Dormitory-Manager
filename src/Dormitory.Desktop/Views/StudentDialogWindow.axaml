@@ -123,6 +123,7 @@
                         CornerRadius="6"/>
                 <Button Content="💾 Lưu sinh viên"
                         Command="{Binding SaveCommand}"
+                        IsEnabled="{Binding !IsBusy}"
                         Width="140"
                         Height="34"
                         Background="#0078D4"

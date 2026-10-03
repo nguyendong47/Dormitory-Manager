@@ -245,6 +245,11 @@ public class ContractService : IContractService
         var contract = await _context.Contracts.FirstOrDefaultAsync(c => c.Id == id);
         if (contract == null) return false;
 
+        if (contract.Status == ContractStatus.Terminated)
+        {
+            throw new InvalidOperationException("Không thể gia hạn hợp đồng đã bị chấm dứt.");
+        }
+
         if (newEndDate <= contract.EndDate)
         {
             throw new ArgumentException("Ngày gia hạn mới phải sau ngày kết thúc hiện tại.");

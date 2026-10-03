@@ -102,6 +102,7 @@ public partial class RoomListViewModel : ViewModelBase
             if (success)
             {
                 await LoadRoomsAsync();
+                SelectedRoom = null;
             }
             else
             {
