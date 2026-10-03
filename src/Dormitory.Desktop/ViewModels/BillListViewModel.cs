@@ -1,9 +1,13 @@
+using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dormitory.Application.DTOs;
 using Dormitory.Application.Interfaces;
 using Dormitory.Core.Enums;
+using Dormitory.Desktop.Services;
+using Dormitory.Desktop.Views;
 
 namespace Dormitory.Desktop.ViewModels;
 
@@ -13,11 +17,15 @@ namespace Dormitory.Desktop.ViewModels;
 public partial class BillListViewModel : ViewModelBase
 {
     private readonly IBillService _billService;
+    private readonly IRoomService _roomService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private ObservableCollection<BillDto> _bills = new();
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(MarkPaidCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteBillCommand))]
     private BillDto? _selectedBill;
 
     [ObservableProperty]
@@ -32,22 +40,33 @@ public partial class BillListViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public BillListViewModel(IBillService billService)
+    public BillListViewModel(
+        IBillService billService,
+        IRoomService roomService,
+        IDialogService dialogService)
     {
         _billService = billService;
+        _roomService = roomService;
+        _dialogService = dialogService;
+
         SelectedMonth = DateTime.UtcNow.Month;
         SelectedYear = DateTime.UtcNow.Year;
-
-        LoadBillsCommand = new AsyncRelayCommand(LoadBillsAsync);
-        MarkAsPaidCommand = new AsyncRelayCommand(MarkAsPaidSelectedAsync, () => SelectedBill != null && SelectedBill.Status != BillStatus.Paid);
     }
 
-    public IAsyncRelayCommand LoadBillsCommand { get; }
-    public IAsyncRelayCommand MarkAsPaidCommand { get; }
+    /// <summary>
+    /// Điều kiện đánh dấu đã thanh toán (chỉ khi hóa đơn chưa thanh toán)
+    /// </summary>
+    private bool CanMarkPaid => SelectedBill != null && SelectedBill.Status == BillStatus.Unpaid;
+
+    /// <summary>
+    /// Điều kiện xóa hóa đơn (khi đã chọn một hóa đơn)
+    /// </summary>
+    private bool CanDeleteBill => SelectedBill != null;
 
     /// <summary>
     /// Tải danh sách hóa đơn theo tháng, năm và trạng thái
     /// </summary>
+    [RelayCommand]
     public async Task LoadBillsAsync()
     {
         IsLoading = true;
@@ -63,16 +82,87 @@ public partial class BillListViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Xác nhận thu tiền / Đánh dấu đã thanh toán cho hóa đơn được chọn
+    /// Mở hộp thoại lập hóa đơn điện nước mới cho phòng
     /// </summary>
-    private async Task MarkAsPaidSelectedAsync()
+    [RelayCommand]
+    public async Task CreateBillAsync()
     {
-        if (SelectedBill == null) return;
-
-        var success = await _billService.MarkAsPaidAsync(SelectedBill.Id);
-        if (success)
+        var dialogVm = new BillDialogViewModel(_billService, _roomService);
+        await dialogVm.LoadInitialDataAsync();
+        var dialog = new BillDialogWindow(dialogVm);
+        var result = await _dialogService.ShowDialogAsync<bool>(dialog);
+        if (result)
         {
             await LoadBillsAsync();
         }
     }
+
+    /// <summary>
+    /// Xác nhận thu tiền / Đánh dấu đã thanh toán cho hóa đơn được chọn
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanMarkPaid))]
+    public async Task MarkPaidAsync()
+    {
+        if (SelectedBill == null || SelectedBill.Status != BillStatus.Unpaid) return;
+
+        var confirmed = await _dialogService.ShowConfirmAsync(
+            "Xác nhận thanh toán",
+            $"Xác nhận thu tiền và đánh dấu đã thanh toán cho hóa đơn {SelectedBill.BillCode} (Phòng {SelectedBill.RoomNumber}) số tiền {SelectedBill.TotalAmount:N0} đ?");
+
+        if (!confirmed) return;
+
+        try
+        {
+            var success = await _billService.MarkAsPaidAsync(SelectedBill.Id);
+            if (success)
+            {
+                await LoadBillsAsync();
+            }
+            else
+            {
+                await _dialogService.ShowMessageAsync("Lỗi", "Không thể cập nhật trạng thái thanh toán.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Xóa hóa đơn được chọn
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanDeleteBill))]
+    public async Task DeleteBillAsync()
+    {
+        if (SelectedBill == null) return;
+
+        var confirmed = await _dialogService.ShowConfirmAsync(
+            "Xác nhận xóa hóa đơn",
+            $"Bạn có chắc chắn muốn xóa hóa đơn {SelectedBill.BillCode} của phòng {SelectedBill.RoomNumber} không? Thao tác này không thể hoàn tác.");
+
+        if (!confirmed) return;
+
+        try
+        {
+            var success = await _billService.DeleteBillAsync(SelectedBill.Id);
+            if (success)
+            {
+                await LoadBillsAsync();
+            }
+            else
+            {
+                await _dialogService.ShowMessageAsync("Lỗi", "Không thể xóa hóa đơn.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Alias tương thích ngược cho MarkPaidCommand
+    /// </summary>
+    public IAsyncRelayCommand MarkAsPaidCommand => MarkPaidCommand;
 }

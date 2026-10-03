@@ -14,38 +14,53 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <Button Content="💵 Thu tiền (Đã thanh toán)" Command="{Binding MarkAsPaidCommand}"/>
                 <Button Content="🔄 Làm mới" Command="{Binding LoadBillsCommand}"/>
             </StackPanel>
         </Grid>
 
-        <!-- Main DataGrid -->
-        <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
-                CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
-            <DataGrid ItemsSource="{Binding Bills}"
-                      SelectedItem="{Binding SelectedBill}"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      GridLinesVisibility="Horizontal"
-                      CanUserResizeColumns="True"
-                      BorderThickness="0">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding BillCode, Mode=OneWay}" Width="150"/>
-                    <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber, Mode=OneWay}" Width="90"/>
-                    <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building, Mode=OneWay}" Width="120"/>
-                    <DataGridTextColumn Header="Tháng" Binding="{Binding Month, Mode=OneWay}" Width="70"/>
-                    <DataGridTextColumn Header="Năm" Binding="{Binding Year, Mode=OneWay}" Width="70"/>
-                    <DataGridTextColumn Header="Tiền phòng (đ)" Binding="{Binding RoomFee, StringFormat='{}{0:N0}', Mode=OneWay}" Width="120"/>
-                    <DataGridTextColumn Header="Điện (kWh)" Binding="{Binding ElectricUsage, StringFormat='{}{0:N0}', Mode=OneWay}" Width="90"/>
-                    <DataGridTextColumn Header="Tiền điện (đ)" Binding="{Binding ElectricFee, StringFormat='{}{0:N0}', Mode=OneWay}" Width="110"/>
-                    <DataGridTextColumn Header="Nước (m3)" Binding="{Binding WaterUsage, StringFormat='{}{0:N0}', Mode=OneWay}" Width="80"/>
-                    <DataGridTextColumn Header="Tiền nước (đ)" Binding="{Binding WaterFee, StringFormat='{}{0:N0}', Mode=OneWay}" Width="110"/>
-                    <DataGridTextColumn Header="Phụ phí (đ)" Binding="{Binding OtherServiceFee, StringFormat='{}{0:N0}', Mode=OneWay}" Width="100"/>
-                    <DataGridTextColumn Header="Tổng cộng (đ)" Binding="{Binding TotalAmount, StringFormat='{}{0:N0}', Mode=OneWay}" Width="130"/>
-                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status, Mode=OneWay}" Width="120"/>
-                    <DataGridTextColumn Header="Hạn nộp" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}', Mode=OneWay}" Width="110"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+        <!-- Main Content (Toolbar + DataGrid) -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            <!-- Toolbar thao tác hóa đơn -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
+                <Button Content="➕ Lập hóa đơn mới" 
+                        Command="{Binding CreateBillCommand}"
+                        Background="#0078D4" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"/>
+                <Button Content="💵 Đánh dấu đã thanh toán" 
+                        Command="{Binding MarkPaidCommand}"/>
+                <Button Content="🗑️ Xóa hóa đơn" 
+                        Command="{Binding DeleteBillCommand}"/>
+            </StackPanel>
+
+            <!-- Main DataGrid -->
+            <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding Bills}"
+                          SelectedItem="{Binding SelectedBill}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          CanUserResizeColumns="True"
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding BillCode, Mode=OneWay}" Width="150"/>
+                        <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber, Mode=OneWay}" Width="90"/>
+                        <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building, Mode=OneWay}" Width="120"/>
+                        <DataGridTextColumn Header="Tháng" Binding="{Binding Month, Mode=OneWay}" Width="70"/>
+                        <DataGridTextColumn Header="Năm" Binding="{Binding Year, Mode=OneWay}" Width="70"/>
+                        <DataGridTextColumn Header="Tiền phòng (đ)" Binding="{Binding RoomFee, StringFormat='{}{0:N0}', Mode=OneWay}" Width="120"/>
+                        <DataGridTextColumn Header="Điện (kWh)" Binding="{Binding ElectricUsage, StringFormat='{}{0:N0}', Mode=OneWay}" Width="90"/>
+                        <DataGridTextColumn Header="Tiền điện (đ)" Binding="{Binding ElectricFee, StringFormat='{}{0:N0}', Mode=OneWay}" Width="110"/>
+                        <DataGridTextColumn Header="Nước (m3)" Binding="{Binding WaterUsage, StringFormat='{}{0:N0}', Mode=OneWay}" Width="80"/>
+                        <DataGridTextColumn Header="Tiền nước (đ)" Binding="{Binding WaterFee, StringFormat='{}{0:N0}', Mode=OneWay}" Width="110"/>
+                        <DataGridTextColumn Header="Phụ phí (đ)" Binding="{Binding OtherServiceFee, StringFormat='{}{0:N0}', Mode=OneWay}" Width="100"/>
+                        <DataGridTextColumn Header="Tổng cộng (đ)" Binding="{Binding TotalAmount, StringFormat='{}{0:N0}', Mode=OneWay}" Width="130"/>
+                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status, Mode=OneWay}" Width="120"/>
+                        <DataGridTextColumn Header="Hạn nộp" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}', Mode=OneWay}" Width="110"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

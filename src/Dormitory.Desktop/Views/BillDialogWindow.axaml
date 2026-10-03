@@ -1,0 +1,220 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        xmlns:dto="using:Dormitory.Application.DTOs"
+        x:Class="Dormitory.Desktop.Views.BillDialogWindow"
+        x:DataType="vm:BillDialogViewModel"
+        Title="{Binding Title}"
+        Width="560"
+        Height="650"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="24" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+            <!-- Header tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="Lập hóa đơn tiền phòng, tiền điện, nước và dịch vụ hàng tháng" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" 
+                           FontSize="13"/>
+            </StackPanel>
+
+            <!-- Thông báo lỗi nghiệp vụ / xác thực -->
+            <Border Grid.Row="1"
+                    Background="#FDE7E9"
+                    BorderBrush="#D13438"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10"
+                    Margin="0,0,0,14"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="⚠️" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#A80000"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Biểu mẫu nhập liệu có ScrollViewer -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="16">
+                    <!-- Khối 1: Thông tin phòng & kỳ hóa đơn -->
+                    <Border Background="{DynamicResource SystemChromeLowColor}" CornerRadius="8" Padding="14">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="🏠 Thông tin kỳ hóa đơn" FontWeight="SemiBold" FontSize="14" Foreground="#0078D4"/>
+                            
+                            <!-- Chọn phòng -->
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Chọn phòng ở *" FontWeight="Medium" FontSize="13"/>
+                                <ComboBox ItemsSource="{Binding Rooms}"
+                                          SelectedItem="{Binding SelectedRoom}"
+                                          HorizontalAlignment="Stretch"
+                                          PlaceholderText="-- Chọn phòng cần lập hóa đơn --">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="dto:RoomDto">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="{Binding RoomNumber, StringFormat='Phòng {0}'}" FontWeight="Medium"/>
+                                                <TextBlock Text="{Binding Building, StringFormat='- Tòa {0}'}"/>
+                                                <TextBlock Text="{Binding PricePerMonth, StringFormat='({0:N0} đ/tháng)'}" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <!-- Tháng, Năm, Tiền phòng -->
+                            <Grid ColumnDefinitions="*,12,*,12,2*">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Tháng *" FontWeight="Medium" FontSize="13"/>
+                                    <NumericUpDown Value="{Binding Month}" Minimum="1" Maximum="12" FormatString="0" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <TextBlock Text="Năm *" FontWeight="Medium" FontSize="13"/>
+                                    <NumericUpDown Value="{Binding Year}" Minimum="2020" Maximum="2099" FormatString="0" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="4" Spacing="4">
+                                    <TextBlock Text="Tiền phòng (đ) *" FontWeight="Medium" FontSize="13"/>
+                                    <NumericUpDown Value="{Binding RoomFee}" Minimum="0" Increment="50000" FormatString="{}{0:N0}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Khối 2: Chỉ số Điện & Tính tiền điện -->
+                    <Border Background="{DynamicResource SystemChromeLowColor}" CornerRadius="8" Padding="14">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="⚡ Chỉ số điện &amp; Tiêu thụ" FontWeight="SemiBold" FontSize="14" Foreground="#D83B01"/>
+                            
+                            <Grid ColumnDefinitions="*,12,*,12,*">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Chỉ số cũ (kWh)" FontWeight="Medium" FontSize="13"/>
+                                    <NumericUpDown Value="{Binding OldElectricIndex}" Minimum="0" Increment="1" FormatString="{}{0:N0}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <TextBlock Text="Chỉ số mới (kWh)" FontWeight="Medium" FontSize="13"/>
+                                    <NumericUpDown Value="{Binding NewElectricIndex}" Minimum="0" Increment="1" FormatString="{}{0:N0}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="4" Spacing="4">
+                                    <TextBlock Text="Đơn giá (đ/kWh)" FontWeight="Medium" FontSize="13"/>
+                                    <NumericUpDown Value="{Binding ElectricRate}" Minimum="0" Increment="100" FormatString="{}{0:N0}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Tiêu thụ & Thành tiền điện -->
+                            <Border Background="{DynamicResource SystemAltHighColor}" CornerRadius="6" Padding="10" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="Lượng điện tiêu thụ:" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                        <TextBlock Text="{Binding CalculatedElectricUsage, StringFormat='{}{0:N0} kWh'}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock Text="Tiền điện:" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                        <TextBlock Text="{Binding CalculatedElectricAmount, StringFormat='{}{0:N0} đ'}" FontWeight="Bold" Foreground="#D83B01"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Khối 3: Chỉ số Nước & Phí Dịch vụ khác -->
+                    <Border Background="{DynamicResource SystemChromeLowColor}" CornerRadius="8" Padding="14">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="💧 Chỉ số nước &amp; Phí dịch vụ" FontWeight="SemiBold" FontSize="14" Foreground="#0078D4"/>
+
+                            <Grid ColumnDefinitions="*,12,*,12,*">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Chỉ số cũ (m³)" FontWeight="Medium" FontSize="13"/>
+                                    <NumericUpDown Value="{Binding OldWaterIndex}" Minimum="0" Increment="1" FormatString="{}{0:N0}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <TextBlock Text="Chỉ số mới (m³)" FontWeight="Medium" FontSize="13"/>
+                                    <NumericUpDown Value="{Binding NewWaterIndex}" Minimum="0" Increment="1" FormatString="{}{0:N0}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="4" Spacing="4">
+                                    <TextBlock Text="Đơn giá (đ/m³)" FontWeight="Medium" FontSize="13"/>
+                                    <NumericUpDown Value="{Binding WaterRate}" Minimum="0" Increment="500" FormatString="{}{0:N0}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Tiêu thụ nước & Thành tiền nước -->
+                            <Border Background="{DynamicResource SystemAltHighColor}" CornerRadius="6" Padding="10" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="Lượng nước tiêu thụ:" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                        <TextBlock Text="{Binding CalculatedWaterUsage, StringFormat='{}{0:N0} m³'}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock Text="Tiền nước:" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                        <TextBlock Text="{Binding CalculatedWaterAmount, StringFormat='{}{0:N0} đ'}" FontWeight="Bold" Foreground="#0078D4"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Phí dịch vụ khác -->
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Phí dịch vụ khác (vệ sinh, an ninh, wifi...) (đ)" FontWeight="Medium" FontSize="13"/>
+                                <NumericUpDown Value="{Binding OtherServiceFee}" Minimum="0" Increment="10000" FormatString="{}{0:N0}" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Ghi chú hóa đơn -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Ghi chú hóa đơn" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Notes}"
+                                 AcceptsReturn="True"
+                                 Height="50"
+                                 TextWrapping="Wrap"
+                                 Watermark="VD: Hóa đơn tiền điện nước phòng..."/>
+                    </StackPanel>
+
+                    <!-- Khối 4: Card tổng thanh toán -->
+                    <Border Background="#EBF3FC" BorderBrush="#0078D4" BorderThickness="1.5" CornerRadius="8" Padding="16">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock Text="TỔNG TIỀN THANH TOÁN" FontWeight="SemiBold" FontSize="12" Foreground="#0078D4"/>
+                                <TextBlock Text="Bao gồm tiền phòng + tiền điện + tiền nước + phí dịch vụ" FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding TotalAmount, StringFormat='{}{0:N0} đ'}"
+                                       FontSize="24"
+                                       FontWeight="Bold"
+                                       Foreground="#0078D4"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Thanh nút tác vụ -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="12"
+                        Margin="0,16,0,0">
+                <Button Content="❌ Hủy bỏ"
+                        Command="{Binding CancelCommand}"
+                        Width="100"
+                        Height="34"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+                <Button Content="💾 Lưu hóa đơn"
+                        Command="{Binding SaveCommand}"
+                        Width="140"
+                        Height="34"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
