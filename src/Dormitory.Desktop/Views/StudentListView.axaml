@@ -20,29 +20,46 @@
             </StackPanel>
         </Grid>
 
-        <!-- Main DataGrid -->
-        <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
-                CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
-            <DataGrid ItemsSource="{Binding Students}"
-                      SelectedItem="{Binding SelectedStudent}"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      GridLinesVisibility="Horizontal"
-                      CanUserResizeColumns="True"
-                      BorderThickness="0">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Mã sinh viên" Binding="{Binding StudentCode, Mode=OneWay}" Width="120"/>
-                    <DataGridTextColumn Header="Họ và tên" Binding="{Binding FullName, Mode=OneWay}" Width="160"/>
-                    <DataGridTextColumn Header="Phòng đang ở" Binding="{Binding CurrentRoomNumber, Mode=OneWay}" Width="110"/>
-                    <DataGridTextColumn Header="Giới tính" Binding="{Binding Gender, Mode=OneWay}" Width="80"/>
-                    <DataGridTextColumn Header="Lớp" Binding="{Binding ClassName, Mode=OneWay}" Width="110"/>
-                    <DataGridTextColumn Header="Khoa" Binding="{Binding Faculty, Mode=OneWay}" Width="160"/>
-                    <DataGridTextColumn Header="Số điện thoại" Binding="{Binding PhoneNumber, Mode=OneWay}" Width="110"/>
-                    <DataGridTextColumn Header="Số CCCD/CMND" Binding="{Binding IdentityCard, Mode=OneWay}" Width="130"/>
-                    <DataGridTextColumn Header="Quê quán" Binding="{Binding HomeTown, Mode=OneWay}" Width="120"/>
-                    <DataGridTextColumn Header="Người giám hộ" Binding="{Binding ParentName, Mode=OneWay}" Width="140"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+        <!-- Main Content (Toolbar + DataGrid) -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            <!-- Toolbar thao tác CRUD -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
+                <Button Content="➕ Thêm sinh viên" 
+                        Command="{Binding AddStudentCommand}"
+                        Background="#0078D4" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"/>
+                <Button Content="✏️ Chỉnh sửa" 
+                        Command="{Binding EditStudentCommand}"/>
+                <Button Content="🗑️ Xóa hồ sơ" 
+                        Command="{Binding DeleteStudentCommand}"/>
+            </StackPanel>
+
+            <!-- Main DataGrid -->
+            <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding Students}"
+                          SelectedItem="{Binding SelectedStudent}"
+                          DoubleTapped="OnDataGridDoubleTapped"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          CanUserResizeColumns="True"
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Mã sinh viên" Binding="{Binding StudentCode, Mode=OneWay}" Width="120"/>
+                        <DataGridTextColumn Header="Họ và tên" Binding="{Binding FullName, Mode=OneWay}" Width="160"/>
+                        <DataGridTextColumn Header="Phòng đang ở" Binding="{Binding CurrentRoomNumber, Mode=OneWay}" Width="110"/>
+                        <DataGridTextColumn Header="Giới tính" Binding="{Binding Gender, Mode=OneWay}" Width="80"/>
+                        <DataGridTextColumn Header="Lớp" Binding="{Binding ClassName, Mode=OneWay}" Width="110"/>
+                        <DataGridTextColumn Header="Khoa" Binding="{Binding Faculty, Mode=OneWay}" Width="160"/>
+                        <DataGridTextColumn Header="Số điện thoại" Binding="{Binding PhoneNumber, Mode=OneWay}" Width="110"/>
+                        <DataGridTextColumn Header="Số CCCD/CMND" Binding="{Binding IdentityCard, Mode=OneWay}" Width="130"/>
+                        <DataGridTextColumn Header="Quê quán" Binding="{Binding HomeTown, Mode=OneWay}" Width="120"/>
+                        <DataGridTextColumn Header="Người giám hộ" Binding="{Binding ParentName, Mode=OneWay}" Width="140"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>
