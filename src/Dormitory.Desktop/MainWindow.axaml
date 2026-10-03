@@ -83,6 +83,7 @@
 
                         <Button Content="⚙️  Cài đặt hệ thống"
                                 Command="{Binding NavigateToSettingsCommand}"
+                                IsVisible="{Binding IsAdmin}"
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                                 Padding="12,10" CornerRadius="6"/>
                     </StackPanel>

@@ -142,7 +142,7 @@ public partial class SystemSettingsViewModel : ViewModelBase
             if (success)
             {
                 StatusMessage = "Phục hồi cơ sở dữ liệu thành công.";
-                await _dialogService.ShowMessageAsync("Phục hồi thành công", "Đã khôi phục cơ sở dữ liệu thành công! Dữ liệu đã sẵn sàng.");
+                await _dialogService.ShowMessageAsync("Phục hồi thành công", "Đã khôi phục cơ sở dữ liệu thành công! Dữ liệu đã sẵn sàng. Vui lòng chuyển tab hoặc khởi động lại ứng dụng để làm mới toàn bộ dữ liệu.");
                 await LoadDatabaseInfoAsync();
             }
             else
