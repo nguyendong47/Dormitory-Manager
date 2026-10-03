@@ -54,22 +54,49 @@ Thanh menu bên trái giúp chuyển đổi linh hoạt giữa các phân hệ:
 
 ## 3. Chi Tiết Các Phân Hệ & Thao Tác Nghiệp Vụ
 
-### 3.1. Bảng Điều Khiển (Dashboard) & Cảnh Báo Thông Minh
+### 3.1. Bảng Điều Khiển (Dashboard) & Biểu Đồ Thống Kê Trực Quan (LiveCharts2 & ClosedXML)
 
-Bảng điều khiển cung cấp cái nhìn toàn diện về hoạt động của ký túc xá:
+Bảng điều khiển cung cấp cái nhìn toàn diện và trực quan theo thời gian thực về tình hình vận hành ký túc xá dành cho Ban Quản lý và Lãnh đạo:
 
 1. **Thẻ Cảnh Báo Thông Minh (Smart Alert Card)**:
    - Nổi bật ở đầu trang với tông màu vàng cam cảnh báo khi hệ thống phát hiện có việc cần xử lý.
    - Nội dung cảnh báo tổng hợp: *"Có X hợp đồng sắp hết hạn (trong 30 ngày) và Y hóa đơn chưa thanh toán cần xử lý!"*.
    - **Bảng danh sách ngắn hợp đồng sắp hết hạn**: Hiển thị trực tiếp Mã HĐ, Họ tên sinh viên, Mã phòng và Ngày hết hạn giúp ban quản lý chủ động liên hệ gia hạn hoặc chuẩn bị bàn giao phòng.
    - **Cơ chế tự động ẩn (`HasAlert`)**: Khi không có hợp đồng nào sắp hết hạn trong 30 ngày tới và toàn bộ hóa đơn đã được thu tiền, thẻ cảnh báo sẽ tự động ẩn đi để giữ giao diện thoáng gọn.
-2. **Thẻ Thống Kê Nhanh**:
-   - *Tổng số phòng* & *Số phòng còn trống* (Sẵn sàng tiếp nhận sinh viên).
+
+2. **Thẻ Thống Kê Nhanh & Chỉ Số Vận Hành**:
+   - *Tổng số phòng* & *Số phòng còn trống* (Sẵn sàng tiếp nhận sinh viên mới).
    - *Sinh viên đang ở* & *Hóa đơn chưa thu* (Cần đôn đốc đóng tiền).
-3. **Chỉ Số Vận Hành**:
-   - *Tỷ lệ lấp đầy KTX*: Biểu đồ thanh tiến trình trực quan thể hiện công suất phòng.
+   - *Tỷ lệ lấp đầy KTX*: Biểu đồ thanh tiến trình trực quan thể hiện công suất phòng toàn bộ hệ thống.
    - *Doanh thu tháng*: Tổng số tiền phòng và dịch vụ điện nước đã thu trong tháng hiện tại.
    - Nút **"🔄 Làm mới số liệu"**: Đồng bộ lại toàn bộ số liệu thời gian thực từ cơ sở dữ liệu.
+
+3. **Biểu Đồ Tròn Tỷ Lệ Lấp Đầy Theo Tòa Nhà (`PieChart` - LiveCharts2)**:
+   - **Mục đích**: Phân tích trực quan tỷ lệ phân bổ sinh viên và công suất sử dụng giường theo từng tòa nhà (ví dụ: Tòa A, Tòa B,...).
+   - **Đặc điểm giao diện**:
+     - Bảng màu hài hòa (SkiaSharp Fluent Palette: Xanh dương, Xanh lá, Cam đỏ, Tím, Vàng, Xanh cyan, Hồng cánh sen).
+     - Bảng chú giải (Legend) chi tiết bên cạnh hiển thị: Tên tòa nhà, số chỗ đã ở, tổng số giường và tỷ lệ lấp đầy tính theo phần trăm (%).
+   - **Tương tác trực quan**: Khi di chuột vào từng phần hình quạt, Tooltip thông minh sẽ xuất hiện cung cấp thông tin chi tiết: `[Tên tòa]: X/Y chỗ (Z.Z%)`.
+
+4. **Biểu Đồ Cột Xu Hướng Doanh Thu 6 Tháng Gần Nhất (`CartesianChart` - LiveCharts2)**:
+   - **Mục đích**: Theo dõi biến động tài chính của ký túc xá trong nửa năm qua, hỗ trợ dự báo và lập kế hoạch ngân sách.
+   - **Cấu trúc biểu đồ cột nhóm (Clustered Column Chart)**:
+     - Cột màu xanh dương: Doanh thu **Tiền phòng**.
+     - Cột màu xanh lá cây: Doanh thu **Điện nước & Dịch vụ**.
+   - **Hệ trục tọa độ chuẩn mực**:
+     - Trục hoành (X-Axis): 6 mốc thời gian gần nhất tính đến tháng hiện tại (ví dụ: `T5/2026`, `T6/2026`, ..., `T10/2026`).
+     - Trục tung (Y-Axis): Thước đo giá trị định dạng tiền tệ VNĐ có phân cách hàng nghìn (`1,000,000 đ`), bước nhảy tự động mượt mà.
+   - **Tương tác Tooltip**: Di chuột vào từng cột hiển thị chính xác số tiền đã thu của khoản mục tương ứng.
+
+5. **Xuất Báo Cáo Quản Trị Tổng Hợp Đa Bảng Tính Ra Excel (`ClosedXML`)**:
+   - **Thao tác**: Nhấn nút **"📊 Xuất Báo Cáo Tổng Hợp"** trên thanh tiêu đề của Dashboard.
+   - **Phản hồi thị giác**: Hệ thống tự động kích hoạt trạng thái tải dữ liệu (`IsLoading = true`) trong suốt quá trình xử lý, đảm bảo trải nghiệm mượt mà và chống nhấn đúp.
+   - **Cấu trúc tệp Excel xuất ra (`BaoCao_TongQuan_KTX_...xlsx`)**:
+     Tệp bảng tính được thiết kế theo chuẩn nhận diện thương hiệu chuyên nghiệp với 3 Worksheets riêng biệt:
+     - **Sheet 1: Tổng Quan**: Báo cáo tổng kết điều hành (Thời điểm trích xuất, Tổng số phòng, Tỷ lệ lấp đầy toàn hệ thống, Doanh thu tháng hiện tại, Số hợp đồng sắp hết hạn và Hóa đơn chưa thanh toán).
+     - **Sheet 2: Công Suất Tòa Nhà**: Bảng số liệu chi tiết theo từng tòa nhà (Mã & Tên tòa, Tổng số phòng, Tổng giường, Số chỗ đã ở, Chỗ trống, Tỷ lệ lấp đầy %), kèm dòng tổng cộng toàn bộ hệ thống.
+     - **Sheet 3: Xu Hướng Doanh Thu**: Bảng tổng hợp dòng tiền 6 tháng gần nhất (Tháng, Doanh thu tiền phòng, Doanh thu điện nước/dịch vụ, Tổng doanh thu từng tháng).
+   - **Chất lượng định dạng**: Header xanh đậm chữ trắng nổi bật, đường kẻ ô mảnh rõ ràng, định dạng số nguyên và tiền tệ VNĐ chuẩn xác, tự động căn chỉnh độ rộng cột tối ưu.
 
 ---
 

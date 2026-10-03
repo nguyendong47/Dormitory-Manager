@@ -90,10 +90,18 @@ public partial class DashboardViewModel : ViewModelBase
     /// </summary>
     public async Task ExportDashboardReportAsync()
     {
-        var buildings = BuildingStats.ToList();
-        var trends = await _dashboardService.GetRevenueTrendsAsync(6);
-        var bytes = await _exportService.ExportDashboardSummaryToExcelAsync(Stats, buildings, trends);
-        await _fileService.SaveFileAsync("BaoCao_TongQuan_KTX", "xlsx", "Excel Files (*.xlsx)|*.xlsx", bytes);
+        IsLoading = true;
+        try
+        {
+            var buildings = BuildingStats.ToList();
+            var trends = await _dashboardService.GetRevenueTrendsAsync(6);
+            var bytes = await _exportService.ExportDashboardSummaryToExcelAsync(Stats, buildings, trends);
+            await _fileService.SaveFileAsync("BaoCao_TongQuan_KTX", "xlsx", "Excel Files (*.xlsx)|*.xlsx", bytes);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     /// <summary>

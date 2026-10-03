@@ -12,11 +12,14 @@
 
 ## 🌟 Tính Năng Nổi Bật
 
-1. **📊 Bảng Điều Khiển Tổng Quan (Dashboard)**:
+1. **📊 Bảng Điều Khiển Tổng Quan & Biểu Đồ Trực Quan (Dashboard & LiveCharts2)**:
    - Thống kê thời gian thực: Tổng số phòng, số phòng trống, số sinh viên đang cư trú, hợp đồng hiệu lực.
    - Theo dõi tỷ lệ lấp đầy KTX (Occupancy Rate) với thanh tiến trình trực quan.
    - Thống kê doanh thu tiền phòng và điện nước đã thu trong tháng hiện tại.
    - Thẻ cảnh báo thông minh: Tự động phát hiện và cảnh báo các hợp đồng sắp hết hạn (trong vòng 30 ngày) và hóa đơn chưa thanh toán; tự động ẩn khi không có cảnh báo.
+   - **Biểu đồ tròn tỷ lệ lấp đầy theo tòa (`PieChart`)**: Phân bổ sinh viên và công suất sử dụng giường từng tòa nhà kèm chú giải và Tooltip tương tác.
+   - **Biểu đồ cột xu hướng doanh thu 6 tháng (`CartesianChart`)**: So sánh doanh thu Tiền phòng vs Điện nước/Dịch vụ qua từng tháng, định dạng tiền tệ VNĐ.
+   - **Xuất báo cáo quản trị tổng hợp Excel**: Xuất toàn bộ KPI, công suất tòa nhà và dòng tiền 6 tháng ra tệp `.xlsx` 3 sheet chuẩn mực với ClosedXML.
 
 2. **🏠 Quản Lý Phòng Ở (`Room`)**:
    - Quản lý danh mục phòng theo tòa nhà, số tầng, loại phòng (Tiêu chuẩn, Premium, VIP).
@@ -63,12 +66,12 @@
 
 ---
 
-## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature & CRUD Matrix - Phase 1)
+## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature & CRUD Matrix - Phase 1 & 2)
 
 | Phân hệ Nghiệp Vụ | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel | Phân Quyền | Trạng Thái |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Xác thực & Phiên (Auth)** | ✅ | — | — | — | — | — | Admin / Manager | **Hoàn thành (Phase 1)** |
-| **Bảng Điều Khiển (Dashboard)** | ✅ | — | — | — | ✅ (Cảnh báo Live) | — | Tất cả | **Hoàn thành (Phase 1)** |
+| **Bảng Điều Khiển (Dashboard)** | ✅ | — | — | — | ✅ (Cảnh báo Live & Lọc) | ✅ (`.xlsx` Đa Sheet) | Tất cả | **Hoàn thành (Phase 2 - LiveCharts2 & Analytics)** |
 | **Phòng Ở (Rooms)** | ✅ | ✅ (`RoomDialog`) | ✅ (`RoomDialog`) | ✅ (Xác nhận an toàn) | ✅ | ✅ (`.xlsx`) | Tất cả | **Hoàn thành (Phase 1)** |
 | **Sinh Viên (Students)** | ✅ | ✅ (`StudentDialog`) | ✅ (`StudentDialog`) | ✅ (Xác nhận an toàn) | ✅ (Đa tiêu chí) | ✅ (`.xlsx`) | Tất cả | **Hoàn thành (Phase 1)** |
 | **Hợp Đồng (Contracts)** | ✅ | ✅ (`ContractDialog`) | ✅ (Gia hạn HĐ) | ✅ (Thanh lý & Giải phóng) | ✅ (Lọc trạng thái) | — | Tất cả | **Hoàn thành (Phase 1)** |
@@ -138,7 +141,7 @@ Dormitory-Manager/
 │   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs
 │
 ├── tests/
-│   └── Dormitory.UnitTests/          # Kiểm thử tự động xUnit (25/25 Passed)
+│   └── Dormitory.UnitTests/          # Kiểm thử tự động xUnit (33/33 Passed)
 │
 ├── Dormitory.sln                     # .NET 8 Solution
 └── README.md
@@ -180,4 +183,4 @@ Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ các l
 dotnet test tests/Dormitory.UnitTests
 ```
 
-Kết quả: **25/25 Tests Passed** (100% Pass).
+Kết quả: **33/33 Tests Passed** (100% Pass).
