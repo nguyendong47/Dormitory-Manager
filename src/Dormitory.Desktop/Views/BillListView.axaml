@@ -31,6 +31,8 @@
                         Command="{Binding MarkPaidCommand}"/>
                 <Button Content="🗑️ Xóa hóa đơn" 
                         Command="{Binding DeleteBillCommand}"/>
+                <Button Content="📊  Xuất Excel" 
+                        Command="{Binding ExportToExcelCommand}"/>
             </StackPanel>
 
             <!-- Main DataGrid -->

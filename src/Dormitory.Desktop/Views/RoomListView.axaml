@@ -31,6 +31,8 @@
                         Command="{Binding EditRoomCommand}"/>
                 <Button Content="🗑️ Xóa phòng" 
                         Command="{Binding DeleteRoomCommand}"/>
+                <Button Content="📊  Xuất Excel" 
+                        Command="{Binding ExportToExcelCommand}"/>
             </StackPanel>
 
             <!-- Main DataGrid -->

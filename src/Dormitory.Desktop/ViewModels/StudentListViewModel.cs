@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,6 +18,8 @@ public partial class StudentListViewModel : ViewModelBase
 {
     private readonly IStudentService _studentService;
     private readonly IDialogService _dialogService;
+    private readonly IExportService _exportService;
+    private readonly IFileService _fileService;
 
     [ObservableProperty]
     private ObservableCollection<StudentDto> _students = new();
@@ -32,16 +35,45 @@ public partial class StudentListViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public StudentListViewModel(IStudentService studentService, IDialogService dialogService)
+    public StudentListViewModel(
+        IStudentService studentService,
+        IDialogService dialogService,
+        IExportService exportService,
+        IFileService fileService)
     {
         _studentService = studentService;
         _dialogService = dialogService;
+        _exportService = exportService;
+        _fileService = fileService;
         LoadStudentsCommand = new AsyncRelayCommand(LoadStudentsAsync);
         SearchCommand = new AsyncRelayCommand(LoadStudentsAsync);
     }
 
     public IAsyncRelayCommand LoadStudentsCommand { get; }
     public IAsyncRelayCommand SearchCommand { get; }
+
+    /// <summary>
+    /// Xuất danh sách sinh viên ra file Excel
+    /// </summary>
+    [RelayCommand]
+    public async Task ExportToExcelAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var list = Students.ToList();
+            var bytes = await _exportService.ExportStudentsToExcelAsync(list);
+            await _fileService.SaveFileAsync("Danh_Sach_Sinh_Vien", "xlsx", "Excel Files", bytes);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi xuất file Excel: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
 
     /// <summary>
     /// Điều kiện để kích hoạt chỉnh sửa hoặc xóa sinh viên

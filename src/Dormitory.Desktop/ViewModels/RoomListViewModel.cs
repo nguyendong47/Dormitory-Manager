@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -18,6 +19,8 @@ public partial class RoomListViewModel : ViewModelBase
 {
     private readonly IRoomService _roomService;
     private readonly IDialogService _dialogService;
+    private readonly IExportService _exportService;
+    private readonly IFileService _fileService;
 
     [ObservableProperty]
     private ObservableCollection<RoomDto> _rooms = new();
@@ -36,14 +39,43 @@ public partial class RoomListViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public RoomListViewModel(IRoomService roomService, IDialogService dialogService)
+    public RoomListViewModel(
+        IRoomService roomService,
+        IDialogService dialogService,
+        IExportService exportService,
+        IFileService fileService)
     {
         _roomService = roomService;
         _dialogService = dialogService;
+        _exportService = exportService;
+        _fileService = fileService;
         LoadRoomsCommand = new AsyncRelayCommand(LoadRoomsAsync);
     }
 
     public IAsyncRelayCommand LoadRoomsCommand { get; }
+
+    /// <summary>
+    /// Xuất danh sách phòng ở ra file Excel
+    /// </summary>
+    [RelayCommand]
+    public async Task ExportToExcelAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var list = Rooms.ToList();
+            var bytes = await _exportService.ExportRoomsToExcelAsync(list);
+            await _fileService.SaveFileAsync("Danh_Sach_Phong", "xlsx", "Excel Files", bytes);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi xuất file Excel: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
 
     /// <summary>
     /// Điều kiện để kích hoạt chỉnh sửa hoặc xóa phòng

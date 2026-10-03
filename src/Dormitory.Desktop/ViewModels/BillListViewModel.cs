@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -19,6 +20,8 @@ public partial class BillListViewModel : ViewModelBase
     private readonly IBillService _billService;
     private readonly IRoomService _roomService;
     private readonly IDialogService _dialogService;
+    private readonly IExportService _exportService;
+    private readonly IFileService _fileService;
 
     [ObservableProperty]
     private ObservableCollection<BillDto> _bills = new();
@@ -43,14 +46,41 @@ public partial class BillListViewModel : ViewModelBase
     public BillListViewModel(
         IBillService billService,
         IRoomService roomService,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IExportService exportService,
+        IFileService fileService)
     {
         _billService = billService;
         _roomService = roomService;
         _dialogService = dialogService;
+        _exportService = exportService;
+        _fileService = fileService;
 
         SelectedMonth = DateTime.UtcNow.Month;
         SelectedYear = DateTime.UtcNow.Year;
+    }
+
+    /// <summary>
+    /// Xuất danh sách hóa đơn ra file Excel
+    /// </summary>
+    [RelayCommand]
+    public async Task ExportToExcelAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var list = Bills.ToList();
+            var bytes = await _exportService.ExportBillsToExcelAsync(list);
+            await _fileService.SaveFileAsync("Danh_Sach_Hoa_Don", "xlsx", "Excel Files", bytes);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi xuất file Excel: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     /// <summary>

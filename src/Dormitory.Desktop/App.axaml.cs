@@ -9,6 +9,7 @@ using Dormitory.Desktop.ViewModels;
 using Dormitory.Desktop.Views;
 using Dormitory.Infrastructure.Data;
 using Dormitory.Infrastructure.Security;
+using Dormitory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -43,7 +44,9 @@ public partial class App : Avalonia.Application
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<IExportService, ExportService>();
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<IFileService, FileService>();
 
         // 3. Cấu hình ViewModels
         services.AddTransient<DashboardViewModel>();

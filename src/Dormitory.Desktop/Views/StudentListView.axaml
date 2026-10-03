@@ -33,6 +33,8 @@
                         Command="{Binding EditStudentCommand}"/>
                 <Button Content="🗑️ Xóa hồ sơ" 
                         Command="{Binding DeleteStudentCommand}"/>
+                <Button Content="📊  Xuất Excel" 
+                        Command="{Binding ExportToExcelCommand}"/>
             </StackPanel>
 
             <!-- Main DataGrid -->
