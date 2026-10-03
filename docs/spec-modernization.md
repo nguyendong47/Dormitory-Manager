@@ -78,6 +78,14 @@ Dormitory-Manager/
 - Biểu đồ tổng quan: Tỷ lệ lấp đầy phòng, doanh thu hàng tháng theo dịch vụ, số lượng sinh viên theo khoa/lớp.
 - Cảnh báo các hợp đồng sắp hết hạn và hóa đơn quá hạn.
 
+### 4.6. Phân hệ Quản lý Nhân viên (`Employee`)
+- Quản lý danh sách nhân viên KTX: Mã NV, họ tên, ngày sinh, giới tính, SĐT, CCCD/CMND, chức vụ, bộ phận, địa chỉ.
+- Thao tác: Danh sách, tìm kiếm từ khóa, thêm mới, chỉnh sửa thông tin, xóa nhân viên.
+
+### 4.7. Giao diện Thao tác & Hội thoại CRUD (`CRUD Dialogs & Modals`)
+- Mỗi phân hệ hỗ trợ đầy đủ hộp thoại thêm/sửa trực quan (Modal Windows) với cơ chế validation dữ liệu.
+- Hộp thoại xác nhận thao tác nguy hiểm (Xóa phòng, xóa sinh viên, xóa nhân viên, hủy hợp đồng) nhằm ngăn ngừa bấm nhầm.
+
 ---
 
 ## 5. Kế hoạch Lưu trữ Dữ liệu (Database)
