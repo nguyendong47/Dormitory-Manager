@@ -39,16 +39,20 @@ public partial class RoomListViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
+    private readonly IUserSession? _userSession;
+
     public RoomListViewModel(
         IRoomService roomService,
         IDialogService dialogService,
         IExportService exportService,
-        IFileService fileService)
+        IFileService fileService,
+        IUserSession? userSession = null)
     {
         _roomService = roomService;
         _dialogService = dialogService;
         _exportService = exportService;
         _fileService = fileService;
+        _userSession = userSession;
         LoadRoomsCommand = new AsyncRelayCommand(LoadRoomsAsync);
     }
 
@@ -121,6 +125,15 @@ public partial class RoomListViewModel : ViewModelBase
     public async Task DeleteRoomAsync()
     {
         if (SelectedRoom == null) return;
+
+        // Ràng buộc RBAC: Chỉ Admin mới có quyền xóa phòng
+        if (_userSession != null && !_userSession.IsAdmin)
+        {
+            await _dialogService.ShowMessageAsync(
+                "Từ chối truy cập",
+                "Chỉ Quản trị viên (Admin) mới có quyền xóa phòng ở.");
+            return;
+        }
 
         var confirmed = await _dialogService.ShowConfirmAsync(
             "Xác nhận xóa phòng",

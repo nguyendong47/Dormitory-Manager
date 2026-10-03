@@ -1,0 +1,147 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             x:Class="Dormitory.Desktop.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+
+    <Grid Background="{DynamicResource SystemChromeMediumLowColor}">
+        <!-- Thẻ đăng nhập căn giữa màn hình -->
+        <Border Width="420"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{DynamicResource SystemAltHighColor}"
+                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="32,28"
+                BoxShadow="0 8 24 0 #20000000">
+            <StackPanel Spacing="20">
+                <!-- Logo & Thương hiệu -->
+                <StackPanel HorizontalAlignment="Center" Spacing="6">
+                    <TextBlock Text="🏢 KTX DORMITORY"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="#0078D4"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Hệ Thống Quản Lý Ký Túc Xá"
+                               FontSize="13"
+                               Foreground="{DynamicResource SystemBaseMediumColor}"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Dải phân cách -->
+                <Separator Margin="0,-4,0,-4"/>
+
+                <!-- Tiêu đề biểu mẫu -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Đăng nhập hệ thống"
+                               FontSize="18"
+                               FontWeight="SemiBold"/>
+                    <TextBlock Text="Vui lòng nhập thông tin tài khoản để tiếp tục"
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+
+                <!-- Biểu mẫu nhập liệu -->
+                <StackPanel Spacing="14">
+                    <!-- Tên đăng nhập -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Tên đăng nhập" FontSize="13" FontWeight="Medium"/>
+                        <TextBox Text="{Binding Username, Mode=TwoWay}"
+                                 Watermark="Nhập tên tài khoản (vd: admin)..."
+                                 KeyDown="OnInputKeyDown"
+                                 CornerRadius="6"
+                                 Padding="10,8"/>
+                    </StackPanel>
+
+                    <!-- Mật khẩu -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Mật khẩu" FontSize="13" FontWeight="Medium"/>
+                        <TextBox Text="{Binding Password, Mode=TwoWay}"
+                                 PasswordChar="*"
+                                 Watermark="Nhập mật khẩu..."
+                                 KeyDown="OnInputKeyDown"
+                                 CornerRadius="6"
+                                 Padding="10,8"/>
+                    </StackPanel>
+
+                    <!-- Thông báo lỗi màu đỏ khi có lỗi -->
+                    <Border Background="#FDE7E9"
+                            BorderBrush="#A80000"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="10,8"
+                            IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="⚠️" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ErrorMessage}"
+                                       Foreground="#A80000"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Nút Đăng nhập Accent #0078D4 -->
+                    <Button Content="Đăng nhập"
+                            Command="{Binding LoginCommand}"
+                            IsEnabled="{Binding !IsLoading}"
+                            Background="#0078D4"
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            FontSize="14"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Padding="12,10"
+                            CornerRadius="6"
+                            Margin="0,4,0,0"/>
+
+                    <!-- Thanh chờ IsLoading -->
+                    <ProgressBar IsIndeterminate="True"
+                                 Height="4"
+                                 CornerRadius="2"
+                                 IsVisible="{Binding IsLoading}"
+                                 Margin="0,-6,0,0"/>
+                </StackPanel>
+
+                <!-- Ghi chú tài khoản thử nghiệm -->
+                <Border Background="{DynamicResource SystemChromeMediumLowColor}"
+                        BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="12,10">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="💡 Tài khoản thử nghiệm có sẵn:" FontSize="12" FontWeight="SemiBold"/>
+                        <StackPanel Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="1">
+                                    <TextBlock Text="• Quản trị viên (Admin)" FontWeight="Medium" FontSize="11"/>
+                                    <TextBlock Text="admin / admin123" FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                </StackPanel>
+                                <Button Grid.Column="1"
+                                        Content="Điền nhanh"
+                                        Command="{Binding FillAdminCommand}"
+                                        FontSize="11"
+                                        Padding="6,3"
+                                        CornerRadius="4"/>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="1">
+                                    <TextBlock Text="• Quản lý KTX (Manager)" FontWeight="Medium" FontSize="11"/>
+                                    <TextBlock Text="manager / manager123" FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                </StackPanel>
+                                <Button Grid.Column="1"
+                                        Content="Điền nhanh"
+                                        Command="{Binding FillManagerCommand}"
+                                        FontSize="11"
+                                        Padding="6,3"
+                                        CornerRadius="4"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

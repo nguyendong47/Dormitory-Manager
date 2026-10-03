@@ -29,62 +29,89 @@
         </DataTemplate>
     </Window.DataTemplates>
 
-    <Grid ColumnDefinitions="240,*">
-        <!-- Sidebar Navigation -->
-        <Border Grid.Column="0" Background="{DynamicResource SystemAltMediumHighColor}"
-                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="0,0,1,0">
-            <Grid RowDefinitions="Auto,*,Auto" Margin="16,20,16,16">
-                <!-- App Brand -->
-                <StackPanel Grid.Row="0" Spacing="6" Margin="0,0,0,24">
-                    <TextBlock Text="🏢 KTX DORMITORY" FontSize="18" FontWeight="Bold" Foreground="#0078D4"/>
-                    <TextBlock Text="Quản Lý Ký Túc Xá" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
-                </StackPanel>
+    <Grid>
+        <!-- Màn hình Đăng nhập (hiển thị khi chưa đăng nhập) -->
+        <views:LoginView DataContext="{Binding LoginVm}"
+                         IsVisible="{Binding !IsLoggedIn}"/>
 
-                <!-- Navigation Buttons -->
-                <StackPanel Grid.Row="1" Spacing="8">
-                    <Button Content="📊  Tổng quan"
-                            Command="{Binding NavigateToDashboardCommand}"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                            Padding="12,10" CornerRadius="6"/>
+        <!-- Giao diện chính sau khi đăng nhập thành công -->
+        <Grid ColumnDefinitions="240,*" IsVisible="{Binding IsLoggedIn}">
+            <!-- Sidebar Navigation -->
+            <Border Grid.Column="0" Background="{DynamicResource SystemAltMediumHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="0,0,1,0">
+                <Grid RowDefinitions="Auto,*,Auto" Margin="16,20,16,16">
+                    <!-- App Brand -->
+                    <StackPanel Grid.Row="0" Spacing="6" Margin="0,0,0,24">
+                        <TextBlock Text="🏢 KTX DORMITORY" FontSize="18" FontWeight="Bold" Foreground="#0078D4"/>
+                        <TextBlock Text="Quản Lý Ký Túc Xá" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    </StackPanel>
 
-                    <Button Content="🏠  Phòng ở"
-                            Command="{Binding NavigateToRoomsCommand}"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                            Padding="12,10" CornerRadius="6"/>
+                    <!-- Navigation Buttons -->
+                    <StackPanel Grid.Row="1" Spacing="8">
+                        <Button Content="📊  Tổng quan"
+                                Command="{Binding NavigateToDashboardCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
 
-                    <Button Content="🎓  Sinh viên"
-                            Command="{Binding NavigateToStudentsCommand}"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                            Padding="12,10" CornerRadius="6"/>
+                        <Button Content="🏠  Phòng ở"
+                                Command="{Binding NavigateToRoomsCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
 
-                    <Button Content="📝  Hợp đồng"
-                            Command="{Binding NavigateToContractsCommand}"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                            Padding="12,10" CornerRadius="6"/>
+                        <Button Content="🎓  Sinh viên"
+                                Command="{Binding NavigateToStudentsCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
 
-                    <Button Content="💵  Hóa đơn &amp; Dịch vụ"
-                            Command="{Binding NavigateToBillsCommand}"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                            Padding="12,10" CornerRadius="6"/>
+                        <Button Content="📝  Hợp đồng"
+                                Command="{Binding NavigateToContractsCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
 
-                    <Button Content="👤  Nhân viên"
-                            Command="{Binding NavigateToEmployeesCommand}"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                            Padding="12,10" CornerRadius="6"/>
-                </StackPanel>
+                        <Button Content="💵  Hóa đơn &amp; Dịch vụ"
+                                Command="{Binding NavigateToBillsCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
 
-                <!-- Footer Info -->
-                <StackPanel Grid.Row="2" Spacing="4">
-                    <Separator Margin="0,0,0,10"/>
-                    <TextBlock Text="👤 Đang đăng nhập: Admin" FontSize="12" FontWeight="SemiBold"/>
-                    <TextBlock Text=".NET 8 LTS • Avalonia UI 11" FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}"/>
-                </StackPanel>
-            </Grid>
-        </Border>
+                        <Button Content="👤  Nhân viên"
+                                Command="{Binding NavigateToEmployeesCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
+                    </StackPanel>
 
-        <!-- Main Content Area -->
-        <Border Grid.Column="1" Background="{DynamicResource SystemChromeMediumLowColor}">
-            <TransitioningContentControl Content="{Binding CurrentView}"/>
-        </Border>
+                    <!-- Footer Info & Đăng xuất -->
+                    <StackPanel Grid.Row="2" Spacing="8">
+                        <Separator Margin="0,0,0,4"/>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="{Binding CurrentUserName, StringFormat='👤 {0}'}" 
+                                       FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding CurrentUserRole}" 
+                                       FontSize="11" Foreground="#0078D4" FontWeight="Medium"/>
+                        </StackPanel>
+
+                        <Button Content="🚪 Đăng xuất"
+                                Command="{Binding LogoutCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Padding="8,8"
+                                CornerRadius="6"
+                                Background="Transparent"
+                                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                                BorderThickness="1"/>
+
+                        <TextBlock Text=".NET 8 LTS • Avalonia UI 11" 
+                                   FontSize="11" 
+                                   Foreground="{DynamicResource SystemBaseMediumColor}" 
+                                   HorizontalAlignment="Center" 
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Main Content Area -->
+            <Border Grid.Column="1" Background="{DynamicResource SystemChromeMediumLowColor}">
+                <TransitioningContentControl Content="{Binding CurrentView}"/>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

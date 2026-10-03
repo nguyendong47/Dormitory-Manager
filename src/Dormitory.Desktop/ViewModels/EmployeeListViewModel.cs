@@ -46,10 +46,16 @@ public partial class EmployeeListViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
-    public EmployeeListViewModel(IEmployeeService employeeService, IDialogService dialogService)
+    private readonly IUserSession? _userSession;
+
+    public EmployeeListViewModel(
+        IEmployeeService employeeService,
+        IDialogService dialogService,
+        IUserSession? userSession = null)
     {
         _employeeService = employeeService;
         _dialogService = dialogService;
+        _userSession = userSession;
         _selectedDepartment = "Tất cả phòng ban";
 
         LoadEmployeesCommand = new AsyncRelayCommand(LoadEmployeesAsync);
@@ -111,6 +117,15 @@ public partial class EmployeeListViewModel : ViewModelBase
     public async Task DeleteEmployeeAsync()
     {
         if (SelectedEmployee == null) return;
+
+        // Ràng buộc RBAC: Chỉ Admin mới có quyền xóa hồ sơ nhân viên
+        if (_userSession != null && !_userSession.IsAdmin)
+        {
+            await _dialogService.ShowMessageAsync(
+                "Từ chối truy cập",
+                "Chỉ Quản trị viên (Admin) mới có quyền xóa hồ sơ nhân viên.");
+            return;
+        }
 
         var confirmed = await _dialogService.ShowConfirmAsync(
             "Xác nhận xóa nhân viên",

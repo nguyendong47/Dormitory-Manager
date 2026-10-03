@@ -1,10 +1,12 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Dormitory.Core.Enums;
+using Dormitory.Desktop.Services;
 
 namespace Dormitory.Desktop.ViewModels;
 
 /// <summary>
-/// ViewModel chính của ứng dụng Desktop, điều phối chuyển hướng giữa các màn hình chức năng
+/// ViewModel chính của ứng dụng Desktop, điều phối chuyển hướng giữa các màn hình chức năng và quản lý phiên đăng nhập
 /// </summary>
 public partial class MainWindowViewModel : ViewModelBase
 {
@@ -14,6 +16,18 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ContractListViewModel _contractListVm;
     private readonly BillListViewModel _billListVm;
     private readonly EmployeeListViewModel _employeeListVm;
+    private readonly IUserSession _userSession;
+
+    public LoginViewModel LoginVm { get; }
+
+    [ObservableProperty]
+    private bool _isLoggedIn;
+
+    [ObservableProperty]
+    private string _currentUserName = string.Empty;
+
+    [ObservableProperty]
+    private string _currentUserRole = string.Empty;
 
     [ObservableProperty]
     private ViewModelBase _currentView;
@@ -27,7 +41,9 @@ public partial class MainWindowViewModel : ViewModelBase
         StudentListViewModel studentListVm,
         ContractListViewModel contractListVm,
         BillListViewModel billListVm,
-        EmployeeListViewModel employeeListVm)
+        EmployeeListViewModel employeeListVm,
+        LoginViewModel loginVm,
+        IUserSession userSession)
     {
         _dashboardVm = dashboardVm;
         _roomListVm = roomListVm;
@@ -35,9 +51,14 @@ public partial class MainWindowViewModel : ViewModelBase
         _contractListVm = contractListVm;
         _billListVm = billListVm;
         _employeeListVm = employeeListVm;
+        LoginVm = loginVm;
+        _userSession = userSession;
 
         // Khởi tạo màn hình mặc định là Dashboard
         _currentView = _dashboardVm;
+
+        // Lắng nghe sự kiện đăng nhập thành công từ LoginViewModel
+        LoginVm.LoginSuccess += OnLoginSuccess;
 
         NavigateToDashboardCommand = new RelayCommand(NavigateToDashboard);
         NavigateToRoomsCommand = new RelayCommand(NavigateToRooms);
@@ -45,9 +66,19 @@ public partial class MainWindowViewModel : ViewModelBase
         NavigateToContractsCommand = new RelayCommand(NavigateToContracts);
         NavigateToBillsCommand = new RelayCommand(NavigateToBills);
         NavigateToEmployeesCommand = new RelayCommand(NavigateToEmployees);
+        LogoutCommand = new RelayCommand(Logout);
 
-        // Nạp số liệu Dashboard
-        _ = _dashboardVm.LoadStatsAsync();
+        // Khởi tạo trạng thái đăng nhập
+        if (_userSession.IsAuthenticated)
+        {
+            UpdateUserInfo();
+            IsLoggedIn = true;
+            _ = _dashboardVm.LoadStatsAsync();
+        }
+        else
+        {
+            IsLoggedIn = false;
+        }
     }
 
     public IRelayCommand NavigateToDashboardCommand { get; }
@@ -56,6 +87,53 @@ public partial class MainWindowViewModel : ViewModelBase
     public IRelayCommand NavigateToContractsCommand { get; }
     public IRelayCommand NavigateToBillsCommand { get; }
     public IRelayCommand NavigateToEmployeesCommand { get; }
+    public IRelayCommand LogoutCommand { get; }
+
+    /// <summary>
+    /// Xử lý khi người dùng đăng nhập thành công
+    /// </summary>
+    private void OnLoginSuccess()
+    {
+        UpdateUserInfo();
+        IsLoggedIn = true;
+        NavigateToDashboard();
+    }
+
+    /// <summary>
+    /// Cập nhật tên và vai trò người dùng từ phiên hiện tại
+    /// </summary>
+    private void UpdateUserInfo()
+    {
+        if (_userSession.CurrentUser != null)
+        {
+            CurrentUserName = _userSession.CurrentUser.FullName;
+            CurrentUserRole = _userSession.CurrentUser.Role switch
+            {
+                UserRole.Admin => "Quản trị viên (Admin)",
+                UserRole.Manager => "Quản lý KTX (Manager)",
+                UserRole.Staff => "Nhân viên (Staff)",
+                _ => _userSession.CurrentUser.Role.ToString()
+            };
+        }
+        else
+        {
+            CurrentUserName = string.Empty;
+            CurrentUserRole = string.Empty;
+        }
+    }
+
+    /// <summary>
+    /// Đăng xuất khỏi hệ thống và xóa phiên làm việc
+    /// </summary>
+    public void Logout()
+    {
+        _userSession.ClearSession();
+        IsLoggedIn = false;
+        CurrentUserName = string.Empty;
+        CurrentUserRole = string.Empty;
+        LoginVm.Password = string.Empty;
+        LoginVm.ErrorMessage = null;
+    }
 
     public void NavigateToDashboard()
     {

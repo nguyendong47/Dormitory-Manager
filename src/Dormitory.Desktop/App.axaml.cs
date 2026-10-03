@@ -47,8 +47,10 @@ public partial class App : Avalonia.Application
         services.AddScoped<IExportService, ExportService>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IFileService, FileService>();
+        services.AddSingleton<IUserSession, UserSession>();
 
         // 3. Cấu hình ViewModels
+        services.AddTransient<LoginViewModel>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<RoomListViewModel>();
         services.AddTransient<StudentListViewModel>();
