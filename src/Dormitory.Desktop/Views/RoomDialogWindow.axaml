@@ -1,0 +1,141 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        x:Class="Dormitory.Desktop.Views.RoomDialogWindow"
+        x:DataType="vm:RoomDialogViewModel"
+        Title="{Binding Title}"
+        Width="520"
+        Height="580"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="24" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+            <!-- Tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="Nhập đầy đủ thông tin phòng ở bên dưới" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" 
+                           FontSize="13"/>
+            </StackPanel>
+
+            <!-- Thông báo lỗi nghiệp vụ / xác thực -->
+            <Border Grid.Row="1"
+                    Background="#FDE7E9"
+                    BorderBrush="#D13438"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10"
+                    Margin="0,0,0,14"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="⚠️" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#A80000"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Biểu mẫu nhập liệu 2 cột -->
+            <ScrollViewer Grid.Row="2">
+                <Grid ColumnDefinitions="*,16,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                    <!-- Tòa nhà -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Tòa nhà *" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Building}" Watermark="VD: Tòa A1"/>
+                    </StackPanel>
+
+                    <!-- Số phòng -->
+                    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Số phòng *" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding RoomNumber}" Watermark="VD: 101"/>
+                    </StackPanel>
+
+                    <!-- Tầng -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Tầng" FontWeight="Medium" FontSize="13"/>
+                        <NumericUpDown Value="{Binding Floor}" Minimum="1" Maximum="50" FormatString="0"/>
+                    </StackPanel>
+
+                    <!-- Sức chứa tối đa -->
+                    <StackPanel Grid.Row="1" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Sức chứa tối đa (người) *" FontWeight="Medium" FontSize="13"/>
+                        <NumericUpDown Value="{Binding Capacity}" Minimum="1" Maximum="20" FormatString="0"/>
+                    </StackPanel>
+
+                    <!-- Loại phòng -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Loại phòng" FontWeight="Medium" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding RoomTypes}"
+                                  SelectedItem="{Binding SelectedType}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Trạng thái -->
+                    <StackPanel Grid.Row="2" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Trạng thái" FontWeight="Medium" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding RoomStatuses}"
+                                  SelectedItem="{Binding SelectedStatus}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Đơn giá thuê tháng -->
+                    <StackPanel Grid.Row="3" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Giá thuê (đ/tháng) *" FontWeight="Medium" FontSize="13"/>
+                        <NumericUpDown Value="{Binding PricePerMonth}" 
+                                       Minimum="0" 
+                                       Increment="50000" 
+                                       FormatString="{}{0:N0}"
+                                       HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Giới tính áp dụng -->
+                    <StackPanel Grid.Row="3" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Dành cho" FontWeight="Medium" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding RoomGenders}"
+                                  SelectedItem="{Binding SelectedGender}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Mô tả / Ghi chú -->
+                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Spacing="4">
+                        <TextBlock Text="Mô tả cơ sở vật chất / Ghi chú" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Description}"
+                                 AcceptsReturn="True"
+                                 Height="70"
+                                 TextWrapping="Wrap"
+                                 Watermark="VD: Có điều hòa, bình nóng lạnh, quạt trần, ban công thoáng mát..."/>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- Thanh nút tác vụ -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="12"
+                        Margin="0,16,0,0">
+                <Button Content="❌ Hủy bỏ"
+                        Command="{Binding CancelCommand}"
+                        Width="100"
+                        Height="34"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+                <Button Content="💾 Lưu thông tin"
+                        Command="{Binding SaveCommand}"
+                        Width="130"
+                        Height="34"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

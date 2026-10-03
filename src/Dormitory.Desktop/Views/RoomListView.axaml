@@ -18,29 +18,46 @@
             </StackPanel>
         </Grid>
 
-        <!-- Main DataGrid -->
-        <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
-                CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
-            <DataGrid ItemsSource="{Binding Rooms}"
-                      SelectedItem="{Binding SelectedRoom}"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      GridLinesVisibility="Horizontal"
-                      CanUserResizeColumns="True"
-                      BorderThickness="0">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber, Mode=OneWay}" Width="110"/>
-                    <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building, Mode=OneWay}" Width="150"/>
-                    <DataGridTextColumn Header="Tầng" Binding="{Binding Floor, Mode=OneWay}" Width="70"/>
-                    <DataGridTextColumn Header="Sức chứa" Binding="{Binding Capacity, Mode=OneWay}" Width="90"/>
-                    <DataGridTextColumn Header="Đang ở" Binding="{Binding CurrentOccupancy, Mode=OneWay}" Width="90"/>
-                    <DataGridTextColumn Header="Giá thuê (đ/tháng)" Binding="{Binding PricePerMonth, StringFormat='{}{0:N0}', Mode=OneWay}" Width="140"/>
-                    <DataGridTextColumn Header="Loại phòng" Binding="{Binding Type, Mode=OneWay}" Width="120"/>
-                    <DataGridTextColumn Header="Dành cho" Binding="{Binding AllowedGender, Mode=OneWay}" Width="100"/>
-                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status, Mode=OneWay}" Width="120"/>
-                    <DataGridTextColumn Header="Mô tả cơ sở vật chất" Binding="{Binding Description, Mode=OneWay}" Width="*"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+        <!-- Main Content (Toolbar + DataGrid) -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            <!-- Toolbar thao tác CRUD -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
+                <Button Content="➕ Thêm phòng mới" 
+                        Command="{Binding AddRoomCommand}"
+                        Background="#0078D4" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"/>
+                <Button Content="✏️ Chỉnh sửa" 
+                        Command="{Binding EditRoomCommand}"/>
+                <Button Content="🗑️ Xóa phòng" 
+                        Command="{Binding DeleteRoomCommand}"/>
+            </StackPanel>
+
+            <!-- Main DataGrid -->
+            <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding Rooms}"
+                          SelectedItem="{Binding SelectedRoom}"
+                          DoubleTapped="OnDataGridDoubleTapped"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          CanUserResizeColumns="True"
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber, Mode=OneWay}" Width="110"/>
+                        <DataGridTextColumn Header="Tòa nhà" Binding="{Binding Building, Mode=OneWay}" Width="150"/>
+                        <DataGridTextColumn Header="Tầng" Binding="{Binding Floor, Mode=OneWay}" Width="70"/>
+                        <DataGridTextColumn Header="Sức chứa" Binding="{Binding Capacity, Mode=OneWay}" Width="90"/>
+                        <DataGridTextColumn Header="Đang ở" Binding="{Binding CurrentOccupancy, Mode=OneWay}" Width="90"/>
+                        <DataGridTextColumn Header="Giá thuê (đ/tháng)" Binding="{Binding PricePerMonth, Mode=OneWay, StringFormat='{}{0:N0} đ'}" Width="150"/>
+                        <DataGridTextColumn Header="Loại phòng" Binding="{Binding Type, Mode=OneWay}" Width="120"/>
+                        <DataGridTextColumn Header="Dành cho" Binding="{Binding AllowedGender, Mode=OneWay}" Width="100"/>
+                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status, Mode=OneWay}" Width="120"/>
+                        <DataGridTextColumn Header="Mô tả cơ sở vật chất" Binding="{Binding Description, Mode=OneWay}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>
