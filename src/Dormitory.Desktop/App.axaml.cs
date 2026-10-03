@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Dormitory.Application.Interfaces;
 using Dormitory.Application.Services;
+using Dormitory.Desktop.Services;
 using Dormitory.Desktop.ViewModels;
 using Dormitory.Desktop.Views;
 using Dormitory.Infrastructure.Data;
@@ -41,6 +42,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IBillService, BillService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddSingleton<IDialogService, DialogService>();
 
         // 3. Cấu hình ViewModels
         services.AddTransient<DashboardViewModel>();
