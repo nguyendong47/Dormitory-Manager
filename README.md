@@ -1,5 +1,10 @@
 # 🏢 Hệ Thống Quản Lý Ký Túc Xá (Dormitory Management System)
 
+[![CI/CD Pipeline](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml)
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
+![Tests](https://img.shields.io/badge/tests-53%2F53%20passed-success.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
 > Ứng dụng Desktop hiện đại quản lý toàn diện Ký túc xá sinh viên, xây dựng trên nền tảng **.NET 8 LTS**, **Avalonia UI 11** và **Entity Framework Core 8** theo chuẩn kiến trúc **Clean Architecture** và mô hình **MVVM**.
 
 ---
@@ -80,9 +85,9 @@
 
 ---
 
-## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature & CRUD Matrix - Hoàn Thành 100% 3 Giai Đoạn)
+## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature Matrix - Hoàn Thành 100% Cả 4 Giai Đoạn)
 
-| Phân hệ Nghiệp Vụ | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel | Phân Quyền | Trạng Thái |
+| Phân hệ / Hạng mục | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel | Phân Quyền | Trạng Thái |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Xác thực & Phiên (Auth)** | ✅ | — | — | — | — | — | Admin / Manager | **Hoàn thành (Phase 1)** |
 | **Bảng Điều Khiển (Dashboard)** | ✅ | — | — | — | ✅ (Cảnh báo Live & Lọc) | ✅ (`.xlsx` Đa Sheet) | Tất cả | **Hoàn thành (Phase 2 - LiveCharts2 & Analytics)** |
@@ -91,8 +96,11 @@
 | **Hợp Đồng (Contracts)** | ✅ | ✅ (`ContractDialog`) | ✅ (Gia hạn HĐ) | ✅ (Thanh lý & Giải phóng) | ✅ (Lọc trạng thái) | — | Tất cả | **Hoàn thành (Phase 1)** |
 | **Hóa Đơn & Điện Nước (Bills)** | ✅ | ✅ (`BillDialog` tự động) | — | — | ✅ (Lọc trạng thái) | ✅ (`.xlsx`) | Tất cả | **Hoàn thành (Phase 1)** |
 | **Nhân Viên KTX (Employees)** | ✅ | ✅ (`EmployeeDialog`) | ✅ (`EmployeeDialog`) | ✅ (Xác nhận an toàn) | ✅ (Đa tiêu chí) | — | **Chỉ Admin** | **Hoàn thành (Phase 1)** |
-| **Cài Đặt Hệ Thống & Quản Trị CSDL** | ✅ | ✅ (Sao lưu `.bak`) | ✅ (Phục hồi CSDL) | — | ✅ (Kiểm tra toàn vẹn) | — | **Chỉ Admin** | **Hoàn thành (Phase 3 - Infrastructure & Packaging)** |
-| **Đóng Gói & Triển Khai Đa Nền Tảng** | ✅ | ✅ (macOS DMG) | ✅ (Win ZIP / Exe) | ✅ (Linux Tar.gz) | — | — | DevOps / Admin | **Hoàn thành (Phase 3 - Infrastructure & Packaging)** |
+| **Cài Đặt Hệ Thống & CSDL** | ✅ | ✅ (Sao lưu `.bak`) | ✅ (Phục hồi CSDL) | — | ✅ (Kiểm tra toàn vẹn) | — | **Chỉ Admin** | **Hoàn thành (Phase 3 - Infrastructure)** |
+| **Đóng Gói Đa Nền Tảng (Scripts)** | ✅ | ✅ (macOS DMG) | ✅ (Win ZIP / Exe) | ✅ (Linux Tar.gz) | — | — | DevOps / Admin | **Hoàn thành (Phase 3 - Packaging)** |
+| **Lưu Trữ Mã Kế Thừa (Legacy Archive)** | ✅ | — | — | — | — | — | Toàn bộ dự án | **Hoàn thành (Phase 4 - Code Reorganization)** |
+| **Nhận Diện Thương Hiệu (Branding & Icons)** | ✅ | ✅ (`AppIcon.ico`) | ✅ (`AppIcon.png`) | — | — | — | macOS / Win / Linux | **Hoàn thành (Phase 4 - Polish & Branding)** |
+| **Tự Động Hóa CI/CD & GitHub Releases** | ✅ | ✅ (CI Build & Test) | ✅ (CD Multi-OS Packaging) | — | — | — | GitHub Actions | **Hoàn thành (Phase 4 - CI/CD Pipeline)** |
 
 ---
 
@@ -144,13 +152,23 @@ graph TD
 
 ```
 Dormitory-Manager/
+├── .github/                          # Cấu hình GitHub Actions CI/CD Pipeline
+│   └── workflows/
+│       └── ci-cd.yml                 # Pipeline tự động Build, Test (53/53), Đóng gói & Phát hành Release
+│
 ├── dist/                             # Thư mục chứa gói xuất bản thành phẩm (DMG, ZIP, TAR.GZ)
+│
 ├── docs/                             # Tài liệu kỹ thuật, hướng dẫn sử dụng & ảnh chụp
 │   ├── images/                       # Ảnh chụp giao diện dashboard
+│   ├── architecture.md               # Tổng quan kiến trúc Clean Architecture & MVVM
 │   ├── packaging-and-deployment.md   # Hướng dẫn đóng gói và triển khai đa nền tảng
 │   ├── spec-modernization.md         # Đặc tả kiến trúc hiện đại hóa
-│   ├── user-guide.md                 # Hướng dẫn sử dụng chi tiết các phân hệ
-│   └── superpowers/plans/            # Kế hoạch triển khai kỹ thuật
+│   └── user-guide.md                 # Hướng dẫn sử dụng chi tiết các phân hệ
+│
+├── legacy/                           # Mã nguồn dự án cũ WinForms 2021 lưu trữ (NET 4.7.2)
+│   ├── Dormitory_Management_2021.sln # Solution WinForms cũ
+│   ├── KTX2021/                      # Project WinForms cũ
+│   └── packages/                     # Thư viện NuGet cũ
 │
 ├── scripts/
 │   └── package/                      # Bộ kịch bản tự động đóng gói đa nền tảng
@@ -163,9 +181,10 @@ Dormitory-Manager/
 │   ├── Dormitory.Application/        # Application: DTOs, Services, Interfaces, Business Logic
 │   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, Migrations, BCrypt, DataSeeder, DatabaseService
 │   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs, appsettings.json
+│       └── Assets/                   # Nhận diện thương hiệu (AppIcon.ico, AppIcon.png) & Fonts
 │
 ├── tests/
-│   └── Dormitory.UnitTests/          # Kiểm thử tự động xUnit (46/46 Passed - 100%)
+│   └── Dormitory.UnitTests/          # Kiểm thử tự động xUnit & Moq (53/53 Passed - 100%)
 │
 ├── Dormitory.sln                     # .NET 8 Solution
 └── README.md
@@ -175,7 +194,16 @@ Dormitory-Manager/
 
 ## 🚀 Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
 
-### Yêu Cầu Môi Trường
+### 📥 Tải Về Bản Đóng Gói Sẵn (Pre-Packaged GitHub Releases)
+
+Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản cài đặt hoặc gói chạy độc lập (Self-Contained - không yêu cầu cài đặt trước .NET Runtime) tại trang [**GitHub Releases**](https://github.com/nguyendong47/Dormitory-Manager/releases):
+
+- **macOS (Apple Silicon M1/M2/M3/M4)**: Tải tệp `DormitoryManager-v2.0.0-macOS-arm64.dmg` -> Nhấp đúp và kéo thả `DormitoryManager.app` vào thư mục `Applications`.
+- **macOS (Intel x64)**: Tải tệp `DormitoryManager-v2.0.0-macOS-x64.dmg` -> Cài đặt tương tự như trên.
+- **Windows (10/11 64-bit)**: Tải tệp `DormitoryManager-v2.0.0-Windows-x64.zip` -> Giải nén và nhấp đúp vào `Dormitory.Desktop.exe` để chạy ngay.
+- **Linux (Ubuntu, Debian, Fedora x64)**: Tải tệp `DormitoryManager-v2.0.0-Linux-x64.tar.gz` -> Giải nén và thực thi `./Dormitory.Desktop`.
+
+### Yêu Cầu Môi Trường (Dành Cho Lập Trình Viên)
 - **.NET 8 SDK** (hoặc mới hơn) cài đặt trên máy phát triển.
 - Hệ điều hành: **macOS** (Apple Silicon / Intel), **Windows 10/11**, hoặc **Linux**.
 
@@ -219,11 +247,11 @@ Thành phẩm sau khi đóng gói sẽ nằm tại thư mục `dist/`.
 
 ## 🧪 Chạy Kiểm Thử Tự Động (Unit Tests)
 
-Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, và dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`):
+Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, cấu hình động `appsettings.json`, và dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`):
 
 ```bash
 dotnet test tests/Dormitory.UnitTests
 ```
 
-Kết quả: **46/46 Tests Passed** (100% Pass).
+Kết quả: **53/53 Tests Passed** (100% Pass).
 

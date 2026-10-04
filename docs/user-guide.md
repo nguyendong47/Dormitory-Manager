@@ -7,11 +7,18 @@ Chào mừng bạn đến với tài liệu hướng dẫn sử dụng Hệ Th�
 ## 1. Khởi Động & Đăng Nhập Hệ Thống
 
 ### 1.1. Khởi động ứng dụng
-1. Mở Terminal tại thư mục gốc `Dormitory-Manager`.
-2. Chạy lệnh:
-   ```bash
-   dotnet run --project src/Dormitory.Desktop
-   ```
+Người dùng có thể khởi động ứng dụng theo hai cách:
+1. **Sử dụng bản đóng gói sẵn (Khuyến nghị cho người dùng cuối)**:
+   - Tải về gói phát hành tương ứng từ trang [GitHub Releases](https://github.com/nguyendong47/Dormitory-Manager/releases).
+   - **macOS**: Mở tệp `.dmg` và kéo biểu tượng `DormitoryManager.app` vào thư mục `Applications`.
+   - **Windows**: Giải nén tệp `.zip` và nhấp đúp vào `Dormitory.Desktop.exe`.
+   - **Linux**: Giải nén tệp `.tar.gz` và chạy lệnh `./Dormitory.Desktop`.
+2. **Khởi chạy từ mã nguồn (Dành cho lập trình viên)**:
+   - Mở Terminal tại thư mục gốc `Dormitory-Manager`.
+   - Chạy lệnh:
+     ```bash
+     dotnet run --project src/Dormitory.Desktop
+     ```
 3. Hệ thống sẽ mở màn hình **Đăng Nhập** (`LoginView`).
 
 ### 1.2. Màn hình Đăng nhập & Xác thực
@@ -35,6 +42,12 @@ Hệ thống được khởi tạo sẵn hai tài khoản phục vụ vận hàn
   - **Họ và tên** cùng **Tên đăng nhập** của người dùng.
   - Huy hiệu phân quyền: `Quản trị viên` hoặc `Quản lý`.
 - Nút **"Đăng xuất"**: Cho phép kết thúc phiên làm việc an toàn, xóa thông tin phiên trong bộ nhớ và quay trở lại màn hình Đăng nhập.
+
+### 1.5. Nhận diện thương hiệu & Biểu tượng ứng dụng (Branding & App Icon)
+- Phiên bản v2.0.0 chính thức tích hợp bộ nhận diện thương hiệu hoàn chỉnh:
+  - Biểu tượng ứng dụng (`src/Dormitory.Desktop/Assets/AppIcon.ico` & `AppIcon.png`) thể hiện hình tượng tòa nhà ký túc xá hiện đại tông màu xanh thương hiệu.
+  - Tích hợp chuẩn sắc nét trên **Thanh tiêu đề cửa sổ (Title Bar)**, **Thanh tác vụ Windows (Taskbar)**, **macOS Dock** và **Launcher Linux**.
+  - Tệp cấu hình macOS `Info.plist` hiển thị đầy đủ tên ứng dụng `Dormitory Manager` và bundle identifier `vn.edu.dormitory.manager`.
 
 ---
 

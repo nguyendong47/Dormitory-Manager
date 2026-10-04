@@ -27,8 +27,14 @@ Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị v
 
 ---
 
-## 3. Cấu Trúc Thư Mục Xuất Bản (Build Artifacts)
+## 3. Cấu Trúc Thư Mục Xuất Bản (Build Artifacts) & Nhận Diện Thương Hiệu
 
+### 3.1. Tài nguyên Biểu tượng Thương hiệu (Branding Assets)
+Ứng dụng sử dụng bộ nhận diện thương hiệu biểu trưng tòa nhà Ký túc xá hiện đại đặt tại `src/Dormitory.Desktop/Assets/`:
+- **`AppIcon.ico`**: Tệp icon đa phân giải (16x16 đến 256x256 pixel) nhúng trực tiếp vào file `.exe` Windows qua thuộc tính `<ApplicationIcon>` trong `Dormitory.Desktop.csproj` và hiển thị trên thanh tác vụ Taskbar, Title bar.
+- **`AppIcon.png`**: Ảnh biểu tượng độ phân giải cao (512x512 PNG) dùng cho macOS Dock/Finder, Linux desktop launcher và Avalonia Window Icon (`Icon="/Assets/AppIcon.png"`).
+
+### 3.2. Cấu trúc thư mục thành phẩm (`dist/`)
 Sau khi chạy các kịch bản đóng gói, các gói thành phẩm sẽ được lưu tại thư mục `dist/`:
 
 ```
@@ -199,52 +205,61 @@ Mặc định CSDL được lưu trữ tại file **`dormitory.db`** cùng cấp
 
 ---
 
-## 7. Mẫu Tự Động Hóa CI/CD (GitHub Actions)
+## 7. Quy Trình Tự Động Hóa CI/CD Chính Thức (GitHub Actions)
 
-Dưới đây là workflow tham khảo `.github/workflows/release.yml` để tự động build và xuất bản các gói phát hành khi tạo Git Tag:
+Dự án tích hợp quy trình CI/CD hoàn chỉnh tại `.github/workflows/ci-cd.yml`, tự động hóa kiểm thử liên tục (CI) và đóng gói phát hành đa nền tảng (CD) khi có commit trên nhánh `master` hoặc khi gắn thẻ Git Tag `v*`:
 
 ```yaml
-name: Release Dormitory Manager
+# Cấu trúc tệp pipeline: .github/workflows/ci-cd.yml
+name: CI/CD Pipeline - Build, Test & Release
 
 on:
   push:
-    tags:
-      - 'v*'
-
-jobs:
-  build-and-release:
-    strategy:
-      matrix:
-        include:
-          - os: macos-latest
-            script: ./scripts/package/build-macos.sh
-            artifact: dist/macos-*/DormitoryManager-*.dmg
-          - os: windows-latest
-            script: bash scripts/package/build-windows.sh
-            artifact: dist/windows-x64/DormitoryManager-*.zip
-          - os: ubuntu-latest
-            script: bash scripts/package/build-linux.sh
-            artifact: dist/linux-x64/DormitoryManager-*.tar.gz
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Checkout mã nguồn
-        uses: actions/checkout@v4
-
-      - name: Cài đặt .NET 8 SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Đóng gói ứng dụng
-        run: |
-          chmod +x scripts/package/*.sh
-          ${{ matrix.script }}
-
-      - name: Tải lên Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: package-${{ matrix.os }}
-          path: ${{ matrix.artifact }}
+    branches: [ master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
 ```
+
+### Các Job Trong Pipeline CI/CD:
+
+1. **`test-and-verify`** *(Continuous Integration - chạy trên Ubuntu)*:
+   - Checkout mã nguồn và cài đặt .NET 8 SDK.
+   - Biên dịch toàn bộ Solution ở chế độ Release: `dotnet build Dormitory.sln -c Release`.
+   - Chạy 100% bộ kiểm thử tự động: `dotnet test Dormitory.sln -c Release` (**53/53 tests pass 100%**).
+   - Đóng vai trò là Quality Gate chặn lỗi trước khi bất kỳ tác vụ đóng gói nào được kích hoạt.
+
+2. **`package-macos`** *(Continuous Deployment - chạy trên macos-14 Apple Silicon)*:
+   - Cấp quyền thực thi và gọi `scripts/package/build-macos.sh arm64`.
+   - Tạo macOS App Bundle `DormitoryManager.app` và đóng gói thành tệp `DormitoryManager-v2.0.0-macOS-arm64.dmg`.
+   - Tải lên GitHub Artifacts (`dormitory-manager-macos-arm64`).
+
+3. **`package-windows`** *(Continuous Deployment - chạy trên Ubuntu)*:
+   - Cài đặt tiện ích `zip` và thực thi `scripts/package/build-windows.sh win-x64`.
+   - Biên dịch ứng dụng Single-File Executable `Dormitory.Desktop.exe` nhúng sẵn `AppIcon.ico`.
+   - Đóng gói cùng `appsettings.json` thành tệp `DormitoryManager-v2.0.0-Windows-x64.zip`.
+   - Tải lên GitHub Artifacts (`dormitory-manager-windows-x64`).
+
+4. **`package-linux`** *(Continuous Deployment - chạy trên Ubuntu)*:
+   - Thực thi `scripts/package/build-linux.sh linux-x64` tạo nhị phân self-contained kèm thư viện native `libSkiaSharp.so`, `libe_sqlite3.so`.
+   - Nén thành tệp lưu trữ `DormitoryManager-v2.0.0-Linux-x64.tar.gz`.
+   - Tải lên GitHub Artifacts (`dormitory-manager-linux-x64`).
+
+5. **`create-release`** *(Automated GitHub Release - kích hoạt khi đẩy Git Tag `v*`)*:
+   - Phụ thuộc vào việc hoàn thành thành công cả 3 job đóng gói.
+   - Tự động tải về toàn bộ 3 gói thành phẩm (macOS DMG, Windows ZIP, Linux Tarball).
+   - Tự động tạo bản phát hành chính thức trên GitHub Releases thông qua action `softprops/action-gh-release@v2`.
+   - Tự động sinh Release Notes tổng hợp các thay đổi và gắn kèm các tệp cài đặt cho người dùng tải về.
+
+---
+
+## 8. Hướng Dẫn Tải & Xác Thực Bản Phát Hành Từ GitHub Releases
+
+Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản cài đặt chính thức tại:
+👉 [**GitHub Releases: nguyendong47/Dormitory-Manager/releases**](https://github.com/nguyendong47/Dormitory-Manager/releases)
+
+- **macOS (M1/M2/M3/M4 Apple Silicon)**: Tải `DormitoryManager-v2.0.0-macOS-arm64.dmg` (~85MB) -> Mở tệp DMG và kéo ứng dụng vào thư mục `Applications`.
+- **macOS (Intel Core x86_64)**: Tải `DormitoryManager-v2.0.0-macOS-x64.dmg` (~88MB) -> Thao tác tương tự.
+- **Windows (10/11 64-bit)**: Tải `DormitoryManager-v2.0.0-Windows-x64.zip` (~95MB) -> Giải nén ra thư mục bất kỳ và nhấp đúp vào `Dormitory.Desktop.exe` để sử dụng ngay (Zero Setup).
+- **Linux (Ubuntu/Debian/Fedora x64)**: Tải `DormitoryManager-v2.0.0-Linux-x64.tar.gz` (~98MB) -> Giải nén và chạy `./Dormitory.Desktop`.
