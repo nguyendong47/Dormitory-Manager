@@ -17,30 +17,44 @@ public partial class SystemSettingsViewModel : ViewModelBase
     private readonly IFileService _fileService;
     private readonly IDialogService _dialogService;
     private readonly IUserSession _userSession;
+    private readonly IEmailService _emailService;
 
     [ObservableProperty]
     private DatabaseInfoDto _databaseInfo = new();
 
     [ObservableProperty]
+    private EmailSettingsDto _emailSettings = new();
+
+    [ObservableProperty]
     private bool _isLoading;
+
+    [ObservableProperty]
+    private bool _isEmailTesting;
 
     public bool IsAdmin => _userSession.IsAdmin;
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;
 
+    [ObservableProperty]
+    private string _emailStatusMessage = string.Empty;
+
     public SystemSettingsViewModel(
         IDatabaseService databaseService,
         IFileService fileService,
         IDialogService dialogService,
-        IUserSession userSession)
+        IUserSession userSession,
+        IEmailService emailService)
     {
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _userSession = userSession ?? throw new ArgumentNullException(nameof(userSession));
+        _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
 
         _userSession.SessionChanged += () => OnPropertyChanged(nameof(IsAdmin));
+
+        _ = LoadEmailSettingsAsync();
     }
 
     /// <summary>
@@ -159,6 +173,89 @@ public partial class SystemSettingsViewModel : ViewModelBase
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Tải thông số cấu hình máy chủ SMTP hiện tại
+    /// </summary>
+    [RelayCommand]
+    public async Task LoadEmailSettingsAsync()
+    {
+        try
+        {
+            EmailSettings = await _emailService.GetEmailSettingsAsync();
+            EmailStatusMessage = "Đã tải cấu hình email SMTP.";
+        }
+        catch (Exception ex)
+        {
+            EmailStatusMessage = $"Lỗi khi tải cấu hình email: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Lưu thông số cấu hình máy chủ SMTP vào hệ thống
+    /// </summary>
+    [RelayCommand]
+    public async Task SaveEmailSettingsAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            var success = await _emailService.SaveEmailSettingsAsync(EmailSettings);
+            if (success)
+            {
+                EmailStatusMessage = "Lưu cấu hình email SMTP thành công.";
+                await _dialogService.ShowMessageAsync("Thành công", "Đã lưu thông số cấu hình máy chủ gửi email SMTP thành công!");
+            }
+            else
+            {
+                EmailStatusMessage = "Lỗi khi lưu tệp cấu hình email.";
+                await _dialogService.ShowMessageAsync("Lỗi", "Không thể lưu tệp cấu hình email.");
+            }
+        }
+        catch (Exception ex)
+        {
+            EmailStatusMessage = $"Lỗi: {ex.Message}";
+            await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi lưu cấu hình email: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Thử nghiệm kết nối tới máy chủ SMTP theo cấu hình hiện tại
+    /// </summary>
+    [RelayCommand]
+    public async Task TestSmtpConnectionAsync()
+    {
+        try
+        {
+            IsEmailTesting = true;
+            EmailStatusMessage = "Đang kiểm tra kết nối tới máy chủ SMTP...";
+
+            var result = await _emailService.TestSmtpConnectionAsync(EmailSettings);
+            if (result.Success)
+            {
+                EmailStatusMessage = "Kết nối máy chủ SMTP thành công!";
+                await _dialogService.ShowMessageAsync("Kết nối thành công", "Kiểm tra kết nối tới máy chủ gửi thư SMTP thành công! Hệ thống đã sẵn sàng gửi email thông báo hóa đơn.");
+            }
+            else
+            {
+                EmailStatusMessage = $"Kết nối thất bại: {result.ErrorMessage}";
+                await _dialogService.ShowMessageAsync("Kết nối thất bại", $"Không thể kết nối tới máy chủ SMTP:\n\n{result.ErrorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            EmailStatusMessage = $"Lỗi kết nối: {ex.Message}";
+            await _dialogService.ShowMessageAsync("Lỗi kết nối", $"Lỗi kết nối tới máy chủ SMTP: {ex.Message}");
+        }
+        finally
+        {
+            IsEmailTesting = false;
         }
     }
 }

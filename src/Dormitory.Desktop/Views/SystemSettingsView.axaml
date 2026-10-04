@@ -142,6 +142,95 @@
                     </StackPanel>
                 </StackPanel>
             </Border>
+
+            <!-- Card 4: Cấu Hình Máy Chủ Gửi Email (SMTP) -->
+            <Border Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="📧" FontSize="18" VerticalAlignment="Center"/>
+                        <TextBlock Text="Cấu Hình Máy Chủ Gửi Email (SMTP)" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Cấu hình thông số máy chủ gửi email SMTP để hệ thống tự động gửi thông báo hóa đơn tiền phòng và điện nước kèm tệp PDF phiếu thu tới sinh viên."
+                               Foreground="{DynamicResource SystemBaseMediumColor}"
+                               TextWrapping="Wrap"
+                               FontSize="13"/>
+
+                    <!-- Khối thông báo trạng thái Email -->
+                    <Border Background="#EBF3FC" BorderBrush="#0078D4" BorderThickness="1" CornerRadius="6" Padding="12,8"
+                            IsVisible="{Binding EmailStatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{Binding EmailStatusMessage}" Foreground="#0078D4" FontSize="13" FontWeight="Medium"/>
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+                        <!-- Cột 1, Hàng 0: Máy chủ SMTP -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,12" Spacing="6">
+                            <TextBlock Text="Máy chủ SMTP (Server):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding EmailSettings.SmtpServer}" Watermark="Ví dụ: smtp.gmail.com hoặc mock"/>
+                        </StackPanel>
+
+                        <!-- Cột 2, Hàng 0: Cổng Port -->
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="12,0,0,12" Spacing="6">
+                            <TextBlock Text="Cổng kết nối (Port):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding EmailSettings.SmtpPort}" Watermark="Mặc định: 587 hoặc 465"/>
+                        </StackPanel>
+
+                        <!-- Cột 1, Hàng 1: Email người gửi -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,12" Spacing="6">
+                            <TextBlock Text="Địa chỉ Email gửi (From):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding EmailSettings.SenderEmail}" Watermark="Ví dụ: ktx@university.edu.vn"/>
+                        </StackPanel>
+
+                        <!-- Cột 2, Hàng 1: Tên hiển thị người gửi -->
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,0,0,12" Spacing="6">
+                            <TextBlock Text="Tên người gửi (Display Name):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding EmailSettings.SenderName}" Watermark="Ban Quản lý Ký túc xá"/>
+                        </StackPanel>
+
+                        <!-- Cột 1, Hàng 2: Tên đăng nhập -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,12" Spacing="6">
+                            <TextBlock Text="Tên đăng nhập SMTP (Username):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding EmailSettings.Username}" Watermark="Tài khoản email đăng nhập"/>
+                        </StackPanel>
+
+                        <!-- Cột 2, Hàng 2: Mật khẩu -->
+                        <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,12" Spacing="6">
+                            <TextBlock Text="Mật khẩu SMTP (App Password):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding EmailSettings.Password}" PasswordChar="•" Watermark="Mật khẩu ứng dụng"/>
+                        </StackPanel>
+
+                        <!-- Cột 1 & 2, Hàng 3: Checkboxes -->
+                        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="24" Margin="0,4,0,8">
+                            <CheckBox Content="Sử dụng mã hóa an toàn SSL / TLS"
+                                      IsChecked="{Binding EmailSettings.EnableSsl}"/>
+                            <CheckBox Content="Kích hoạt tự động gửi email (Bỏ chọn để dùng chế độ Mock / Safe Mode)"
+                                      IsChecked="{Binding EmailSettings.IsEnabled}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0" VerticalAlignment="Center">
+                        <Button Content="🧪  Kiểm tra kết nối SMTP"
+                                Command="{Binding TestSmtpConnectionCommand}"
+                                IsEnabled="{Binding !IsEmailTesting}"
+                                CornerRadius="6"
+                                Padding="16,10"/>
+
+                        <Button Content="💾  Lưu cấu hình Email"
+                                Command="{Binding SaveEmailSettingsCommand}"
+                                Background="#0078D4"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                CornerRadius="6"
+                                Padding="16,10"/>
+
+                        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsEmailTesting}" Width="100" Height="4" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

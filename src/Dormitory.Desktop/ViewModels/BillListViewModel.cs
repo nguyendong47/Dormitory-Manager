@@ -23,6 +23,9 @@ public partial class BillListViewModel : ViewModelBase
     private readonly IExportService _exportService;
     private readonly IFileService _fileService;
     private readonly IPdfExportService _pdfExportService;
+    private readonly IEmailService _emailService;
+    private readonly IContractService _contractService;
+    private readonly IStudentService _studentService;
 
     public ObservableCollection<string> StatusFilterOptions { get; } = new()
     {
@@ -41,6 +44,7 @@ public partial class BillListViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(MarkPaidCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteBillCommand))]
     [NotifyCanExecuteChangedFor(nameof(ExportBillPdfCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SendBillEmailCommand))]
     private BillDto? _selectedBill;
 
     [ObservableProperty]
@@ -61,7 +65,10 @@ public partial class BillListViewModel : ViewModelBase
         IDialogService dialogService,
         IExportService exportService,
         IFileService fileService,
-        IPdfExportService pdfExportService)
+        IPdfExportService pdfExportService,
+        IEmailService emailService,
+        IContractService contractService,
+        IStudentService studentService)
     {
         _billService = billService;
         _roomService = roomService;
@@ -69,6 +76,9 @@ public partial class BillListViewModel : ViewModelBase
         _exportService = exportService;
         _fileService = fileService;
         _pdfExportService = pdfExportService;
+        _emailService = emailService;
+        _contractService = contractService;
+        _studentService = studentService;
     }
 
     /// <summary>
@@ -120,6 +130,91 @@ public partial class BillListViewModel : ViewModelBase
         catch (Exception ex)
         {
             await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi xuất phiếu thu PDF: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Gửi email thông báo hóa đơn kèm tệp PDF phiếu thu tới sinh viên thuê phòng
+    /// </summary>
+    [RelayCommand]
+    public async Task SendBillEmailAsync(BillDto? bill = null)
+    {
+        var target = bill ?? SelectedBill;
+        if (target == null)
+        {
+            await _dialogService.ShowMessageAsync("Thông báo", "Vui lòng chọn một hóa đơn cần gửi email.");
+            return;
+        }
+
+        IsLoading = true;
+        try
+        {
+            // 1. Tìm thông tin sinh viên thuê phòng của hóa đơn
+            string recipientEmail = string.Empty;
+            string recipientName = string.Empty;
+
+            var contracts = await _contractService.GetAllContractsAsync(ContractStatus.Active, roomId: target.RoomId);
+            var activeContract = contracts.FirstOrDefault();
+
+            if (activeContract != null)
+            {
+                var student = await _studentService.GetStudentByIdAsync(activeContract.StudentId);
+                if (student != null)
+                {
+                    recipientName = student.FullName;
+                    recipientEmail = student.Email?.Trim() ?? string.Empty;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(recipientEmail))
+            {
+                var roomStudents = await _studentService.GetAllStudentsAsync(roomId: target.RoomId);
+                var studentWithEmail = roomStudents.FirstOrDefault(s => !string.IsNullOrWhiteSpace(s.Email));
+                if (studentWithEmail != null)
+                {
+                    recipientName = studentWithEmail.FullName;
+                    recipientEmail = studentWithEmail.Email!.Trim();
+                }
+                else if (roomStudents.Any())
+                {
+                    recipientName = roomStudents.First().FullName;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(recipientEmail))
+            {
+                await _dialogService.ShowMessageAsync(
+                    "Không tìm thấy email",
+                    $"Phòng {target.RoomNumber} (Hóa đơn {target.BillCode}) hiện chưa có sinh viên nào được cập nhật địa chỉ email trong hồ sơ.\n\nVui lòng cập nhật email sinh viên trong danh mục Quản lý sinh viên trước khi gửi thông báo.");
+                return;
+            }
+
+            // 2. Sinh dữ liệu phiếu thu định dạng PDF
+            var pdfBytes = await _pdfExportService.GenerateBillReceiptPdfAsync(target.Id);
+
+            // 3. Gửi email qua dịch vụ IEmailService
+            var sendResult = await _emailService.SendBillInvoiceEmailAsync(target.Id, recipientEmail, recipientName, pdfBytes);
+
+            if (sendResult.Success)
+            {
+                await _dialogService.ShowMessageAsync(
+                    "Gửi email thành công",
+                    $"Đã gửi hóa đơn {target.BillCode} kèm tệp PDF phiếu thu tới sinh viên {recipientName} ({recipientEmail}) thành công!");
+            }
+            else
+            {
+                await _dialogService.ShowMessageAsync(
+                    "Gửi email thất bại",
+                    $"Không thể gửi email hóa đơn: {sendResult.ErrorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi gửi email", $"Có lỗi xảy ra khi gửi email: {ex.Message}");
         }
         finally
         {

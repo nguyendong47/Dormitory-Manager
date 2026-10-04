@@ -37,6 +37,10 @@
                         Command="{Binding ExportBillPdfCommand}" 
                         CommandParameter="{Binding SelectedBill}" 
                         IsEnabled="{Binding SelectedBill, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                <Button Content="📧  Gửi email hóa đơn" 
+                        Command="{Binding SendBillEmailCommand}" 
+                        CommandParameter="{Binding SelectedBill}" 
+                        IsEnabled="{Binding SelectedBill, Converter={x:Static ObjectConverters.IsNotNull}}"/>
                 <Button Content="📊  Xuất Excel" 
                         Command="{Binding ExportToExcelCommand}"/>
 
@@ -62,6 +66,9 @@
                             <MenuItem Header="📄 In phiếu thu (PDF)" 
                                       Command="{Binding ExportBillPdfCommand}" 
                                       CommandParameter="{Binding SelectedBill}"/>
+                            <MenuItem Header="📧 Gửi email hóa đơn" 
+                                      Command="{Binding SendBillEmailCommand}" 
+                                      CommandParameter="{Binding SelectedBill}"/>
                             <MenuItem Header="💵 Đánh dấu đã thanh toán" 
                                       Command="{Binding MarkPaidCommand}"/>
                             <MenuItem Header="🗑️ Xóa hóa đơn" 
@@ -83,16 +90,23 @@
                         <DataGridTextColumn Header="Tổng cộng (đ)" Binding="{Binding TotalAmount, StringFormat='{}{0:N0}', Mode=OneWay}" Width="130"/>
                         <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status, Mode=OneWay}" Width="120"/>
                         <DataGridTextColumn Header="Hạn nộp" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}', Mode=OneWay}" Width="110"/>
-                        <DataGridTemplateColumn Header="Thao tác" Width="105">
+                        <DataGridTemplateColumn Header="Thao tác" Width="180">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="dto:BillDto">
-                                    <Button Content="📄 In PDF"
-                                            ToolTip.Tip="In phiếu thu tiền phòng &amp; dịch vụ định dạng PDF"
-                                            Command="{Binding #BillViewRoot.((vm:BillListViewModel)DataContext).ExportBillPdfCommand}"
-                                            CommandParameter="{Binding}"
-                                            Padding="8,3" FontSize="11"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Button Content="📄 In PDF"
+                                                ToolTip.Tip="In phiếu thu tiền phòng &amp; dịch vụ định dạng PDF"
+                                                Command="{Binding #BillViewRoot.((vm:BillListViewModel)DataContext).ExportBillPdfCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="8,3" FontSize="11"/>
+                                        <Button Content="📧 Gửi mail"
+                                                ToolTip.Tip="Gửi email thông báo kèm tệp PDF phiếu thu tới sinh viên"
+                                                Command="{Binding #BillViewRoot.((vm:BillListViewModel)DataContext).SendBillEmailCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="8,3" FontSize="11"
+                                                Background="#0078D4"
+                                                Foreground="White"/>
+                                    </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

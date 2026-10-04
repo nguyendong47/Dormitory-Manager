@@ -136,6 +136,7 @@ public class TestFixture : IDisposable
         services.AddScoped<IViolationService, ViolationService>();
         services.AddScoped<IExportService, ExportService>();
         services.AddScoped<IPdfExportService, PdfExportService>();
+        services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IDatabaseService, DatabaseService>();
 
         services.AddTransient<LoginViewModel>();
