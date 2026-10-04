@@ -12,6 +12,7 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly DashboardViewModel _dashboardVm;
     private readonly RoomListViewModel _roomListVm;
+    private readonly EquipmentListViewModel _equipmentListVm;
     private readonly StudentListViewModel _studentListVm;
     private readonly ContractListViewModel _contractListVm;
     private readonly BillListViewModel _billListVm;
@@ -42,6 +43,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(
         DashboardViewModel dashboardVm,
         RoomListViewModel roomListVm,
+        EquipmentListViewModel equipmentListVm,
         StudentListViewModel studentListVm,
         ContractListViewModel contractListVm,
         BillListViewModel billListVm,
@@ -52,6 +54,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         _dashboardVm = dashboardVm;
         _roomListVm = roomListVm;
+        _equipmentListVm = equipmentListVm;
         _studentListVm = studentListVm;
         _contractListVm = contractListVm;
         _billListVm = billListVm;
@@ -68,6 +71,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         NavigateToDashboardCommand = new RelayCommand(NavigateToDashboard);
         NavigateToRoomsCommand = new RelayCommand(NavigateToRooms);
+        NavigateToEquipmentsCommand = new RelayCommand(NavigateToEquipments);
         NavigateToStudentsCommand = new RelayCommand(NavigateToStudents);
         NavigateToContractsCommand = new RelayCommand(NavigateToContracts);
         NavigateToBillsCommand = new RelayCommand(NavigateToBills);
@@ -92,6 +96,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public IRelayCommand NavigateToDashboardCommand { get; }
     public IRelayCommand NavigateToRoomsCommand { get; }
+    public IRelayCommand NavigateToEquipmentsCommand { get; }
     public IRelayCommand NavigateToStudentsCommand { get; }
     public IRelayCommand NavigateToContractsCommand { get; }
     public IRelayCommand NavigateToBillsCommand { get; }
@@ -160,6 +165,13 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentView = _roomListVm;
         ActiveMenu = "Rooms";
         _ = _roomListVm.LoadRoomsAsync();
+    }
+
+    public void NavigateToEquipments()
+    {
+        CurrentView = _equipmentListVm;
+        ActiveMenu = "Equipments";
+        _ = _equipmentListVm.LoadEquipmentsAsync();
     }
 
     public void NavigateToStudents()

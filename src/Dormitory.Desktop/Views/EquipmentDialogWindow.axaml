@@ -1,0 +1,133 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        xmlns:dto="using:Dormitory.Application.DTOs"
+        x:Class="Dormitory.Desktop.Views.EquipmentDialogWindow"
+        x:DataType="vm:EquipmentDialogViewModel"
+        Title="{Binding Title}"
+        Width="520"
+        Height="560"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="24" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+            <!-- Tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="Nhập đầy đủ thông tin trang thiết bị, tài sản phòng ở bên dưới" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" 
+                           FontSize="13"/>
+            </StackPanel>
+
+            <!-- Thông báo lỗi dữ liệu nhập -->
+            <Border Grid.Row="1"
+                    Background="#FDE7E9"
+                    BorderBrush="#D13438"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10"
+                    Margin="0,0,0,14"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="⚠️" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#A80000"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Biểu mẫu nhập liệu -->
+            <ScrollViewer Grid.Row="2">
+                <Grid ColumnDefinitions="*,16,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                    <!-- Mã thiết bị -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Mã thiết bị *" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding EquipmentCode}" Watermark="VD: TB-101-01"/>
+                    </StackPanel>
+
+                    <!-- Tên thiết bị -->
+                    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Tên thiết bị *" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Name}" Watermark="VD: Điều hòa Casper"/>
+                    </StackPanel>
+
+                    <!-- Phòng đặt thiết bị -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Phòng đặt thiết bị *" FontWeight="Medium" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding Rooms}"
+                                  SelectedItem="{Binding SelectedRoom}"
+                                  HorizontalAlignment="Stretch"
+                                  PlaceholderText="-- Chọn phòng --">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="dto:RoomDto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="{Binding RoomNumber, StringFormat='Phòng {0}'}" FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding Building, StringFormat='- Tòa {0}'}" 
+                                                   Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Trạng thái thiết bị -->
+                    <StackPanel Grid.Row="1" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Trạng thái" FontWeight="Medium" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding EquipmentStatuses}"
+                                  SelectedItem="{Binding Status}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Số lượng -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Số lượng *" FontWeight="Medium" FontSize="13"/>
+                        <NumericUpDown Value="{Binding Quantity}" Minimum="1" Maximum="1000" FormatString="0" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Đơn giá ước tính -->
+                    <StackPanel Grid.Row="2" Grid.Column="2" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Đơn giá (đ)" FontWeight="Medium" FontSize="13"/>
+                        <NumericUpDown Value="{Binding Price}" 
+                                       Minimum="0" 
+                                       Increment="50000" 
+                                       FormatString="{}{0:N0}"
+                                       HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Ghi chú / Tình trạng ban đầu -->
+                    <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Spacing="4" Margin="0,0,0,12">
+                        <TextBlock Text="Ghi chú thiết bị" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Notes}"
+                                 AcceptsReturn="True"
+                                 Height="70"
+                                 TextWrapping="Wrap"
+                                 Watermark="Ghi chú thông tin bảo hành, tình trạng hoặc nhãn hiệu..."/>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- Thanh nút tác vụ -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="12"
+                        Margin="0,16,0,0">
+                <Button Content="Hủy bỏ"
+                        Command="{Binding CancelCommand}"
+                        Width="100"
+                        HorizontalContentAlignment="Center"/>
+                <Button Content="Lưu dữ liệu"
+                        Command="{Binding SaveCommand}"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        Width="120"
+                        HorizontalContentAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,226 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             xmlns:dto="using:Dormitory.Application.DTOs"
+             xmlns:conv="using:Dormitory.Desktop.Converters"
+             xmlns:views="using:Dormitory.Desktop.Views"
+             x:Class="Dormitory.Desktop.Views.EquipmentListView"
+             x:DataType="vm:EquipmentListViewModel"
+             x:Name="EquipmentViewRoot">
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="24">
+        <!-- Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="🛋️ Quản Lý Tài Sản &amp; Trang Thiết Bị Phòng" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Theo dõi hiện trạng, bảo trì và kiểm kê tài sản, trang thiết bị phòng ở ký túc xá" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Button Content="🔄 Làm mới" Command="{Binding LoadEquipmentsCommand}"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Khối thẻ KPI thống kê tài sản -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Margin="0,0,0,16">
+            <!-- Thẻ 1: Tổng số thiết bị -->
+            <Border Grid.Column="0" Margin="0,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="📦 Tổng số thiết bị" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding TotalCount}" FontSize="28" FontWeight="Bold" Foreground="#0078D4"/>
+                    <TextBlock Text="Tài sản phòng KTX" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Thẻ 2: Hoạt động tốt -->
+            <Border Grid.Column="1" Margin="8,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="✨ Hoạt động tốt" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding GoodCount}" FontSize="28" FontWeight="Bold" Foreground="#107C41"/>
+                    <TextBlock Text="Sẵn sàng sử dụng" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Thẻ 3: Cần sửa chữa -->
+            <Border Grid.Column="2" Margin="8,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="⚠️ Cần sửa chữa" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding NeedsRepairCount}" FontSize="28" FontWeight="Bold" Foreground="#FFB900"/>
+                    <TextBlock Text="Chờ khắc phục / bảo trì" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Thẻ 4: Hỏng hóc -->
+            <Border Grid.Column="3" Margin="8,0,0,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="❌ Hỏng hóc" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding BrokenCount}" FontSize="28" FontWeight="Bold" Foreground="#D83B01"/>
+                    <TextBlock Text="Cần thanh lý / thay mới" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Main Content (Toolbar + DataGrid) -->
+        <Grid Grid.Row="2" RowDefinitions="Auto,*">
+            <!-- Toolbar tìm kiếm và lọc dữ liệu -->
+            <WrapPanel Grid.Row="0" Margin="0,0,0,12" VerticalAlignment="Center">
+                <!-- Thao tác CRUD -->
+                <Button Content="➕ Thêm thiết bị" 
+                        Command="{Binding AddEquipmentCommand}"
+                        Background="#0078D4" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"
+                        Margin="0,0,10,6"/>
+                <Button Content="✏️ Chỉnh sửa" 
+                        Command="{Binding EditEquipmentCommand}"
+                        Margin="0,0,10,6"/>
+                <Button Content="⚠️ Báo sự cố" 
+                        Command="{Binding ReportIssueCommand}"
+                        Margin="0,0,10,6"/>
+                <Button Content="🗑️ Xóa thiết bị" 
+                        Command="{Binding DeleteEquipmentCommand}"
+                        Margin="0,0,10,6"/>
+
+                <!-- Thanh tìm kiếm -->
+                <TextBox Width="210" 
+                         Watermark="Tìm mã hoặc tên thiết bị..." 
+                         Text="{Binding SearchText}"
+                         Margin="0,0,10,6"/>
+                <Button Content="🔍 Tìm" 
+                        Command="{Binding LoadEquipmentsCommand}"
+                        Margin="0,0,10,6"/>
+
+                <!-- Lọc theo phòng -->
+                <TextBlock Text="Phòng:" VerticalAlignment="Center" Margin="6,0,6,6" FontWeight="Medium"/>
+                <ComboBox ItemsSource="{Binding Rooms}"
+                          SelectedItem="{Binding SelectedRoomFilter}"
+                          Width="160"
+                          PlaceholderText="-- Tất cả phòng --"
+                          Margin="0,0,10,6">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="dto:RoomDto">
+                            <TextBlock Text="{Binding RoomNumber, StringFormat='Phòng {0}'}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!-- Lọc theo trạng thái -->
+                <TextBlock Text="Trạng thái:" VerticalAlignment="Center" Margin="6,0,6,6" FontWeight="Medium"/>
+                <ComboBox ItemsSource="{Binding StatusFilterOptions}"
+                          SelectedItem="{Binding SelectedStatusOption}"
+                          Width="140"
+                          Margin="0,0,10,6"/>
+
+                <!-- Nút xóa bộ lọc -->
+                <Button Content="❌ Xóa lọc" 
+                        Command="{Binding ClearFiltersCommand}"
+                        Margin="0,0,10,6"/>
+            </WrapPanel>
+
+            <!-- Main DataGrid -->
+            <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding Equipments}"
+                          SelectedItem="{Binding SelectedEquipment}"
+                          DoubleTapped="OnDataGridDoubleTapped"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          CanUserResizeColumns="True"
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <!-- Mã TB -->
+                        <DataGridTextColumn Header="Mã thiết bị" 
+                                            Binding="{Binding EquipmentCode, Mode=OneWay}" 
+                                            Width="120"/>
+
+                        <!-- Tên thiết bị -->
+                        <DataGridTextColumn Header="Tên thiết bị" 
+                                            Binding="{Binding Name, Mode=OneWay}" 
+                                            Width="180"/>
+
+                        <!-- Số phòng -->
+                        <DataGridTextColumn Header="Phòng" 
+                                            Binding="{Binding RoomNumber, StringFormat='Phòng {0}', Mode=OneWay}" 
+                                            Width="100"/>
+
+                        <!-- Tòa nhà -->
+                        <DataGridTextColumn Header="Tòa nhà" 
+                                            Binding="{Binding BuildingName, StringFormat='Tòa {0}', Mode=OneWay}" 
+                                            Width="100"/>
+
+                        <!-- Số lượng -->
+                        <DataGridTextColumn Header="Số lượng" 
+                                            Binding="{Binding Quantity, Mode=OneWay}" 
+                                            Width="85"/>
+
+                        <!-- Đơn giá -->
+                        <DataGridTextColumn Header="Đơn giá" 
+                                            Binding="{Binding Price, Mode=OneWay, StringFormat='{}{0:N0} đ'}" 
+                                            Width="120"/>
+
+                        <!-- Trạng thái Badge -->
+                        <DataGridTemplateColumn Header="Trạng thái" Width="130">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:EquipmentDto">
+                                    <Border Background="{Binding Status, Converter={x:Static conv:EquipmentStatusToBadgeBackgroundConverter.Instance}}"
+                                            BorderBrush="{Binding Status, Converter={x:Static conv:EquipmentStatusToBadgeBorderConverter.Instance}}"
+                                            BorderThickness="1"
+                                            CornerRadius="10"
+                                            Padding="8,3"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding StatusText}" 
+                                                   Foreground="{Binding Status, Converter={x:Static conv:EquipmentStatusToBadgeForegroundConverter.Instance}}"
+                                                   FontSize="12" 
+                                                   FontWeight="SemiBold"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Ngày bảo trì gần nhất -->
+                        <DataGridTextColumn Header="Bảo trì gần nhất" 
+                                            Binding="{Binding LastMaintainedAt, Mode=OneWay, StringFormat='{}{0:dd/MM/yyyy}'}" 
+                                            Width="130"/>
+
+                        <!-- Ghi chú -->
+                        <DataGridTextColumn Header="Ghi chú" 
+                                            Binding="{Binding Notes, Mode=OneWay}" 
+                                            Width="*"/>
+
+                        <!-- Thao tác trên từng dòng -->
+                        <DataGridTemplateColumn Header="Thao tác" Width="190">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:EquipmentDto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <Button Content="✏️" 
+                                                ToolTip.Tip="Chỉnh sửa thiết bị"
+                                                Command="{Binding #EquipmentViewRoot.((vm:EquipmentListViewModel)DataContext).EditEquipmentItemCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="6,4" FontSize="12"/>
+                                        <Button Content="⚠️" 
+                                                ToolTip.Tip="Báo hỏng / sự cố"
+                                                Command="{Binding #EquipmentViewRoot.((vm:EquipmentListViewModel)DataContext).ReportIssueItemCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="6,4" FontSize="12"/>
+                                        <Button Content="🗑️" 
+                                                ToolTip.Tip="Xóa thiết bị"
+                                                Command="{Binding #EquipmentViewRoot.((vm:EquipmentListViewModel)DataContext).DeleteEquipmentItemCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="6,4" FontSize="12"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

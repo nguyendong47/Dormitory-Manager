@@ -16,6 +16,9 @@
         <DataTemplate DataType="{x:Type vm:RoomListViewModel}">
             <views:RoomListView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EquipmentListViewModel}">
+            <views:EquipmentListView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:StudentListViewModel}">
             <views:StudentListView/>
         </DataTemplate>
@@ -59,6 +62,11 @@
 
                         <Button Content="🏠  Phòng ở"
                                 Command="{Binding NavigateToRoomsCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
+
+                        <Button Content="🛋️  Quản lý tài sản"
+                                Command="{Binding NavigateToEquipmentsCommand}"
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                                 Padding="12,10" CornerRadius="6"/>
 

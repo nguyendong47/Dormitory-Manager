@@ -65,6 +65,8 @@ public partial class App : Avalonia.Application
         services.AddTransient<LoginViewModel>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<RoomListViewModel>();
+        services.AddTransient<EquipmentListViewModel>();
+        services.AddTransient<EquipmentDialogViewModel>();
         services.AddTransient<StudentListViewModel>();
         services.AddTransient<ContractListViewModel>();
         services.AddTransient<BillListViewModel>();
