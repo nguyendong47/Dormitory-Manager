@@ -56,6 +56,12 @@ fi
 chmod +x "$BIN_FILE"
 echo "✅ Tệp thực thi Linux đã sẵn sàng: $BIN_FILE"
 
+# Sao chép cơ sở dữ liệu mẫu ban đầu nếu có vào gói phát hành
+if [ -f "$REPO_ROOT/dormitory.db" ]; then
+    echo "📦 Sao chép cơ sở dữ liệu mẫu 'dormitory.db' vào gói phát hành..."
+    cp "$REPO_ROOT/dormitory.db" "$DIST_DIR/dormitory.db"
+fi
+
 # 3. Tạo tệp nén TAR.GZ nếu có công cụ tar
 if command -v tar &> /dev/null; then
     echo "📦 [2/3] Đang tạo tệp lưu trữ TAR.GZ phân phối ($TAR_FILE)..."

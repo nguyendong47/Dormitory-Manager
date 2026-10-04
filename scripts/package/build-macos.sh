@@ -76,6 +76,12 @@ if [ ! -f "$PUBLISH_DIR/Dormitory.Desktop" ]; then
     exit 1
 fi
 
+# Sao chép cơ sở dữ liệu mẫu ban đầu nếu có vào publish output
+if [ -f "$REPO_ROOT/dormitory.db" ]; then
+    echo "📦 Sao chép cơ sở dữ liệu mẫu 'dormitory.db' vào gói ứng dụng..."
+    cp "$REPO_ROOT/dormitory.db" "$PUBLISH_DIR/dormitory.db"
+fi
+
 # 3. Tạo cấu trúc macOS App Bundle
 echo "📂 [2/4] Đang tạo cấu trúc macOS App Bundle ($APP_BUNDLE)..."
 mkdir -p "$APP_BUNDLE/Contents/MacOS"

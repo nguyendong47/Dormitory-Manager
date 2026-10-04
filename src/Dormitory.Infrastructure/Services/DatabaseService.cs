@@ -1,6 +1,7 @@
 using System.Globalization;
 using Dormitory.Application.DTOs;
 using Dormitory.Application.Interfaces;
+using Dormitory.Infrastructure.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -42,7 +43,7 @@ public class DatabaseService : IDatabaseService
         // 1. Ưu tiên đường dẫn tùy chỉnh được cấu hình trực tiếp
         if (!string.IsNullOrWhiteSpace(_customDbPath))
         {
-            return Path.GetFullPath(_customDbPath);
+            return DatabasePathResolver.ResolveDatabasePath(_customDbPath);
         }
 
         // 2. Lấy chuỗi kết nối từ IConfiguration nếu có (ưu tiên DormitoryDb)
@@ -58,27 +59,8 @@ public class DatabaseService : IDatabaseService
             connStr = dbContext.Database.GetConnectionString();
         }
 
-        // 4. Giá trị mặc định nếu không có cấu hình hoặc chuỗi kết nối rỗng
-        if (string.IsNullOrWhiteSpace(connStr))
-        {
-            connStr = "Data Source=dormitory.db";
-        }
-
-        // Trích xuất DataSource từ connection string của SQLite
-        try
-        {
-            var builder = new SqliteConnectionStringBuilder(connStr);
-            if (!string.IsNullOrWhiteSpace(builder.DataSource))
-            {
-                return Path.GetFullPath(builder.DataSource);
-            }
-        }
-        catch
-        {
-            // Bỏ qua lỗi cú pháp và fallback về dormitory.db
-        }
-
-        return Path.GetFullPath("dormitory.db");
+        // 4. Giải quyết đường dẫn tuyệt đối an toàn qua DatabasePathResolver
+        return DatabasePathResolver.ResolveDatabasePathFromConnectionString(connStr);
     }
 
     /// <summary>

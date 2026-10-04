@@ -36,8 +36,9 @@ public partial class App : Avalonia.Application
             .Build();
         services.AddSingleton<IConfiguration>(config);
 
-        // 1. Cấu hình DbContext SQLite với chuỗi kết nối động từ configuration (fallback: dormitory.db)
-        var connectionString = config.GetConnectionString("DormitoryDb") ?? "Data Source=dormitory.db";
+        // 1. Cấu hình DbContext SQLite với chuỗi kết nối an toàn giải quyết qua DatabasePathResolver
+        var rawConnectionString = config.GetConnectionString("DormitoryDb") ?? "Data Source=dormitory.db";
+        var connectionString = DatabasePathResolver.BuildConnectionString(rawConnectionString);
         services.AddDbContext<DormitoryDbContext>(options =>
             options.UseSqlite(connectionString));
 

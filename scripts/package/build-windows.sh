@@ -55,6 +55,12 @@ fi
 
 echo "✅ Tệp thực thi Windows đã sẵn sàng: $EXE_FILE"
 
+# Sao chép cơ sở dữ liệu mẫu ban đầu nếu có vào gói phát hành
+if [ -f "$REPO_ROOT/dormitory.db" ]; then
+    echo "📦 Sao chép cơ sở dữ liệu mẫu 'dormitory.db' vào gói phát hành..."
+    cp "$REPO_ROOT/dormitory.db" "$DIST_DIR/dormitory.db"
+fi
+
 # 3. Tạo tệp nén ZIP nếu có công cụ zip
 if command -v zip &> /dev/null; then
     echo "📦 [2/3] Đang tạo tệp nén ZIP phân phối ($ZIP_FILE)..."

@@ -52,8 +52,9 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            // Mặc định sử dụng SQLite database lưu tại thư mục thực thi hoặc root
-            optionsBuilder.UseSqlite("Data Source=dormitory.db");
+            // Mặc định sử dụng SQLite database với đường dẫn an toàn qua DatabasePathResolver
+            var connectionString = DatabasePathResolver.BuildConnectionString("Data Source=dormitory.db");
+            optionsBuilder.UseSqlite(connectionString);
         }
     }
 
