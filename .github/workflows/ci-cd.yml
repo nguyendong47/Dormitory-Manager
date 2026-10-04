@@ -1,0 +1,161 @@
+# ==============================================================================
+# Dormitory Manager - CI/CD Pipeline
+# Tự động hóa quá trình Kiểm thử liên tục (CI) và Đóng gói phát hành (CD)
+# Đa nền tảng: macOS (Apple Silicon arm64), Windows (x64), Linux (x64)
+# ==============================================================================
+
+name: CI/CD Pipeline - Build, Test & Release
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # ----------------------------------------------------------------------------
+  # Job 1: Kiểm thử và xác thực mã nguồn (Continuous Integration)
+  # ----------------------------------------------------------------------------
+  test-and-verify:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build solution (Release)
+        run: dotnet build Dormitory.sln -c Release
+
+      - name: Run unit & integration tests
+        run: dotnet test Dormitory.sln -c Release --verbosity normal
+
+  # ----------------------------------------------------------------------------
+  # Job 2: Đóng gói ứng dụng cho macOS (Apple Silicon arm64)
+  # ----------------------------------------------------------------------------
+  package-macos:
+    name: Package macOS Application
+    needs: test-and-verify
+    runs-on: macos-14
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Make packaging scripts executable
+        run: chmod +x scripts/package/*.sh
+
+      - name: Package macOS DMG (arm64)
+        run: bash scripts/package/build-macos.sh arm64
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dormitory-manager-macos-arm64
+          path: dist/macos-arm64/DormitoryManager-v2.0.0-macOS-arm64.dmg
+          if-no-files-found: error
+
+  # ----------------------------------------------------------------------------
+  # Job 3: Đóng gói ứng dụng cho Windows (win-x64)
+  # ----------------------------------------------------------------------------
+  package-windows:
+    name: Package Windows Application
+    needs: test-and-verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install packaging dependencies (zip)
+        run: sudo apt-get update && sudo apt-get install -y zip
+
+      - name: Make packaging scripts executable
+        run: chmod +x scripts/package/*.sh
+
+      - name: Package Windows ZIP (win-x64)
+        run: bash scripts/package/build-windows.sh win-x64
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dormitory-manager-windows-x64
+          path: dist/windows-x64/DormitoryManager-v2.0.0-Windows-x64.zip
+          if-no-files-found: error
+
+  # ----------------------------------------------------------------------------
+  # Job 4: Đóng gói ứng dụng cho Linux (linux-x64)
+  # ----------------------------------------------------------------------------
+  package-linux:
+    name: Package Linux Application
+    needs: test-and-verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Make packaging scripts executable
+        run: chmod +x scripts/package/*.sh
+
+      - name: Package Linux Tarball (linux-x64)
+        run: bash scripts/package/build-linux.sh linux-x64
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dormitory-manager-linux-x64
+          path: dist/linux-x64/DormitoryManager-v2.0.0-Linux-x64.tar.gz
+          if-no-files-found: error
+
+  # ----------------------------------------------------------------------------
+  # Job 5: Tự động phát hành phiên bản (GitHub Release) khi gắn thẻ tag v*
+  # ----------------------------------------------------------------------------
+  create-release:
+    name: Create GitHub Release
+    needs: [package-macos, package-windows, package-linux]
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all packaged artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/dormitory-manager-macos-arm64/*.dmg
+            artifacts/dormitory-manager-windows-x64/*.zip
+            artifacts/dormitory-manager-linux-x64/*.tar.gz
+          generate_release_notes: true
