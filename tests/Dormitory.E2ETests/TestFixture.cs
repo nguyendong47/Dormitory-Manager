@@ -133,6 +133,7 @@ public class TestFixture : IDisposable
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IEquipmentService, EquipmentService>();
+        services.AddScoped<IViolationService, ViolationService>();
         services.AddScoped<IExportService, ExportService>();
         services.AddScoped<IPdfExportService, PdfExportService>();
         services.AddScoped<IDatabaseService, DatabaseService>();
@@ -146,6 +147,8 @@ public class TestFixture : IDisposable
         services.AddTransient<ContractListViewModel>();
         services.AddTransient<BillListViewModel>();
         services.AddTransient<EmployeeListViewModel>();
+        services.AddTransient<ViolationListViewModel>();
+        services.AddTransient<ViolationDialogViewModel>();
         services.AddTransient<SystemSettingsViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
@@ -157,6 +160,7 @@ public class TestFixture : IDisposable
     public MainWindowViewModel CreateMainWindowViewModel() => GetService<MainWindowViewModel>();
     public EquipmentListViewModel CreateEquipmentListViewModel() => GetService<EquipmentListViewModel>();
     public BillListViewModel CreateBillListViewModel() => GetService<BillListViewModel>();
+    public ViolationListViewModel CreateViolationListViewModel() => GetService<ViolationListViewModel>();
 
     public void Dispose()
     {

@@ -1,0 +1,273 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             xmlns:dto="using:Dormitory.Application.DTOs"
+             xmlns:conv="using:Dormitory.Desktop.Converters"
+             xmlns:views="using:Dormitory.Desktop.Views"
+             x:Class="Dormitory.Desktop.Views.ViolationListView"
+             x:DataType="vm:ViolationListViewModel"
+             x:Name="ViolationViewRoot">
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="24">
+        <!-- Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="⚖️ Quản Lý Vi Phạm Nội Quy &amp; Kỷ Luật" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Lập biên bản vi phạm, theo dõi mức độ kỷ luật và trừ điểm rèn luyện sinh viên" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Button Content="🔄 Làm mới" Command="{Binding LoadViolationsCommand}"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Khối thẻ KPI thống kê biên bản vi phạm -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Margin="0,0,0,16">
+            <!-- Thẻ 1: Tổng số biên bản -->
+            <Border Grid.Column="0" Margin="0,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="📋 Tổng số biên bản" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding TotalCount}" FontSize="28" FontWeight="Bold" Foreground="#0078D4"/>
+                    <TextBlock Text="Biên bản đã lập" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Thẻ 2: Chờ xử lý -->
+            <Border Grid.Column="1" Margin="8,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="⏳ Chờ xử lý" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding PendingCount}" FontSize="28" FontWeight="Bold" Foreground="#FFB900"/>
+                    <TextBlock Text="Cần kết luận / khắc phục" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Thẻ 3: Đã xử lý -->
+            <Border Grid.Column="2" Margin="8,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="✅ Đã xử lý" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding ResolvedCount}" FontSize="28" FontWeight="Bold" Foreground="#107C41"/>
+                    <TextBlock Text="Đã khắc phục &amp; phạt" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Thẻ 4: Mức độ nghiêm trọng -->
+            <Border Grid.Column="3" Margin="8,0,0,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="16" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="🚨 Nghiêm trọng" FontSize="13" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding CriticalCount}" FontSize="28" FontWeight="Bold" Foreground="#D13438"/>
+                    <TextBlock Text="Cảnh cáo &amp; Buộc rời KTX" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Main Content (Toolbar + DataGrid) -->
+        <Grid Grid.Row="2" RowDefinitions="Auto,*">
+            <!-- Toolbar tìm kiếm và lọc dữ liệu -->
+            <WrapPanel Grid.Row="0" Margin="0,0,0,12" VerticalAlignment="Center">
+                <!-- Thao tác CRUD -->
+                <Button Content="➕ Lập biên bản" 
+                        Command="{Binding AddViolationCommand}"
+                        Background="#0078D4" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"
+                        Margin="0,0,10,6"/>
+                <Button Content="✏️ Chỉnh sửa" 
+                        Command="{Binding EditViolationCommand}"
+                        Margin="0,0,10,6"/>
+                <Button Content="✅ Xử lý biên bản" 
+                        Command="{Binding ResolveViolationCommand}"
+                        Margin="0,0,10,6"/>
+                <Button Content="🗑️ Xóa biên bản" 
+                        Command="{Binding DeleteViolationCommand}"
+                        Margin="0,0,10,6"/>
+
+                <!-- Thanh tìm kiếm -->
+                <TextBox Width="200" 
+                         Watermark="Tìm mã BB, tên SV, tiêu đề..." 
+                         Text="{Binding SearchText}"
+                         Margin="0,0,10,6"/>
+                <Button Content="🔍 Tìm" 
+                        Command="{Binding LoadViolationsCommand}"
+                        Margin="0,0,10,6"/>
+
+                <!-- Lọc theo phòng -->
+                <TextBlock Text="Phòng:" VerticalAlignment="Center" Margin="6,0,6,6" FontWeight="Medium"/>
+                <ComboBox ItemsSource="{Binding Rooms}"
+                          SelectedItem="{Binding SelectedRoomFilter}"
+                          Width="150"
+                          PlaceholderText="-- Tất cả phòng --"
+                          Margin="0,0,10,6">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="dto:RoomDto">
+                            <TextBlock Text="{Binding RoomNumber, StringFormat='Phòng {0}'}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!-- Lọc theo mức độ -->
+                <TextBlock Text="Mức độ:" VerticalAlignment="Center" Margin="6,0,6,6" FontWeight="Medium"/>
+                <ComboBox ItemsSource="{Binding SeverityFilterOptions}"
+                          SelectedItem="{Binding SelectedSeverityOption}"
+                          Width="175"
+                          Margin="0,0,10,6"/>
+
+                <!-- Lọc theo trạng thái -->
+                <TextBlock Text="Trạng thái:" VerticalAlignment="Center" Margin="6,0,6,6" FontWeight="Medium"/>
+                <ComboBox ItemsSource="{Binding StatusFilterOptions}"
+                          SelectedItem="{Binding SelectedStatusOption}"
+                          Width="130"
+                          Margin="0,0,10,6"/>
+
+                <!-- Nút xóa bộ lọc -->
+                <Button Content="❌ Xóa lọc" 
+                        Command="{Binding ClearFiltersCommand}"
+                        Margin="0,0,10,6"/>
+            </WrapPanel>
+
+            <!-- Main DataGrid -->
+            <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding Violations}"
+                          SelectedItem="{Binding SelectedViolation}"
+                          DoubleTapped="OnDataGridDoubleTapped"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          CanUserResizeColumns="True"
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <!-- Mã biên bản -->
+                        <DataGridTextColumn Header="Mã BB" 
+                                            Binding="{Binding ViolationCode, Mode=OneWay}" 
+                                            Width="110"/>
+
+                        <!-- Ngày vi phạm -->
+                        <DataGridTextColumn Header="Ngày vi phạm" 
+                                            Binding="{Binding ViolationDate, Mode=OneWay, StringFormat='{}{0:dd/MM/yyyy}'}" 
+                                            Width="115"/>
+
+                        <!-- Sinh viên vi phạm -->
+                        <DataGridTemplateColumn Header="Sinh viên" Width="170">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ViolationDto">
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock Text="{Binding StudentName}" FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding StudentCode, StringFormat='MSSV: {0}'}" 
+                                                   FontSize="11" 
+                                                   Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Phòng / Tòa nhà -->
+                        <DataGridTemplateColumn Header="Phòng / Tòa" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ViolationDto">
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock Text="{Binding RoomNumber, StringFormat='Phòng {0}'}" FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding BuildingName, StringFormat='Tòa {0}'}" 
+                                                   FontSize="11" 
+                                                   Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Tiêu đề vi phạm -->
+                        <DataGridTextColumn Header="Hành vi vi phạm" 
+                                            Binding="{Binding Title, Mode=OneWay}" 
+                                            Width="*"/>
+
+                        <!-- Mức độ vi phạm (Badge) -->
+                        <DataGridTemplateColumn Header="Mức độ" Width="170">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ViolationDto">
+                                    <Border Background="{Binding Severity, Converter={x:Static conv:ViolationSeverityToBadgeBackgroundConverter.Instance}}"
+                                            BorderBrush="{Binding Severity, Converter={x:Static conv:ViolationSeverityToBadgeBorderConverter.Instance}}"
+                                            BorderThickness="1"
+                                            CornerRadius="10"
+                                            Padding="8,3"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding SeverityText}" 
+                                                   Foreground="{Binding Severity, Converter={x:Static conv:ViolationSeverityToBadgeForegroundConverter.Instance}}"
+                                                   FontSize="12" 
+                                                   FontWeight="SemiBold"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Điểm rèn luyện bị trừ -->
+                        <DataGridTemplateColumn Header="Điểm trừ" Width="85">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ViolationDto">
+                                    <TextBlock Text="{Binding DemeritPoints, StringFormat='-{0} đ'}" 
+                                               Foreground="#D13438" 
+                                               FontWeight="SemiBold" 
+                                               VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Tiền phạt -->
+                        <DataGridTextColumn Header="Tiền phạt" 
+                                            Binding="{Binding FineAmount, Mode=OneWay, StringFormat='{}{0:N0} đ'}" 
+                                            Width="110"/>
+
+                        <!-- Trạng thái Badge -->
+                        <DataGridTemplateColumn Header="Trạng thái" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ViolationDto">
+                                    <Border Background="{Binding Status, Converter={x:Static conv:ViolationStatusToBadgeBackgroundConverter.Instance}}"
+                                            BorderBrush="{Binding Status, Converter={x:Static conv:ViolationStatusToBadgeBorderConverter.Instance}}"
+                                            BorderThickness="1"
+                                            CornerRadius="10"
+                                            Padding="8,3"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding StatusText}" 
+                                                   Foreground="{Binding Status, Converter={x:Static conv:ViolationStatusToBadgeForegroundConverter.Instance}}"
+                                                   FontSize="12" 
+                                                   FontWeight="SemiBold"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Thao tác trên từng dòng -->
+                        <DataGridTemplateColumn Header="Thao tác" Width="160">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ViolationDto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <Button Content="✏️" 
+                                                ToolTip.Tip="Chỉnh sửa biên bản"
+                                                Command="{Binding #ViolationViewRoot.((vm:ViolationListViewModel)DataContext).EditViolationItemCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="6,4" FontSize="12"/>
+                                        <Button Content="✅" 
+                                                ToolTip.Tip="Xử lý / Giải quyết"
+                                                Command="{Binding #ViolationViewRoot.((vm:ViolationListViewModel)DataContext).ResolveViolationItemCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="6,4" FontSize="12"/>
+                                        <Button Content="🗑️" 
+                                                ToolTip.Tip="Xóa biên bản"
+                                                Command="{Binding #ViolationViewRoot.((vm:ViolationListViewModel)DataContext).DeleteViolationItemCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="6,4" FontSize="12"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

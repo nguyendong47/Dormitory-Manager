@@ -34,6 +34,9 @@
         <DataTemplate DataType="{x:Type vm:EmployeeListViewModel}">
             <views:EmployeeListView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ViolationListViewModel}">
+            <views:ViolationListView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:SystemSettingsViewModel}">
             <views:SystemSettingsView/>
         </DataTemplate>
@@ -90,6 +93,11 @@
 
                         <Button Content="👤  Nhân viên"
                                 Command="{Binding NavigateToEmployeesCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
+
+                        <Button Content="⚖️  Kỷ luật &amp; Vi phạm"
+                                Command="{Binding NavigateToViolationsCommand}"
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                                 Padding="12,10" CornerRadius="6"/>
 

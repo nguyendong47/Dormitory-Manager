@@ -17,6 +17,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ContractListViewModel _contractListVm;
     private readonly BillListViewModel _billListVm;
     private readonly EmployeeListViewModel _employeeListVm;
+    private readonly ViolationListViewModel _violationListVm;
     private readonly SystemSettingsViewModel _systemSettingsVm;
     private readonly IUserSession _userSession;
 
@@ -48,6 +49,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ContractListViewModel contractListVm,
         BillListViewModel billListVm,
         EmployeeListViewModel employeeListVm,
+        ViolationListViewModel violationListVm,
         SystemSettingsViewModel systemSettingsVm,
         LoginViewModel loginVm,
         IUserSession userSession)
@@ -59,6 +61,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _contractListVm = contractListVm;
         _billListVm = billListVm;
         _employeeListVm = employeeListVm;
+        _violationListVm = violationListVm;
         _systemSettingsVm = systemSettingsVm;
         LoginVm = loginVm;
         _userSession = userSession;
@@ -89,6 +92,7 @@ public partial class MainWindowViewModel : ViewModelBase
         NavigateToContractsCommand = new RelayCommand(NavigateToContracts);
         NavigateToBillsCommand = new RelayCommand(NavigateToBills);
         NavigateToEmployeesCommand = new RelayCommand(NavigateToEmployees);
+        NavigateToViolationsCommand = new RelayCommand(NavigateToViolations);
         NavigateToSettingsCommand = new AsyncRelayCommand(NavigateToSettingsAsync);
         LogoutCommand = new RelayCommand(Logout);
     }
@@ -100,6 +104,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public IRelayCommand NavigateToContractsCommand { get; }
     public IRelayCommand NavigateToBillsCommand { get; }
     public IRelayCommand NavigateToEmployeesCommand { get; }
+    public IRelayCommand NavigateToViolationsCommand { get; }
     public IAsyncRelayCommand NavigateToSettingsCommand { get; }
     public IRelayCommand LogoutCommand { get; }
 
@@ -200,6 +205,13 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentView = _employeeListVm;
         ActiveMenu = "Employees";
         _ = _employeeListVm.LoadEmployeesAsync();
+    }
+
+    public void NavigateToViolations()
+    {
+        CurrentView = _violationListVm;
+        ActiveMenu = "Violations";
+        _ = _violationListVm.LoadViolationsAsync();
     }
 
     public async Task NavigateToSettingsAsync()

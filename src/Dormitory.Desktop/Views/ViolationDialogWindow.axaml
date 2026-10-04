@@ -1,0 +1,203 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        xmlns:dto="using:Dormitory.Application.DTOs"
+        x:Class="Dormitory.Desktop.Views.ViolationDialogWindow"
+        x:DataType="vm:ViolationDialogViewModel"
+        Title="{Binding DialogTitle}"
+        Width="560"
+        Height="650"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="24" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+            <!-- Tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="{Binding DialogTitle}" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="Điền đầy đủ thông tin biên bản vi phạm kỷ luật nội quy ký túc xá bên dưới" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" 
+                           FontSize="13"/>
+            </StackPanel>
+
+            <!-- Thông báo lỗi nghiệp vụ / xác thực -->
+            <Border Grid.Row="1"
+                    Background="#FDE7E9"
+                    BorderBrush="#D13438"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10"
+                    Margin="0,0,0,14"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="⚠️" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#A80000"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Biểu mẫu nhập liệu -->
+            <ScrollViewer Grid.Row="2">
+                <StackPanel Spacing="12">
+                    <!-- Sinh viên vi phạm và Phòng ở -->
+                    <Grid ColumnDefinitions="*,16,*">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Sinh viên vi phạm *" FontWeight="Medium" FontSize="13"/>
+                            <ComboBox ItemsSource="{Binding Students}"
+                                      SelectedItem="{Binding SelectedStudent}"
+                                      IsEnabled="{Binding !IsResolveMode}"
+                                      HorizontalAlignment="Stretch"
+                                      PlaceholderText="-- Chọn sinh viên --">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="dto:StudentDto">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <TextBlock Text="{Binding FullName}" FontWeight="Medium"/>
+                                            <TextBlock Text="{Binding StudentCode, StringFormat='({0})'}" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="Phòng xảy ra vi phạm *" FontWeight="Medium" FontSize="13"/>
+                            <ComboBox ItemsSource="{Binding Rooms}"
+                                      SelectedItem="{Binding SelectedRoom}"
+                                      IsEnabled="{Binding !IsResolveMode}"
+                                      HorizontalAlignment="Stretch"
+                                      PlaceholderText="-- Chọn phòng --">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="dto:RoomDto">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <TextBlock Text="{Binding RoomNumber, StringFormat='Phòng {0}'}" FontWeight="Medium"/>
+                                            <TextBlock Text="{Binding Building, StringFormat='- Tòa {0}'}" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Tiêu đề vi phạm -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Tiêu đề / Hành vi vi phạm *" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Title}"
+                                 IsEnabled="{Binding !IsResolveMode}"
+                                 Watermark="VD: Nấu ăn trong phòng bằng bếp từ công suất lớn..."/>
+                    </StackPanel>
+
+                    <!-- Mức độ nghiêm trọng và Ngày vi phạm -->
+                    <Grid ColumnDefinitions="*,16,*">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Mức độ nghiêm trọng *" FontWeight="Medium" FontSize="13"/>
+                            <ComboBox ItemsSource="{Binding SeverityOptions}"
+                                      SelectedItem="{Binding SelectedSeverityItem}"
+                                      IsEnabled="{Binding !IsResolveMode}"
+                                      HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:SeverityOptionItem">
+                                        <TextBlock Text="{Binding DisplayName}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="Ngày vi phạm *" FontWeight="Medium" FontSize="13"/>
+                            <DatePicker SelectedDate="{Binding ViolationDate}"
+                                        IsEnabled="{Binding !IsResolveMode}"
+                                        HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Điểm rèn luyện bị trừ và Tiền phạt -->
+                    <Grid ColumnDefinitions="*,16,*">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Điểm rèn luyện bị trừ *" FontWeight="Medium" FontSize="13"/>
+                            <NumericUpDown Value="{Binding DemeritPoints}"
+                                           Minimum="0" Maximum="100"
+                                           FormatString="0"
+                                           IsEnabled="{Binding !IsResolveMode}"
+                                           HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="Tiền phạt (đ)" FontWeight="Medium" FontSize="13"/>
+                            <NumericUpDown Value="{Binding FineAmount}"
+                                           Minimum="0"
+                                           Increment="50000"
+                                           FormatString="{}{0:N0}"
+                                           IsEnabled="{Binding !IsResolveMode}"
+                                           HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Mô tả sự việc -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Mô tả sự việc chi tiết" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Description}"
+                                 IsEnabled="{Binding !IsResolveMode}"
+                                 AcceptsReturn="True"
+                                 Height="60"
+                                 TextWrapping="Wrap"
+                                 Watermark="Mô tả cụ thể tang vật, nhân chứng, thời điểm xảy ra..."/>
+                    </StackPanel>
+
+                    <!-- Trạng thái xử lý -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Trạng thái giải quyết *" FontWeight="Medium" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding StatusOptions}"
+                                  SelectedItem="{Binding SelectedStatusItem}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:StatusOptionItem">
+                                    <TextBlock Text="{Binding DisplayName}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Ghi chú giải quyết / Kết luận kỷ luật -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Ghi chú xử lý / Kết luận kỷ luật" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding ResolutionNotes}"
+                                 AcceptsReturn="True"
+                                 Height="70"
+                                 TextWrapping="Wrap"
+                                 Watermark="VD: Đã nộp tiền phạt tại văn phòng KTX, cam kết không tái phạm..."/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Thanh nút tác vụ -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="12"
+                        Margin="0,16,0,0">
+                <Button Content="❌ Hủy bỏ"
+                        Command="{Binding CancelCommand}"
+                        Width="100"
+                        Height="34"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+                <Button Content="💾 Lưu dữ liệu"
+                        Command="{Binding SaveCommand}"
+                        IsEnabled="{Binding !IsBusy}"
+                        Width="140"
+                        Height="34"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

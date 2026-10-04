@@ -73,6 +73,8 @@ public partial class App : Avalonia.Application
         services.AddTransient<ContractListViewModel>();
         services.AddTransient<BillListViewModel>();
         services.AddTransient<EmployeeListViewModel>();
+        services.AddTransient<ViolationListViewModel>();
+        services.AddTransient<ViolationDialogViewModel>();
         services.AddTransient<SystemSettingsViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
