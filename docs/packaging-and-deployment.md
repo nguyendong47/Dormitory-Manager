@@ -1,6 +1,6 @@
 # Hướng Dẫn Đóng Gói Và Triển Khai Đa Nền Tảng (Cross-Platform Packaging & Deployment)
 
-Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị viên Ký túc xá và Lập trình viên để đóng gói, phân phối và triển khai ứng dụng **Dormitory Manager v2.0.0** trên ba nền tảng hệ điều hành: **macOS**, **Windows** và **Linux**.
+Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị viên Ký túc xá và Lập trình viên để đóng gói, phân phối và triển khai ứng dụng **Dormitory Manager v2.1.0** trên ba nền tảng hệ điều hành: **macOS**, **Windows** và **Linux**.
 
 ---
 
@@ -10,6 +10,8 @@ Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị v
 - **.NET 8 LTS**: Nền tảng thực thi hiện đại, hiệu năng cao và hỗ trợ dài hạn của Microsoft.
 - **Avalonia UI 11.2.5**: Khung giao diện đa nền tảng kết xuất đồ họa trực tiếp qua SkiaSharp.
 - **SQLite & EF Core 8**: Cơ sở dữ liệu nhúng cục bộ độc lập, lưu trữ dữ liệu tại file `dormitory.db`.
+- **QuestPDF 2024.12.3**: Thư viện kết xuất tài liệu PDF phiếu thu tài chính chuẩn in ấn A4 (sử dụng giấy phép cộng đồng `CommunityLicense`), tự động dàn trang tối ưu không phụ thuộc vào công cụ ngoài.
+- **Avalonia.Headless.XUnit 11.2.5**: Khung kiểm thử giao diện người dùng tự động (Headless UI E2E) chạy độc lập không cần Display Server hay GPU, tích hợp trơn tru trên môi trường CI/CD.
 
 ---
 
@@ -43,19 +45,19 @@ Dormitory-Manager/
 │   ├── macos-arm64/                              # macOS Apple Silicon (M1/M2/M3/M4)
 │   │   ├── publish/                              # Tệp nhị phân thô
 │   │   ├── DormitoryManager.app/                 # macOS App Bundle chuẩn
-│   │   └── DormitoryManager-v2.0.0-macOS-arm64.dmg # Tệp ảnh đĩa cài đặt DMG
+│   │   └── DormitoryManager-v2.1.0-macOS-arm64.dmg # Tệp ảnh đĩa cài đặt DMG
 │   ├── macos-x64/                                # macOS Intel x86_64
 │   │   ├── DormitoryManager.app/
-│   │   └── DormitoryManager-v2.0.0-macOS-x64.dmg
+│   │   └── DormitoryManager-v2.1.0-macOS-x64.dmg
 │   ├── windows-x64/                              # Windows 64-bit (x64)
 │   │   ├── Dormitory.Desktop.exe                 # Tệp chạy đơn (Single-File Executable)
 │   │   ├── appsettings.json                      # Cấu hình hệ thống
-│   │   └── DormitoryManager-v2.0.0-Windows-x64.zip # Tệp nén ZIP phân phối
+│   │   └── DormitoryManager-v2.1.0-Windows-x64.zip # Tệp nén ZIP phân phối
 │   └── linux-x64/                                # Linux 64-bit (x64)
 │       ├── Dormitory.Desktop                     # Tệp chạy nhị phân Linux
 │       ├── appsettings.json                      # Cấu hình hệ thống
 │       ├── *.so                                  # Native libraries (libSkiaSharp, libe_sqlite3)
-│       └── DormitoryManager-v2.0.0-Linux-x64.tar.gz # Tệp nén lưu trữ TAR.GZ
+│       └── DormitoryManager-v2.1.0-Linux-x64.tar.gz # Tệp nén lưu trữ TAR.GZ
 ```
 
 ---
@@ -227,23 +229,23 @@ on:
 1. **`test-and-verify`** *(Continuous Integration - chạy trên Ubuntu)*:
    - Checkout mã nguồn và cài đặt .NET 8 SDK.
    - Biên dịch toàn bộ Solution ở chế độ Release: `dotnet build Dormitory.sln -c Release`.
-   - Chạy 100% bộ kiểm thử tự động: `dotnet test Dormitory.sln -c Release` (**53/53 tests pass 100%**).
+   - Chạy 100% bộ kiểm thử tự động: `dotnet test Dormitory.sln -c Release` (**77/77 tests pass 100%**: 74 Unit Tests + 3 Avalonia Headless UI E2E Journeys).
    - Đóng vai trò là Quality Gate chặn lỗi trước khi bất kỳ tác vụ đóng gói nào được kích hoạt.
 
 2. **`package-macos`** *(Continuous Deployment - chạy trên macos-14 Apple Silicon)*:
    - Cấp quyền thực thi và gọi `scripts/package/build-macos.sh arm64`.
-   - Tạo macOS App Bundle `DormitoryManager.app` và đóng gói thành tệp `DormitoryManager-v2.0.0-macOS-arm64.dmg`.
+   - Tạo macOS App Bundle `DormitoryManager.app` và đóng gói thành tệp `DormitoryManager-v2.1.0-macOS-arm64.dmg`.
    - Tải lên GitHub Artifacts (`dormitory-manager-macos-arm64`).
 
 3. **`package-windows`** *(Continuous Deployment - chạy trên Ubuntu)*:
    - Cài đặt tiện ích `zip` và thực thi `scripts/package/build-windows.sh win-x64`.
    - Biên dịch ứng dụng Single-File Executable `Dormitory.Desktop.exe` nhúng sẵn `AppIcon.ico`.
-   - Đóng gói cùng `appsettings.json` thành tệp `DormitoryManager-v2.0.0-Windows-x64.zip`.
+   - Đóng gói cùng `appsettings.json` thành tệp `DormitoryManager-v2.1.0-Windows-x64.zip`.
    - Tải lên GitHub Artifacts (`dormitory-manager-windows-x64`).
 
 4. **`package-linux`** *(Continuous Deployment - chạy trên Ubuntu)*:
    - Thực thi `scripts/package/build-linux.sh linux-x64` tạo nhị phân self-contained kèm thư viện native `libSkiaSharp.so`, `libe_sqlite3.so`.
-   - Nén thành tệp lưu trữ `DormitoryManager-v2.0.0-Linux-x64.tar.gz`.
+   - Nén thành tệp lưu trữ `DormitoryManager-v2.1.0-Linux-x64.tar.gz`.
    - Tải lên GitHub Artifacts (`dormitory-manager-linux-x64`).
 
 5. **`create-release`** *(Automated GitHub Release - kích hoạt khi đẩy Git Tag `v*`)*:
@@ -259,7 +261,7 @@ on:
 Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản cài đặt chính thức tại:
 👉 [**GitHub Releases: nguyendong47/Dormitory-Manager/releases**](https://github.com/nguyendong47/Dormitory-Manager/releases)
 
-- **macOS (M1/M2/M3/M4 Apple Silicon)**: Tải `DormitoryManager-v2.0.0-macOS-arm64.dmg` (~85MB) -> Mở tệp DMG và kéo ứng dụng vào thư mục `Applications`.
-- **macOS (Intel Core x86_64)**: Tải `DormitoryManager-v2.0.0-macOS-x64.dmg` (~88MB) -> Thao tác tương tự.
-- **Windows (10/11 64-bit)**: Tải `DormitoryManager-v2.0.0-Windows-x64.zip` (~95MB) -> Giải nén ra thư mục bất kỳ và nhấp đúp vào `Dormitory.Desktop.exe` để sử dụng ngay (Zero Setup).
-- **Linux (Ubuntu/Debian/Fedora x64)**: Tải `DormitoryManager-v2.0.0-Linux-x64.tar.gz` (~98MB) -> Giải nén và chạy `./Dormitory.Desktop`.
+- **macOS (M1/M2/M3/M4 Apple Silicon)**: Tải `DormitoryManager-v2.1.0-macOS-arm64.dmg` (~85MB) -> Mở tệp DMG và kéo ứng dụng vào thư mục `Applications`.
+- **macOS (Intel Core x86_64)**: Tải `DormitoryManager-v2.1.0-macOS-x64.dmg` (~88MB) -> Thao tác tương tự.
+- **Windows (10/11 64-bit)**: Tải `DormitoryManager-v2.1.0-Windows-x64.zip` (~95MB) -> Giải nén ra thư mục bất kỳ và nhấp đúp vào `Dormitory.Desktop.exe` để sử dụng ngay (Zero Setup).
+- **Linux (Ubuntu/Debian/Fedora x64)**: Tải `DormitoryManager-v2.1.0-Linux-x64.tar.gz` (~98MB) -> Giải nén và chạy `./Dormitory.Desktop`.

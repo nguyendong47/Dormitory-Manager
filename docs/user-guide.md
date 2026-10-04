@@ -56,9 +56,10 @@ Hệ thống được khởi tạo sẵn hai tài khoản phục vụ vận hàn
 Thanh menu bên trái giúp chuyển đổi linh hoạt giữa các phân hệ:
 - 📊 **Bảng điều khiển**: Thống kê tổng quan số liệu KTX và cảnh báo công việc.
 - 🏠 **Phòng ở**: Quản lý danh mục phòng, tình trạng, giá thuê và xuất Excel.
+- 🛋️ **Quản lý tài sản**: Quản lý trang thiết bị & tài sản phòng ở, kiểm kê, theo dõi tình trạng hư hỏng và báo sự cố.
 - 🎓 **Sinh viên**: Quản lý hồ sơ cá nhân sinh viên và xuất danh bạ Excel.
 - 📝 **Hợp đồng**: Lập mới, gia hạn, thanh lý hợp đồng và bộ lọc trạng thái.
-- 💵 **Hóa đơn**: Lập phiếu thu điện nước, xác nhận thu tiền, lọc trạng thái và xuất Excel.
+- 💵 **Hóa đơn**: Lập phiếu thu điện nước, xác nhận thu tiền, lọc trạng thái, xuất Excel và in PDF (QuestPDF).
 - 👥 **Nhân viên**: Quản lý đội ngũ nhân sự vận hành KTX (**Chỉ dành cho Quản trị viên**).
 - ⚙️ **Cài đặt**: Quản trị CSDL (sao lưu, phục hồi, kiểm tra toàn vẹn), cấu hình chuỗi kết nối và thông tin hệ thống (**Chỉ dành cho Quản trị viên**).
 
@@ -294,6 +295,72 @@ Phân hệ dành riêng cho **Quản trị viên (Admin)** để theo dõi tình
 
 ---
 
+### 3.8. Quản Lý Trang Thiết Bị & Tài Sản Phòng Ký Túc Xá (`Equipment`)
+
+Phân hệ **Quản lý tài sản** cho phép ban quản lý theo dõi, kiểm kê và kiểm soát toàn diện hiện trạng trang thiết bị, tài sản gắn liền với từng phòng ở ký túc xá (giường tầng, bàn ghế học tập, máy điều hòa, quạt trần, bình nóng lạnh, bóng đèn,...).
+
+#### 1. Bốn Thẻ KPI Thống Kê Hiện Trạng Tài Sản Thời Gian Thực:
+- **Tổng số lượng**: Thống kê tổng số lượng trang thiết bị/tài sản đang được quản lý trên toàn bộ hệ thống ký túc xá.
+- **Hoạt động tốt** (Màu xanh lá): Số lượng thiết bị đang vận hành ổn định, không có lỗi hỏng hóc (`EquipmentStatus.Good`).
+- **Cần bảo trì / sửa chữa** (Màu cam vàng): Số lượng thiết bị có dấu hiệu xuống cấp, chập chờn hoặc đến kỳ bảo dưỡng định kỳ (`EquipmentStatus.NeedsRepair`).
+- **Hỏng hóc** (Màu đỏ): Số lượng thiết bị đã hỏng hoàn toàn, không thể sử dụng và cần sửa chữa lớn hoặc thay mới (`EquipmentStatus.Broken`).
+
+#### 2. Lọc & Tìm Kiếm Đa Tiêu Chí:
+- **Lọc theo phòng ở (`Phòng`)**: Hộp chọn danh sách phòng cho phép lọc tài sản của một phòng cụ thể (ví dụ: `P101`, `P102`) hoặc chọn `Tất cả phòng`.
+- **Lọc theo trạng thái (`Trạng thái`)**: Lọc nhanh các danh mục (*Tất cả*, *Hoạt động tốt*, *Cần bảo trì*, *Hỏng hóc*) giúp cán bộ kỹ thuật dễ dàng gom nhóm các thiết bị cần can thiệp.
+- **Tìm kiếm từ khóa**: Nhập tên thiết bị hoặc mã phòng vào ô tìm kiếm để lọc tức thì theo thời gian thực.
+
+#### 3. Các Thao Tác Nghiệp Vụ:
+- **Thêm mới trang thiết bị (`+ Thêm thiết bị`)**:
+  - Nhấn nút **"+ Thêm thiết bị"** trên thanh công cụ để mở hộp thoại `EquipmentDialogWindow`.
+  - Chọn phòng ở, nhập tên thiết bị, số lượng, trạng thái ban đầu và ghi chú mô tả chi tiết.
+  - Nhấn **"Lưu thay đổi"** để hoàn tất nạp dữ liệu vào CSDL.
+  - *(Bảo vệ phân quyền: Nút chức năng chỉ kích hoạt đối với tài khoản Quản trị viên `Admin`)*.
+- **Chỉnh sửa thông tin thiết bị (`Sửa`)**:
+  - Chọn một dòng thiết bị trên bảng danh sách và bấm **"Sửa"**.
+  - Cập nhật số lượng, trạng thái sử dụng hoặc ghi chú tình trạng kỹ thuật.
+- **Báo hỏng / Báo sự cố nhanh (`⚠️ Báo sự cố`)**:
+  - Khi sinh viên hoặc cán bộ quản lý phát hiện thiết bị gặp trục trặc, chọn thiết bị và bấm **"⚠️ Báo sự cố"**.
+  - Hệ thống tự động chuyển đổi trạng thái thiết bị sang *Cần bảo trì* hoặc *Hỏng hóc*, tăng số lượng thẻ KPI cảnh báo kỹ thuật mà không cần mở hộp thoại chỉnh sửa rườm rà.
+- **Xóa thiết bị (`Xóa`)**:
+  - Chọn thiết bị cần loại bỏ (thanh lý hoặc không còn quản lý) và bấm **"Xóa"**.
+  - Hộp thoại xác nhận an toàn (`ConfirmDialogWindow`) yêu cầu người dùng xác nhận trước khi xóa vĩnh viễn khỏi CSDL.
+
+---
+
+### 3.9. In Phiếu Thu Tiền Phòng & Dịch Vụ Ra File PDF Chuẩn In Ấn (QuestPDF)
+
+Nhằm phục vụ nhu cầu in ấn hóa đơn thu tiền gửi sinh viên, phụ huynh hoặc lưu trữ hồ sơ tài chính kế toán, hệ thống tích hợp công nghệ kết xuất tài liệu PDF hiện đại **QuestPDF**.
+
+#### 1. Ba Cách Xuất Phiếu Thu PDF Thuận Tiện Trên Giao Diện:
+- **Cách 1 - Thanh công cụ**: Chọn một hóa đơn trên DataGrid danh sách hóa đơn, sau đó bấm nút **"📄 In phiếu thu PDF (QuestPDF)"** trên thanh công cụ phía trên.
+- **Cách 2 - Menu ngữ cảnh (Context Menu chuột phải)**: Nhấp chuột phải vào dòng hóa đơn bất kỳ và chọn **"📄 In phiếu thu ra PDF"**.
+- **Cách 3 - Nút thao tác nhanh trên từng dòng**: Nhấp trực tiếp vào nút **"📄 In PDF"** tại cột Thao tác cuối cùng của dòng hóa đơn tương ứng.
+
+Hộp thoại chọn tệp lưu trữ native của hệ điều hành xuất hiện với tên tệp gợi ý tự động: `PhieuThu_MaHD_yyyyMMdd_HHmmss.pdf`. Sau khi người dùng chọn đường dẫn lưu và nhấn **Save**, tệp PDF được xuất tức thì với tốc độ tính bằng mili-giây.
+
+#### 2. Cấu Trúc Phiếu Thu PDF Chuẩn Mực & Đẹp Mắt:
+- **Phần đầu trang (Header)**:
+  - Thông tin đơn vị quản lý: **BAN QUẢN LÝ KÝ TÚC XÁ SINH VIÊN**, khẩu hiệu, Hotline `1900 6868`, Email `bqlktx@dormitory.edu.vn`.
+  - Tiêu đề nổi bật: **PHIẾU THU TIỀN PHÒNG & DỊCH VỤ**.
+  - Thông tin định danh: Mã hóa đơn, Ngày lập, Kỳ thanh toán (Tháng/Năm) và Ngày hạn nộp.
+  - Dấu trạng thái thanh toán trực quan: Huy hiệu màu xanh nổi bật **[ĐÃ THANH TOÁN]** hoặc màu cam **[CHƯA THANH TOÁN]**.
+- **Phần thân trang (Body)**:
+  - **Thông tin sinh viên & phòng ở**: Họ tên sinh viên, Mã số sinh viên (MSSV), Phòng số, Tòa nhà, Số điện thoại liên hệ.
+  - **Bảng kê chi tiết các khoản thu rõ ràng**:
+    * *Tiền phòng*: Đơn giá thuê phòng theo quy định của tháng.
+    * *Tiền điện tiêu thụ*: Chỉ số đầu kỳ (chỉ số cũ), Chỉ số cuối kỳ (chỉ số mới), Số kWh điện năng tiêu thụ, Đơn giá chuẩn (3.500 đ/kWh) và Thành tiền điện.
+    * *Tiền nước sinh hoạt*: Chỉ số đầu kỳ, Chỉ số cuối kỳ, Số m³ nước sạch tiêu thụ, Đơn giá chuẩn (15.000 đ/m³) và Thành tiền nước.
+    * *Phụ phí dịch vụ*: Phí vệ sinh môi trường, Phí mạng Internet băng thông rộng.
+  - **Tổng tiền thanh toán**: In đậm, kích thước lớn màu xanh thương hiệu, định dạng tiền tệ VNĐ chuẩn và có dòng ghi chú số tiền bằng chữ.
+- **Phần chân trang (Footer)**:
+  - Hai khối chữ ký pháp lý rõ ràng:
+    * **Người nộp tiền** (Sinh viên hoặc đại diện phòng ký tên).
+    * **Người lập phiếu / Thủ quỹ** (Ban Quản lý KTX ký và đóng dấu xác nhận).
+  - Ghi chú nhắc nhở sinh viên giữ lại biên lai để đối chiếu khi cần thiết.
+
+---
+
 ## 4. Các Lưu Ý Về An Toàn Dữ Liệu & Ràng Buộc Hệ Thống
 
 1. **Bảo mật và phân quyền**:
@@ -308,4 +375,54 @@ Phân hệ dành riêng cho **Quản trị viên (Admin)** để theo dõi tình
 4. **Xuất file Excel an toàn**:
    - Hệ thống sử dụng bộ chọn tệp native của hệ điều hành (`IFileService` kết hợp Avalonia `StorageProvider`), đảm bảo tính tương thích cao và không xảy ra xung đột quyền ghi đĩa.
    - Khi xuất file, có thể mở trực tiếp bằng Microsoft Excel, Google Sheets hoặc LibreOffice mà không bị lỗi font hay định dạng.
+
+---
+
+## 5. Khung Kiểm Thử Tự Động & Đảm Bảo Chất Lượng (Headless UI E2E Testing & Unit Tests)
+
+Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **77/77 Tests Passing (100%)** qua cấu trúc kiểm thử 2 tầng chuyên sâu:
+
+### 5.1. Bộ Kiểm Thử Đơn Vị & Tích Hợp (74 Unit & Integration Tests)
+- Được tổ chức tại dự án `tests/Dormitory.UnitTests/` sử dụng **xUnit**, **Moq** và **Microsoft.EntityFrameworkCore.InMemory**.
+- Kiểm tra toàn diện mọi tầng nghiệp vụ:
+  - **Dịch vụ thiết bị (`EquipmentServiceTests`)**: Xác thực vòng đời thêm, sửa, xóa, tìm kiếm, kiểm tra số lượng tồn và bắt ngoại lệ khi phòng không tồn tại.
+  - **Dịch vụ xuất PDF (`PdfExportServiceTests`)**: Kiểm tra sinh dữ liệu byte PDF đầy đủ từ hóa đơn và hợp đồng, bắt lỗi không tìm thấy hóa đơn.
+  - **Dịch vụ hóa đơn & tính toán (`BillCalculationTests`)**: Tính toán chính xác điện, nước lũy tiến, phụ phí vệ sinh/internet và hạn nộp tiền.
+  - **Dịch vụ phòng & hợp đồng (`RoomServiceTests`, `ContractServiceTests`)**: Ràng buộc sĩ số, phân bổ phòng theo giới tính, gia hạn và thanh lý hợp đồng.
+  - **Dịch vụ CSDL & an toàn hệ thống (`DatabaseServiceTests`)**: Sao lưu SQLite Online Backup, khôi phục CSDL an toàn, kiểm tra tính toàn vẹn `PRAGMA integrity_check`.
+  - **Bảo mật & mã hóa (`PasswordHasherTests`)**: Xác thực thuật toán băm mật khẩu an toàn BCrypt.
+
+### 5.2. Bộ Kiểm Thử Giao Diện Headless E2E Tự Động (3 Avalonia Headless UI Journeys)
+- Được tổ chức tại dự án `tests/Dormitory.E2ETests/` sử dụng công nghệ **`Avalonia.Headless.XUnit`**.
+- Khung kiểm thử giao diện headless cho phép khởi chạy và tương tác toàn diện với ứng dụng Avalonia UI mà không cần màn hình hiển thị thật (Display Server) hay card đồ họa GPU, bảo đảm chạy ổn định 100% trên cả máy phát triển và môi trường CI/CD GitHub Actions Ubuntu.
+- **3 Hành trình người dùng trọng yếu (Critical User Journeys)**:
+  1. **Hành trình 1 - Xác thực & Điều hướng toàn hệ thống (`AuthAndNavigationE2ETests`)**:
+     - Khởi chạy màn hình đăng nhập `LoginView`.
+     - Nhập thông tin tài khoản Quản trị viên `admin` / `Admin@123456`.
+     - Xác thực thành công và điều hướng tuần tự qua tất cả 8 phân hệ: *Dashboard, Phòng ở, Thiết bị, Sinh viên, Hợp đồng, Hóa đơn, Nhân viên, Cài đặt hệ thống*.
+     - Kiểm tra dữ liệu nạp đầy đủ trên từng View và không xuất hiện ngoại lệ UI.
+  2. **Hành trình 2 - Vòng đời quản lý thiết bị phòng (`EquipmentManagementE2ETests`)**:
+     - Điều hướng tới phân hệ Quản lý tài sản `EquipmentListView`.
+     - Xác nhận 4 thẻ KPI thống kê hiển thị chính xác.
+     - Kiểm tra tính năng lọc danh sách theo phòng và theo trạng thái (*Hoạt động tốt*, *Cần bảo trì*).
+     - Mở hộp thoại `EquipmentDialogWindow`, thêm mới trang thiết bị thành công.
+     - Thực hiện thao tác báo sự cố nhanh và xóa an toàn thiết bị với hộp thoại xác nhận.
+  3. **Hành trình 3 - Xuất phiếu thu PDF từ hóa đơn (`BillExportE2ETests`)**:
+     - Điều hướng tới phân hệ Hóa đơn `BillListView`.
+     - Tải danh sách hóa đơn hiện có trong cơ sở dữ liệu.
+     - Kích hoạt lệnh xuất PDF `ExportBillPdfCommand`.
+     - Kiểm tra kết quả trả về là mảng byte tệp PDF hợp lệ, bắt đầu bằng magic header `%PDF-` chuẩn ISO 32000 và kích thước dữ liệu hoàn chỉnh.
+
+### 5.3. Lệnh Chạy Toàn Bộ Kiểm Thử
+Để thực thi toàn bộ 77 bài kiểm thử của hệ thống:
+```bash
+dotnet test Dormitory.sln -c Release --verbosity normal
+```
+Kết quả:
+```
+Passed!  - Failed: 0, Passed: 74, Skipped: 0, Total: 74 (Dormitory.UnitTests.dll)
+Passed!  - Failed: 0, Passed:  3, Skipped: 0, Total:  3 (Dormitory.E2ETests.dll)
+Test Run Successful. Total tests: 77. Passed: 77. (100% Pass)
+```
+
 

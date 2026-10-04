@@ -1,8 +1,8 @@
 # 🏢 Hệ Thống Quản Lý Ký Túc Xá (Dormitory Management System)
 
 [![CI/CD Pipeline](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml)
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
-![Tests](https://img.shields.io/badge/tests-53%2F53%20passed-success.svg)
+![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
+![Tests](https://img.shields.io/badge/tests-77%2F77%20passed-success.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 > Ứng dụng Desktop hiện đại quản lý toàn diện Ký túc xá sinh viên, xây dựng trên nền tảng **.NET 8 LTS**, **Avalonia UI 11** và **Entity Framework Core 8** theo chuẩn kiến trúc **Clean Architecture** và mô hình **MVVM**.
@@ -83,11 +83,26 @@
     - Dịch vụ hộp thoại phi tập trung (`IDialogService`) và chọn tệp lưu trữ (`IFileService`).
     - Cửa sổ xác nhận an toàn (`ConfirmDialogWindow`) và thông báo (`MessageDialogWindow`) ngăn chặn xóa nhầm dữ liệu.
 
+11. **🛋️ Quản Lý Trang Thiết Bị & Tài Sản Phòng Ở (`Equipment`)**:
+    - Quản lý danh mục tài sản theo phòng (giường tầng, bàn ghế, điều hòa, bình nóng lạnh, quạt điện).
+    - 4 thẻ KPI thống kê hiện trạng thời gian thực: Tổng số lượng, Hoạt động tốt, Cần bảo trì, Hỏng hóc.
+    - Bộ lọc đa năng theo phòng ở, theo trạng thái thiết bị và thanh tìm kiếm từ khóa tức thì.
+    - Đầy đủ thao tác Thêm, Sửa, Xóa an toàn (phân quyền Admin) và nút thao tác nhanh **"⚠️ Báo sự cố"**.
+
+12. **📄 Xuất Phiếu Thu Tiền Phòng & Dịch Vụ Ra PDF (QuestPDF)**:
+    - Kết xuất phiếu thu tiền phòng, điện nước và dịch vụ hàng tháng ra file PDF chuẩn in ấn A4 chuyên nghiệp.
+    - Tích hợp 3 điểm thao tác: Nút thanh công cụ, Menu ngữ cảnh (chuột phải) và Nút thao tác nhanh trên DataGrid.
+    - Bố cục trang trọng: Thông tin Ban Quản lý, thông tin sinh viên & phòng ở, bảng chi tiết điện nước lũy tiến, phụ phí, tổng tiền in đậm định dạng VNĐ và hai khối chữ ký xác nhận.
+
+13. **🧪 Khung Kiểm Thử Tự Động Toàn Diện (Unit Tests & Avalonia Headless UI E2E)**:
+    - 74 bài kiểm thử đơn vị & tích hợp kiểm soát chặt chẽ toàn bộ logic nghiệp vụ, tính toán tiền điện nước và bảo mật.
+    - 3 kịch bản kiểm thử giao diện tự động không cần màn hình (`Avalonia.Headless.XUnit`) chạy mượt mà trên môi trường CI/CD.
+
 ---
 
-## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature Matrix - Hoàn Thành 100% Cả 4 Giai Đoạn)
+## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature Matrix - Hoàn Thành 100% Cả 5 Giai Đoạn - v2.1.0)
 
-| Phân hệ / Hạng mục | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel | Phân Quyền | Trạng Thái |
+| Phân hệ / Hạng mục | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel / PDF | Phân Quyền | Trạng Thái |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Xác thực & Phiên (Auth)** | ✅ | — | — | — | — | — | Admin / Manager | **Hoàn thành (Phase 1)** |
 | **Bảng Điều Khiển (Dashboard)** | ✅ | — | — | — | ✅ (Cảnh báo Live & Lọc) | ✅ (`.xlsx` Đa Sheet) | Tất cả | **Hoàn thành (Phase 2 - LiveCharts2 & Analytics)** |
@@ -101,6 +116,9 @@
 | **Lưu Trữ Mã Kế Thừa (Legacy Archive)** | ✅ | — | — | — | — | — | Toàn bộ dự án | **Hoàn thành (Phase 4 - Code Reorganization)** |
 | **Nhận Diện Thương Hiệu (Branding & Icons)** | ✅ | ✅ (`AppIcon.ico`) | ✅ (`AppIcon.png`) | — | — | — | macOS / Win / Linux | **Hoàn thành (Phase 4 - Polish & Branding)** |
 | **Tự Động Hóa CI/CD & GitHub Releases** | ✅ | ✅ (CI Build & Test) | ✅ (CD Multi-OS Packaging) | — | — | — | GitHub Actions | **Hoàn thành (Phase 4 - CI/CD Pipeline)** |
+| **Quản Lý Tài Sản Phòng (Equipments)** | ✅ | ✅ (`EquipmentDialog`) | ✅ (`EquipmentDialog`) | ✅ (Xác nhận an toàn) | ✅ (Lọc phòng & TT) | — | Admin / Manager | **Hoàn thành (Phase 5 - Equipment Module)** |
+| **In Phiếu Thu PDF (QuestPDF)** | ✅ | — | — | — | — | ✅ (Xuất PDF in ấn) | Tất cả | **Hoàn thành (Phase 5 - PDF Receipts)** |
+| **Kiểm Thử E2E Headless (Avalonia)** | ✅ | ✅ (Auth & Nav E2E) | ✅ (Equipments E2E) | ✅ (Bill PDF E2E) | — | — | Tự động hóa CI/CD | **Hoàn thành (Phase 5 - Headless E2E)** |
 
 ---
 
@@ -154,7 +172,7 @@ graph TD
 Dormitory-Manager/
 ├── .github/                          # Cấu hình GitHub Actions CI/CD Pipeline
 │   └── workflows/
-│       └── ci-cd.yml                 # Pipeline tự động Build, Test (53/53), Đóng gói & Phát hành Release
+│       └── ci-cd.yml                 # Pipeline tự động Build, Test (77/77), Đóng gói & Phát hành Release
 │
 ├── dist/                             # Thư mục chứa gói xuất bản thành phẩm (DMG, ZIP, TAR.GZ)
 │
@@ -177,14 +195,15 @@ Dormitory-Manager/
 │       └── build-linux.sh            # Đóng gói Linux Self-Contained Binary & Tar.gz
 │
 ├── src/
-│   ├── Dormitory.Core/               # Domain: Thực thể và Enums nghiệp vụ (Room, Student, Contract, Bill, Employee, User)
+│   ├── Dormitory.Core/               # Domain: Thực thể và Enums (Room, Equipment, Student, Contract, Bill, Employee, User)
 │   ├── Dormitory.Application/        # Application: DTOs, Services, Interfaces, Business Logic
-│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, Migrations, BCrypt, DataSeeder, DatabaseService
+│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, QuestPDF, Migrations, BCrypt, DatabaseService
 │   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs, appsettings.json
 │       └── Assets/                   # Nhận diện thương hiệu (AppIcon.ico, AppIcon.png) & Fonts
 │
 ├── tests/
-│   └── Dormitory.UnitTests/          # Kiểm thử tự động xUnit & Moq (53/53 Passed - 100%)
+│   ├── Dormitory.UnitTests/          # Kiểm thử đơn vị & tích hợp xUnit & Moq (74/74 Passed - 100%)
+│   └── Dormitory.E2ETests/           # Kiểm thử giao diện tự động Avalonia Headless UI (3/3 Journeys Passed - 100%)
 │
 ├── Dormitory.sln                     # .NET 8 Solution
 └── README.md
@@ -245,13 +264,14 @@ Thành phẩm sau khi đóng gói sẽ nằm tại thư mục `dist/`.
 
 ---
 
-## 🧪 Chạy Kiểm Thử Tự Động (Unit Tests)
+## 🧪 Chạy Kiểm Thử Tự Động (Unit Tests & Headless UI E2E)
 
-Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, cấu hình động `appsettings.json`, và dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`):
+Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, dịch vụ xuất phiếu thu PDF QuestPDF, quản lý tài sản phòng ở, cấu hình động `appsettings.json`, dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`), và 3 hành trình người dùng E2E chạy hoàn toàn tự động trên nền tảng Avalonia Headless:
 
 ```bash
-dotnet test tests/Dormitory.UnitTests
+dotnet test Dormitory.sln
 ```
 
-Kết quả: **53/53 Tests Passed** (100% Pass).
+Kết quả: **77/77 Tests Passed** (100% Pass: 74 Unit Tests + 3 Avalonia Headless UI E2E Journeys).
+
 

@@ -39,7 +39,7 @@ jobs:
       - name: Build solution (Release)
         run: dotnet build Dormitory.sln -c Release
 
-      - name: Run unit & integration tests
+      - name: Run unit, integration & headless E2E tests
         run: dotnet test Dormitory.sln -c Release --verbosity normal
 
   # ----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dormitory-manager-macos-arm64
-          path: dist/macos-arm64/DormitoryManager-v2.0.0-macOS-arm64.dmg
+          path: dist/macos-arm64/DormitoryManager-*.dmg
           if-no-files-found: error
 
   # ----------------------------------------------------------------------------
@@ -100,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dormitory-manager-windows-x64
-          path: dist/windows-x64/DormitoryManager-v2.0.0-Windows-x64.zip
+          path: dist/windows-x64/DormitoryManager-*.zip
           if-no-files-found: error
 
   # ----------------------------------------------------------------------------
@@ -129,7 +129,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dormitory-manager-linux-x64
-          path: dist/linux-x64/DormitoryManager-v2.0.0-Linux-x64.tar.gz
+          path: dist/linux-x64/DormitoryManager-*.tar.gz
           if-no-files-found: error
 
   # ----------------------------------------------------------------------------
