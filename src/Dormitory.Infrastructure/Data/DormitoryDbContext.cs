@@ -53,6 +53,11 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
     /// </summary>
     public DbSet<Equipment> Equipments => Set<Equipment>();
 
+    /// <summary>
+    /// Bảng quản lý biên bản vi phạm nội quy và kỷ luật KTX
+    /// </summary>
+    public DbSet<Violation> Violations => Set<Violation>();
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -178,6 +183,27 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
                 .WithMany(r => r.Equipments)
                 .HasForeignKey(e => e.RoomId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Cấu hình bảng Violation
+        modelBuilder.Entity<Violation>(entity =>
+        {
+            entity.HasKey(v => v.Id);
+            entity.Property(v => v.ViolationCode).IsRequired().HasMaxLength(50);
+            entity.Property(v => v.Title).IsRequired().HasMaxLength(200);
+            entity.Property(v => v.FineAmount).HasPrecision(18, 2);
+            entity.Property(v => v.RecordedBy).HasMaxLength(100);
+            entity.Property(v => v.ResolutionNotes).HasMaxLength(500);
+
+            entity.HasOne(v => v.Student)
+                .WithMany()
+                .HasForeignKey(v => v.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(v => v.Room)
+                .WithMany()
+                .HasForeignKey(v => v.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

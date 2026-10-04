@@ -404,5 +404,84 @@ public static class DataSeeder
                 await context.SaveChangesAsync();
             }
         }
+
+        // 7. Khởi tạo biên bản vi phạm kỷ luật mẫu nếu chưa có
+        if (!await context.Violations.AnyAsync())
+        {
+            var student1 = await context.Students.FirstOrDefaultAsync(s => s.StudentCode == "SV2021001");
+            var student2 = await context.Students.FirstOrDefaultAsync(s => s.StudentCode == "SV2021002");
+            var student3 = await context.Students.FirstOrDefaultAsync(s => s.StudentCode == "SV2021003");
+
+            var roomA101 = await context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == "A101");
+            var roomA102 = await context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == "A102");
+            var roomB201 = await context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == "B201");
+
+            var violations = new List<Violation>();
+
+            if (student1 != null && roomA101 != null)
+            {
+                violations.Add(new Violation
+                {
+                    ViolationCode = "VP-20241001-001",
+                    StudentId = student1.Id,
+                    RoomId = roomA101.Id,
+                    Title = "Sử dụng bếp từ nấu ăn trái phép trong phòng",
+                    Description = "Sử dụng bếp từ đơn công suất 2000W để nấu ăn gây quá tải điện phòng A101",
+                    Severity = ViolationSeverity.Severe,
+                    Status = ViolationStatus.Pending,
+                    FineAmount = 200000,
+                    DemeritPoints = 10,
+                    ViolationDate = DateTime.UtcNow.AddDays(-3),
+                    CreatedAt = DateTime.UtcNow.AddDays(-3),
+                    RecordedBy = "admin"
+                });
+            }
+
+            if (student2 != null && roomA102 != null)
+            {
+                violations.Add(new Violation
+                {
+                    ViolationCode = "VP-20241002-001",
+                    StudentId = student2.Id,
+                    RoomId = roomA102.Id,
+                    Title = "Mở nhạc gây ồn ào sau 23h00",
+                    Description = "Bật loa bluetooth âm lượng lớn sau giờ giới nghiêm làm ảnh hưởng các phòng xung quanh",
+                    Severity = ViolationSeverity.Moderate,
+                    Status = ViolationStatus.Resolved,
+                    FineAmount = 0,
+                    DemeritPoints = 5,
+                    ViolationDate = DateTime.UtcNow.AddDays(-2),
+                    CreatedAt = DateTime.UtcNow.AddDays(-2),
+                    ResolutionNotes = "Sinh viên đã làm bản cam kết không tái phạm",
+                    RecordedBy = "admin"
+                });
+            }
+
+            if (student3 != null && roomB201 != null)
+            {
+                violations.Add(new Violation
+                {
+                    ViolationCode = "VP-20241003-001",
+                    StudentId = student3.Id,
+                    RoomId = roomB201.Id,
+                    Title = "Phơi quần áo sai quy định tại hành lang chung",
+                    Description = "Phơi quần áo tại lối thoát hiểm hành lang tầng 2 Tòa B",
+                    Severity = ViolationSeverity.Minor,
+                    Status = ViolationStatus.Resolved,
+                    FineAmount = 0,
+                    DemeritPoints = 2,
+                    ViolationDate = DateTime.UtcNow.AddDays(-1),
+                    CreatedAt = DateTime.UtcNow.AddDays(-1),
+                    ResolutionNotes = "Đã thu dọn quần áo về đúng nơi quy định",
+                    RecordedBy = "admin"
+                });
+            }
+
+            if (violations.Count > 0)
+            {
+                context.Violations.AddRange(violations);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }
