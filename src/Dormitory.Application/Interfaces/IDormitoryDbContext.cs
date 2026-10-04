@@ -14,6 +14,7 @@ public interface IDormitoryDbContext
     DbSet<Bill> Bills { get; }
     DbSet<Employee> Employees { get; }
     DbSet<User> Users { get; }
+    DbSet<Equipment> Equipments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

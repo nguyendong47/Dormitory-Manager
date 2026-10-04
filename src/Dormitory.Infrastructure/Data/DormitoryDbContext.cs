@@ -48,6 +48,11 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
     /// </summary>
     public DbSet<User> Users => Set<User>();
 
+    /// <summary>
+    /// Bảng quản lý trang thiết bị, tài sản phòng ký túc xá
+    /// </summary>
+    public DbSet<Equipment> Equipments => Set<Equipment>();
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -158,6 +163,21 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
             entity.Property(u => u.FullName).IsRequired().HasMaxLength(100);
             entity.Property(u => u.Email).HasMaxLength(100);
             entity.HasIndex(u => u.Username).IsUnique();
+        });
+
+        // Cấu hình bảng Equipment
+        modelBuilder.Entity<Equipment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.EquipmentCode).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Price).HasPrecision(18, 2);
+            entity.Property(e => e.Notes).HasMaxLength(500);
+
+            entity.HasOne(e => e.Room)
+                .WithMany(r => r.Equipments)
+                .HasForeignKey(e => e.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

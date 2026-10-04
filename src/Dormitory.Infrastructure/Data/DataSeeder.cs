@@ -132,6 +132,19 @@ public static class DataSeeder
                     Type = RoomType.Vip,
                     AllowedGender = Gender.Female,
                     Description = "Phòng VIP đầy đủ tiện nghi khép kín"
+                },
+                new Room
+                {
+                    RoomNumber = "B201",
+                    Building = "Tòa B (Nữ)",
+                    Floor = 2,
+                    Capacity = 2,
+                    CurrentOccupancy = 0,
+                    PricePerMonth = 1200000,
+                    Status = RoomStatus.Available,
+                    Type = RoomType.Premium,
+                    AllowedGender = Gender.Female,
+                    Description = "Phòng dịch vụ 2 người nữ có điều hòa"
                 }
             };
             context.Rooms.AddRange(rooms);
@@ -246,6 +259,150 @@ public static class DataSeeder
 
             context.Bills.Add(bill1);
             await context.SaveChangesAsync();
+        }
+
+        // 6. Khởi tạo danh sách tài sản / trang thiết bị phòng mẫu nếu chưa có
+        if (!await context.Equipments.AnyAsync())
+        {
+            var roomA101 = await context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == "A101");
+            var roomA102 = await context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == "A102");
+            var roomB201 = await context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == "B201")
+                           ?? await context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == "A201")
+                           ?? await context.Rooms.FirstOrDefaultAsync(r => r.RoomNumber == "B101");
+
+            var equipments = new List<Equipment>();
+
+            // Phòng 101 (Tòa A): Điều hòa Daikin Inverter (1), Giường tầng sắt (2), Bình nóng lạnh Ariston (1), Bàn học liền giá sách (4)
+            if (roomA101 != null)
+            {
+                equipments.AddRange(new[]
+                {
+                    new Equipment
+                    {
+                        RoomId = roomA101.Id,
+                        EquipmentCode = "TB-A101-01",
+                        Name = "Điều hòa Daikin Inverter 12000BTU",
+                        Status = EquipmentStatus.Good,
+                        Quantity = 1,
+                        Price = 10500000,
+                        Notes = "Bảo hành chính hãng 24 tháng",
+                        CreatedAt = DateTime.UtcNow,
+                        LastMaintainedAt = DateTime.UtcNow.AddMonths(-1)
+                    },
+                    new Equipment
+                    {
+                        RoomId = roomA101.Id,
+                        EquipmentCode = "TB-A101-02",
+                        Name = "Giường tầng sắt 1m2",
+                        Status = EquipmentStatus.Good,
+                        Quantity = 2,
+                        Price = 2200000,
+                        Notes = "Sơn tĩnh điện chống rỉ",
+                        CreatedAt = DateTime.UtcNow
+                    },
+                    new Equipment
+                    {
+                        RoomId = roomA101.Id,
+                        EquipmentCode = "TB-A101-03",
+                        Name = "Bình nóng lạnh Ariston 20L",
+                        Status = EquipmentStatus.Good,
+                        Quantity = 1,
+                        Price = 2800000,
+                        Notes = "Có rơ-le chống giật ELCB",
+                        CreatedAt = DateTime.UtcNow,
+                        LastMaintainedAt = DateTime.UtcNow.AddMonths(-2)
+                    },
+                    new Equipment
+                    {
+                        RoomId = roomA101.Id,
+                        EquipmentCode = "TB-A101-04",
+                        Name = "Bàn học liền giá sách",
+                        Status = EquipmentStatus.Good,
+                        Quantity = 4,
+                        Price = 850000,
+                        Notes = "Gỗ công nghiệp MDF chống ẩm",
+                        CreatedAt = DateTime.UtcNow
+                    }
+                });
+            }
+
+            // Phòng 102 (Tòa A): Quạt trần Vinawind (2), Giường tầng sắt (2), Bàn ghế học sinh (4)
+            if (roomA102 != null)
+            {
+                equipments.AddRange(new[]
+                {
+                    new Equipment
+                    {
+                        RoomId = roomA102.Id,
+                        EquipmentCode = "TB-A102-01",
+                        Name = "Quạt trần Vinawind",
+                        Status = EquipmentStatus.Good,
+                        Quantity = 2,
+                        Price = 750000,
+                        Notes = "Cánh nhôm, hộp số 5 cấp độ gió",
+                        CreatedAt = DateTime.UtcNow
+                    },
+                    new Equipment
+                    {
+                        RoomId = roomA102.Id,
+                        EquipmentCode = "TB-A102-02",
+                        Name = "Giường tầng sắt 1m2",
+                        Status = EquipmentStatus.Good,
+                        Quantity = 2,
+                        Price = 2200000,
+                        Notes = "Khung sắt hộp dày 1.2mm",
+                        CreatedAt = DateTime.UtcNow
+                    },
+                    new Equipment
+                    {
+                        RoomId = roomA102.Id,
+                        EquipmentCode = "TB-A102-03",
+                        Name = "Bàn ghế học sinh",
+                        Status = EquipmentStatus.Good,
+                        Quantity = 4,
+                        Price = 600000,
+                        Notes = "Bộ bàn ghế đơn khung sắt mặt gỗ",
+                        CreatedAt = DateTime.UtcNow
+                    }
+                });
+            }
+
+            // Phòng 201 (Tòa B): Điều hòa Panasonic 9000BTU (1 - Cần sửa), Bình nóng lạnh (1)
+            if (roomB201 != null)
+            {
+                equipments.AddRange(new[]
+                {
+                    new Equipment
+                    {
+                        RoomId = roomB201.Id,
+                        EquipmentCode = "TB-B201-01",
+                        Name = "Điều hòa Panasonic 9000BTU",
+                        Status = EquipmentStatus.NeedsRepair,
+                        Quantity = 1,
+                        Price = 8200000,
+                        Notes = "Hơi yếu lạnh, cần bảo trì kiểm tra gas",
+                        CreatedAt = DateTime.UtcNow.AddMonths(-6)
+                    },
+                    new Equipment
+                    {
+                        RoomId = roomB201.Id,
+                        EquipmentCode = "TB-B201-02",
+                        Name = "Bình nóng lạnh Rossi 15L",
+                        Status = EquipmentStatus.Good,
+                        Quantity = 1,
+                        Price = 2100000,
+                        Notes = "Đang hoạt động ổn định",
+                        CreatedAt = DateTime.UtcNow,
+                        LastMaintainedAt = DateTime.UtcNow.AddMonths(-1)
+                    }
+                });
+            }
+
+            if (equipments.Count > 0)
+            {
+                context.Equipments.AddRange(equipments);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

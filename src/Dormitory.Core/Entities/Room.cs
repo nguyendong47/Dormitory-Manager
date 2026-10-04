@@ -76,4 +76,9 @@ public class Room
     /// Danh sách hóa đơn điện, nước, phòng hàng tháng của phòng này
     /// </summary>
     public ICollection<Bill> Bills { get; set; } = new List<Bill>();
+
+    /// <summary>
+    /// Danh sách trang thiết bị, tài sản thuộc phòng này
+    /// </summary>
+    public ICollection<Equipment> Equipments { get; set; } = new List<Equipment>();
 }
