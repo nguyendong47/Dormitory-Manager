@@ -5,6 +5,7 @@
         x:Class="Dormitory.Desktop.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Hệ Thống Quản Lý Ký Túc Xá - Dormitory Management"
+        Icon="/Assets/AppIcon.ico"
         Width="1180" Height="720"
         WindowStartupLocation="CenterScreen">
 

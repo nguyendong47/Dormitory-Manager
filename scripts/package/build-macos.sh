@@ -87,6 +87,12 @@ echo "📂 [2/4] Đang tạo cấu trúc macOS App Bundle ($APP_BUNDLE)..."
 mkdir -p "$APP_BUNDLE/Contents/MacOS"
 mkdir -p "$APP_BUNDLE/Contents/Resources"
 
+# Sao chép biểu tượng ứng dụng macOS nếu có
+if [ -f "$REPO_ROOT/scripts/package/AppIcon.icns" ]; then
+    echo "🎨 Sao chép AppIcon.icns vào App Bundle..."
+    cp "$REPO_ROOT/scripts/package/AppIcon.icns" "$APP_BUNDLE/Contents/Resources/AppIcon.icns"
+fi
+
 # Tạo file Info.plist chuẩn mực
 cat << 'EOF' > "$APP_BUNDLE/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
@@ -109,6 +115,8 @@ cat << 'EOF' > "$APP_BUNDLE/Contents/Info.plist"
     <string>????</string>
     <key>CFBundleExecutable</key>
     <string>Dormitory.Desktop</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>NSPrincipalClass</key>
