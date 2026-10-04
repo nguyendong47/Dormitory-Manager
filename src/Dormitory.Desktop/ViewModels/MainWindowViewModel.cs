@@ -63,8 +63,21 @@ public partial class MainWindowViewModel : ViewModelBase
         LoginVm = loginVm;
         _userSession = userSession;
 
-        // Khởi tạo màn hình mặc định là Dashboard
-        _currentView = _dashboardVm;
+        // Khởi tạo màn hình mặc định ban đầu dựa vào trạng thái xác thực
+        if (_userSession.IsAuthenticated)
+        {
+            _currentView = _dashboardVm;
+            UpdateUserInfo();
+            IsLoggedIn = true;
+            IsAdmin = _userSession.IsAdmin;
+            _ = _dashboardVm.LoadStatsAsync();
+        }
+        else
+        {
+            _currentView = LoginVm;
+            IsLoggedIn = false;
+            IsAdmin = false;
+        }
 
         // Lắng nghe sự kiện đăng nhập thành công từ LoginViewModel
         LoginVm.LoginSuccess += OnLoginSuccess;
@@ -78,20 +91,6 @@ public partial class MainWindowViewModel : ViewModelBase
         NavigateToEmployeesCommand = new RelayCommand(NavigateToEmployees);
         NavigateToSettingsCommand = new AsyncRelayCommand(NavigateToSettingsAsync);
         LogoutCommand = new RelayCommand(Logout);
-
-        // Khởi tạo trạng thái đăng nhập
-        if (_userSession.IsAuthenticated)
-        {
-            UpdateUserInfo();
-            IsLoggedIn = true;
-            IsAdmin = _userSession.IsAdmin;
-            _ = _dashboardVm.LoadStatsAsync();
-        }
-        else
-        {
-            IsLoggedIn = false;
-            IsAdmin = false;
-        }
     }
 
     public IRelayCommand NavigateToDashboardCommand { get; }
@@ -151,6 +150,7 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentUserRole = string.Empty;
         LoginVm.Password = string.Empty;
         LoginVm.ErrorMessage = null;
+        CurrentView = LoginVm;
     }
 
     public void NavigateToDashboard()
