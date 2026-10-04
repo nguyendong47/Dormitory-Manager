@@ -30,3 +30,9 @@ packages/
 
 # GitNexus local index
 .gitnexus/
+
+# Legacy project
+legacy/packages/
+legacy/**/bin/
+legacy/**/obj/
+legacy/**/.vs/

@@ -42,3 +42,15 @@ This project is indexed by GitNexus as **Dormitory-Manager** (1076 symbols, 1652
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+## Project Execution Rules
+
+- **ALWAYS use Subagents for Execution and Review (Subagent-Driven Development)**:
+  - Do NOT implement non-trivial tasks inline directly in the main controller context.
+  - Dispatch dedicated implementer subagents per task to write code and tests.
+  - Dispatch dedicated reviewer subagents per task to verify spec compliance, quality gates, and code health.
+  - The main controller focuses on orchestrating, quality control, user communication, and acceptance sign-offs.
+- **Language Conventions**:
+  - Code identifiers (classes, methods, variables, properties): 100% English.
+  - Code comments and UI user-facing text: 100% Vietnamese.
+  - Documentation and README: 100% Vietnamese.
