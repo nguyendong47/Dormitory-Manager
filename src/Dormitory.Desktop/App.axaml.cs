@@ -56,6 +56,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IEquipmentService, EquipmentService>();
         services.AddScoped<IExportService, ExportService>();
+        services.AddScoped<IPdfExportService, PdfExportService>();
         services.AddScoped<IDatabaseService, DatabaseService>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IFileService, FileService>();

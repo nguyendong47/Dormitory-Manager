@@ -22,6 +22,7 @@ public partial class BillListViewModel : ViewModelBase
     private readonly IDialogService _dialogService;
     private readonly IExportService _exportService;
     private readonly IFileService _fileService;
+    private readonly IPdfExportService _pdfExportService;
 
     public ObservableCollection<string> StatusFilterOptions { get; } = new()
     {
@@ -39,6 +40,7 @@ public partial class BillListViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(MarkPaidCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteBillCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExportBillPdfCommand))]
     private BillDto? _selectedBill;
 
     [ObservableProperty]
@@ -58,13 +60,15 @@ public partial class BillListViewModel : ViewModelBase
         IRoomService roomService,
         IDialogService dialogService,
         IExportService exportService,
-        IFileService fileService)
+        IFileService fileService,
+        IPdfExportService pdfExportService)
     {
         _billService = billService;
         _roomService = roomService;
         _dialogService = dialogService;
         _exportService = exportService;
         _fileService = fileService;
+        _pdfExportService = pdfExportService;
     }
 
     /// <summary>
@@ -91,6 +95,31 @@ public partial class BillListViewModel : ViewModelBase
         catch (Exception ex)
         {
             await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi xuất file Excel: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Xuất phiếu thu tiền phòng & dịch vụ ra định dạng PDF in ấn chuyên nghiệp
+    /// </summary>
+    [RelayCommand]
+    public async Task ExportBillPdfAsync(BillDto? bill = null)
+    {
+        var target = bill ?? SelectedBill;
+        if (target == null) return;
+
+        IsLoading = true;
+        try
+        {
+            var bytes = await _pdfExportService.GenerateBillReceiptPdfAsync(target.Id);
+            await _fileService.SaveFileAsync($"PhieuThu_{target.BillCode}", "pdf", "PDF Documents (*.pdf)|*.pdf", bytes);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi xuất phiếu thu PDF: {ex.Message}");
         }
         finally
         {

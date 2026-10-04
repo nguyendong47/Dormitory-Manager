@@ -1,8 +1,10 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             xmlns:dto="using:Dormitory.Application.DTOs"
              x:Class="Dormitory.Desktop.Views.BillListView"
-             x:DataType="vm:BillListViewModel">
+             x:DataType="vm:BillListViewModel"
+             x:Name="BillViewRoot">
 
     <Grid RowDefinitions="Auto,*" Margin="24">
         <!-- Header & Action Bar -->
@@ -31,6 +33,10 @@
                         Command="{Binding MarkPaidCommand}"/>
                 <Button Content="🗑️ Xóa hóa đơn" 
                         Command="{Binding DeleteBillCommand}"/>
+                <Button Content="📄  In phiếu thu (PDF)" 
+                        Command="{Binding ExportBillPdfCommand}" 
+                        CommandParameter="{Binding SelectedBill}" 
+                        IsEnabled="{Binding SelectedBill, Converter={x:Static ObjectConverters.IsNotNull}}"/>
                 <Button Content="📊  Xuất Excel" 
                         Command="{Binding ExportToExcelCommand}"/>
 
@@ -51,6 +57,17 @@
                           GridLinesVisibility="Horizontal"
                           CanUserResizeColumns="True"
                           BorderThickness="0">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="📄 In phiếu thu (PDF)" 
+                                      Command="{Binding ExportBillPdfCommand}" 
+                                      CommandParameter="{Binding SelectedBill}"/>
+                            <MenuItem Header="💵 Đánh dấu đã thanh toán" 
+                                      Command="{Binding MarkPaidCommand}"/>
+                            <MenuItem Header="🗑️ Xóa hóa đơn" 
+                                      Command="{Binding DeleteBillCommand}"/>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding BillCode, Mode=OneWay}" Width="150"/>
                         <DataGridTextColumn Header="Số phòng" Binding="{Binding RoomNumber, Mode=OneWay}" Width="90"/>
@@ -66,6 +83,19 @@
                         <DataGridTextColumn Header="Tổng cộng (đ)" Binding="{Binding TotalAmount, StringFormat='{}{0:N0}', Mode=OneWay}" Width="130"/>
                         <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status, Mode=OneWay}" Width="120"/>
                         <DataGridTextColumn Header="Hạn nộp" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}', Mode=OneWay}" Width="110"/>
+                        <DataGridTemplateColumn Header="Thao tác" Width="105">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:BillDto">
+                                    <Button Content="📄 In PDF"
+                                            ToolTip.Tip="In phiếu thu tiền phòng &amp; dịch vụ định dạng PDF"
+                                            Command="{Binding #BillViewRoot.((vm:BillListViewModel)DataContext).ExportBillPdfCommand}"
+                                            CommandParameter="{Binding}"
+                                            Padding="8,3" FontSize="11"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>
