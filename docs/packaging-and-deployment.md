@@ -1,6 +1,6 @@
 # Hướng Dẫn Đóng Gói Và Triển Khai Đa Nền Tảng (Cross-Platform Packaging & Deployment)
 
-Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị viên Ký túc xá và Lập trình viên để đóng gói, phân phối và triển khai ứng dụng **Dormitory Manager v2.1.0** trên ba nền tảng hệ điều hành: **macOS**, **Windows** và **Linux**.
+Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị viên Ký túc xá và Lập trình viên để đóng gói, phân phối và triển khai ứng dụng **Dormitory Manager v2.3.0** trên ba nền tảng hệ điều hành: **macOS**, **Windows** và **Linux**.
 
 ---
 
@@ -10,7 +10,9 @@ Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị v
 - **.NET 8 LTS**: Nền tảng thực thi hiện đại, hiệu năng cao và hỗ trợ dài hạn của Microsoft.
 - **Avalonia UI 11.2.5**: Khung giao diện đa nền tảng kết xuất đồ họa trực tiếp qua SkiaSharp.
 - **SQLite & EF Core 8**: Cơ sở dữ liệu nhúng cục bộ độc lập, lưu trữ dữ liệu tại file `dormitory.db`.
-- **QuestPDF 2024.12.3**: Thư viện kết xuất tài liệu PDF phiếu thu tài chính chuẩn in ấn A4 (sử dụng giấy phép cộng đồng `CommunityLicense`), tự động dàn trang tối ưu không phụ thuộc vào công cụ ngoài.
+- **ClosedXML 0.104.2**: Thư viện kết xuất báo cáo bảng tính Excel đa tầng (`.xlsx`) nhiều worksheets, hỗ trợ định dạng số liệu kế toán VNĐ, tỷ lệ phần trăm (%) và tự động căn chỉnh độ rộng cột.
+- **QuestPDF 2024.12.3**: Thư viện kết xuất tài liệu PDF phiếu thu và báo cáo hành chính chuẩn in ấn A4 (sử dụng giấy phép cộng đồng `CommunityLicense`), hỗ trợ font Unicode tiếng Việt, tự động dàn trang tối ưu không phụ thuộc vào công cụ ngoài.
+- **MailKit 4.8.0 & MimeKit**: Thư viện gửi email thông báo hóa đơn tự động kèm tệp PDF đính kèm qua máy chủ SMTP với mã hóa SSL/TLS.
 - **Avalonia.Headless.XUnit 11.2.5**: Khung kiểm thử giao diện người dùng tự động (Headless UI E2E) chạy độc lập không cần Display Server hay GPU, tích hợp trơn tru trên môi trường CI/CD.
 
 ---
@@ -45,19 +47,19 @@ Dormitory-Manager/
 │   ├── macos-arm64/                              # macOS Apple Silicon (M1/M2/M3/M4)
 │   │   ├── publish/                              # Tệp nhị phân thô
 │   │   ├── DormitoryManager.app/                 # macOS App Bundle chuẩn
-│   │   └── DormitoryManager-v2.1.0-macOS-arm64.dmg # Tệp ảnh đĩa cài đặt DMG
+│   │   └── DormitoryManager-v2.3.0-macOS-arm64.dmg # Tệp ảnh đĩa cài đặt DMG
 │   ├── macos-x64/                                # macOS Intel x86_64
 │   │   ├── DormitoryManager.app/
-│   │   └── DormitoryManager-v2.1.0-macOS-x64.dmg
+│   │   └── DormitoryManager-v2.3.0-macOS-x64.dmg
 │   ├── windows-x64/                              # Windows 64-bit (x64)
 │   │   ├── Dormitory.Desktop.exe                 # Tệp chạy đơn (Single-File Executable)
 │   │   ├── appsettings.json                      # Cấu hình hệ thống
-│   │   └── DormitoryManager-v2.1.0-Windows-x64.zip # Tệp nén ZIP phân phối
+│   │   └── DormitoryManager-v2.3.0-Windows-x64.zip # Tệp nén ZIP phân phối
 │   └── linux-x64/                                # Linux 64-bit (x64)
 │       ├── Dormitory.Desktop                     # Tệp chạy nhị phân Linux
 │       ├── appsettings.json                      # Cấu hình hệ thống
 │       ├── *.so                                  # Native libraries (libSkiaSharp, libe_sqlite3)
-│       └── DormitoryManager-v2.1.0-Linux-x64.tar.gz # Tệp nén lưu trữ TAR.GZ
+│       └── DormitoryManager-v2.3.0-Linux-x64.tar.gz # Tệp nén lưu trữ TAR.GZ
 ```
 
 ---
@@ -205,6 +207,11 @@ Mặc định CSDL được lưu trữ tại file **`dormitory.db`** cùng cấp
 3. Giải nén/cài đặt phiên bản mới.
 4. Copy file `dormitory.db` cũ hoặc vào phần mềm mới chọn **Phục hồi CSDL** để tải lại dữ liệu.
 
+### 6.4. Thư mục lưu trữ tệp báo cáo cục bộ (`reports/`)
+- Kể từ phiên bản **v2.3.0**, phân hệ Báo cáo & Phân tích tổng hợp tự động lưu các tệp báo cáo Excel (`.xlsx`) và PDF (`.pdf`) tại thư mục **`reports/`** cùng cấp thư mục thực thi của ứng dụng.
+- Người dùng cần đảm bảo ứng dụng có quyền ghi đĩa vào thư mục này.
+- Khi sao lưu toàn diện hệ thống, Ban Quản lý nên sao chép đồng thời cả tệp `dormitory.db` và thư mục `reports/` để lưu trữ đầy đủ tài liệu phục vụ đối soát, thanh tra.
+
 ---
 
 ## 7. Quy Trình Tự Động Hóa CI/CD Chính Thức (GitHub Actions)
@@ -229,23 +236,23 @@ on:
 1. **`test-and-verify`** *(Continuous Integration - chạy trên Ubuntu)*:
    - Checkout mã nguồn và cài đặt .NET 8 SDK.
    - Biên dịch toàn bộ Solution ở chế độ Release: `dotnet build Dormitory.sln -c Release`.
-   - Chạy 100% bộ kiểm thử tự động: `dotnet test Dormitory.sln -c Release` (**77/77 tests pass 100%**: 74 Unit Tests + 3 Avalonia Headless UI E2E Journeys).
+   - Chạy 100% bộ kiểm thử tự động: `dotnet test Dormitory.sln -c Release` (**177/177 tests pass 100%**: 171 Unit Tests + 6 Avalonia Headless UI E2E Journeys).
    - Đóng vai trò là Quality Gate chặn lỗi trước khi bất kỳ tác vụ đóng gói nào được kích hoạt.
 
 2. **`package-macos`** *(Continuous Deployment - chạy trên macos-14 Apple Silicon)*:
    - Cấp quyền thực thi và gọi `scripts/package/build-macos.sh arm64`.
-   - Tạo macOS App Bundle `DormitoryManager.app` và đóng gói thành tệp `DormitoryManager-v2.1.0-macOS-arm64.dmg`.
+   - Tạo macOS App Bundle `DormitoryManager.app` và đóng gói thành tệp `DormitoryManager-v2.3.0-macOS-arm64.dmg`.
    - Tải lên GitHub Artifacts (`dormitory-manager-macos-arm64`).
 
 3. **`package-windows`** *(Continuous Deployment - chạy trên Ubuntu)*:
    - Cài đặt tiện ích `zip` và thực thi `scripts/package/build-windows.sh win-x64`.
    - Biên dịch ứng dụng Single-File Executable `Dormitory.Desktop.exe` nhúng sẵn `AppIcon.ico`.
-   - Đóng gói cùng `appsettings.json` thành tệp `DormitoryManager-v2.1.0-Windows-x64.zip`.
+   - Đóng gói cùng `appsettings.json` thành tệp `DormitoryManager-v2.3.0-Windows-x64.zip`.
    - Tải lên GitHub Artifacts (`dormitory-manager-windows-x64`).
 
 4. **`package-linux`** *(Continuous Deployment - chạy trên Ubuntu)*:
    - Thực thi `scripts/package/build-linux.sh linux-x64` tạo nhị phân self-contained kèm thư viện native `libSkiaSharp.so`, `libe_sqlite3.so`.
-   - Nén thành tệp lưu trữ `DormitoryManager-v2.1.0-Linux-x64.tar.gz`.
+   - Nén thành tệp lưu trữ `DormitoryManager-v2.3.0-Linux-x64.tar.gz`.
    - Tải lên GitHub Artifacts (`dormitory-manager-linux-x64`).
 
 5. **`create-release`** *(Automated GitHub Release - kích hoạt khi đẩy Git Tag `v*`)*:
@@ -261,7 +268,31 @@ on:
 Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản cài đặt chính thức tại:
 👉 [**GitHub Releases: nguyendong47/Dormitory-Manager/releases**](https://github.com/nguyendong47/Dormitory-Manager/releases)
 
-- **macOS (M1/M2/M3/M4 Apple Silicon)**: Tải `DormitoryManager-v2.1.0-macOS-arm64.dmg` (~85MB) -> Mở tệp DMG và kéo ứng dụng vào thư mục `Applications`.
-- **macOS (Intel Core x86_64)**: Tải `DormitoryManager-v2.1.0-macOS-x64.dmg` (~88MB) -> Thao tác tương tự.
-- **Windows (10/11 64-bit)**: Tải `DormitoryManager-v2.1.0-Windows-x64.zip` (~95MB) -> Giải nén ra thư mục bất kỳ và nhấp đúp vào `Dormitory.Desktop.exe` để sử dụng ngay (Zero Setup).
-- **Linux (Ubuntu/Debian/Fedora x64)**: Tải `DormitoryManager-v2.1.0-Linux-x64.tar.gz` (~98MB) -> Giải nén và chạy `./Dormitory.Desktop`.
+- **macOS (M1/M2/M3/M4 Apple Silicon)**: Tải `DormitoryManager-v2.3.0-macOS-arm64.dmg` (~85MB) -> Mở tệp DMG và kéo ứng dụng vào thư mục `Applications`.
+- **macOS (Intel Core x86_64)**: Tải `DormitoryManager-v2.3.0-macOS-x64.dmg` (~88MB) -> Thao tác tương tự.
+- **Windows (10/11 64-bit)**: Tải `DormitoryManager-v2.3.0-Windows-x64.zip` (~95MB) -> Giải nén ra thư mục bất kỳ và nhấp đúp vào `Dormitory.Desktop.exe` để sử dụng ngay (Zero Setup).
+- **Linux (Ubuntu/Debian/Fedora x64)**: Tải `DormitoryManager-v2.3.0-Linux-x64.tar.gz` (~98MB) -> Giải nén và chạy `./Dormitory.Desktop`.
+
+---
+
+## 9. Ghi Chú Phát Hành Phiên Bản v2.3.0 (Release Notes)
+
+### 🚀 Tính Năng Mới Nổi Bật:
+1. **Phân Hệ Báo Cáo & Phân Tích Tổng Hợp KTX (Reporting & Analytics)**:
+   - Cung cấp 4 loại báo cáo quản trị chuyên sâu:
+     * **Báo cáo Vi phạm KTX**: Thống kê mức độ, điểm trừ, tiền phạt, tỷ lệ giải quyết, Top 5 sinh viên và Top phòng vi phạm.
+     * **Báo cáo Tài chính & Thu phí**: Tổng hợp doanh thu kỳ vọng vs thực thu, bóc tách tiền phòng/điện/nước/phụ phí, công nợ tồn đọng quá hạn.
+     * **Báo cáo Tỷ lệ Lấp đầy & Sức chứa**: Tổng số phòng/giường, đang ở, chỗ trống, phòng bảo trì, tỷ lệ lấp đầy %, phân tích theo tòa nhà và danh sách phòng trống.
+     * **Báo cáo Kiểm kê Tài sản & Trang thiết bị**: Thống kê thiết bị, tổng giá trị tài sản, phân loại Tốt / Cần sửa / Hỏng, tỷ lệ khả dụng %.
+   - **Xuất bảng tính Excel đa tầng (`ClosedXML`)**: Định dạng tiền tệ VNĐ, %, auto-fit cột, nhiều worksheets chuyên biệt.
+   - **Xuất văn bản PDF hành chính chuẩn A4 (`QuestPDF`)**: Hỗ trợ font Unicode, thẻ KPI, bảng biểu striped, 3 khối chữ ký xác nhận pháp lý.
+   - **Trung tâm Quản lý Lịch sử Báo cáo (`ReportListView`)**: Thẻ KPI, bộ lọc đa năng, mở tệp trực tiếp, tải về máy và xóa an toàn.
+2. **Phân Hệ Quản Lý Vi Phạm Nội Quy & Kỷ Luật (`Violation`)**:
+   - Lập biên bản vi phạm với 4 mức độ kỷ luật, trừ điểm rèn luyện, phạt tiền và theo dõi tiến trình giải quyết.
+3. **Gửi Email Hóa Đơn Tự Động Kèm PDF Phiếu Thu (`MailKit / SMTP`)**:
+   - Gửi email HTML trang nhã đính kèm tệp PDF phiếu thu trực tiếp từ màn hình hóa đơn.
+   - Cấu hình thông số máy chủ SMTP linh hoạt trong Cài đặt hệ thống.
+4. **Mở Rộng Kiểm Thử Tự Động Toàn Diện (177/177 Tests Passing - 100%)**:
+   - 171 Unit & Integration Tests bao phủ 100% logic nghiệp vụ, tính toán, DTOs và ViewModels.
+   - 6 Avalonia Headless UI E2E Journeys kiểm thử tự động toàn diện không cần màn hình hiển thị.
+

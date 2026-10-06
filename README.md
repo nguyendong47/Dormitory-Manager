@@ -1,8 +1,8 @@
 # 🏢 Hệ Thống Quản Lý Ký Túc Xá (Dormitory Management System)
 
 [![CI/CD Pipeline](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml)
-![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
-![Tests](https://img.shields.io/badge/tests-77%2F77%20passed-success.svg)
+![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)
+![Tests](https://img.shields.io/badge/tests-177%2F177%20passed-success.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 > Ứng dụng Desktop hiện đại quản lý toàn diện Ký túc xá sinh viên, xây dựng trên nền tảng **.NET 8 LTS**, **Avalonia UI 11** và **Entity Framework Core 8** theo chuẩn kiến trúc **Clean Architecture** và mô hình **MVVM**.
@@ -69,7 +69,7 @@
    - Giám sát trạng thái file CSDL SQLite thời gian thực: đường dẫn, dung lượng đĩa, tổng số bản ghi từ toàn bộ các bảng trong hệ thống.
    - Sao lưu snapshot CSDL an toàn ra file `.bak` sử dụng SQLite Online Backup API không làm gián đoạn các giao dịch đọc/ghi.
    - Phục hồi CSDL an toàn với cơ chế kiểm tra tính toàn vẹn (`PRAGMA integrity_check`) và hộp thoại xác nhận.
-   - Cấu hình chuỗi kết nối động qua `appsettings.json` với cơ chế dự phòng an toàn (Safe Fallback).
+   - Cấu hình chuỗi kết nối động và cấu hình máy chủ gửi thư SMTP qua giao diện và `appsettings.json`.
    - Phân quyền Quản trị viên (RBAC): Chỉ `Admin` mới có quyền truy cập và thao tác phục hồi dữ liệu.
 
 9. **📦 Đóng Gói & Triển Khai Đa Nền Tảng (Cross-Platform Packaging)**:
@@ -94,16 +94,31 @@
     - Tích hợp 3 điểm thao tác: Nút thanh công cụ, Menu ngữ cảnh (chuột phải) và Nút thao tác nhanh trên DataGrid.
     - Bố cục trang trọng: Thông tin Ban Quản lý, thông tin sinh viên & phòng ở, bảng chi tiết điện nước lũy tiến, phụ phí, tổng tiền in đậm định dạng VNĐ và hai khối chữ ký xác nhận.
 
-13. **🧪 Khung Kiểm Thử Tự Động Toàn Diện (Unit Tests & Avalonia Headless UI E2E)**:
-    - 74 bài kiểm thử đơn vị & tích hợp kiểm soát chặt chẽ toàn bộ logic nghiệp vụ, tính toán tiền điện nước và bảo mật.
-    - 3 kịch bản kiểm thử giao diện tự động không cần màn hình (`Avalonia.Headless.XUnit`) chạy mượt mà trên môi trường CI/CD.
+13. **⚖️ Quản Lý Vi Phạm Nội Quy & Kỷ Luật Sinh Viên (`Violation`)**:
+    - Lập biên bản vi phạm KTX phân loại 4 mức độ: Nhắc nhở, Khiển trách, Cảnh cáo, Buộc rời KTX.
+    - Tự động trừ điểm rèn luyện và áp dụng mức tiền phạt vi phạm; quy trình xử lý biên bản linh hoạt.
+    - 4 thẻ KPI theo dõi số lượng biên bản theo trạng thái và mức độ vi phạm.
+
+14. **📧 Gửi Email Hóa Đơn Tự Động Kèm Tệp PDF Thu Tiền (`MailKit / SMTP`)**:
+    - Tự động gửi thông báo tiền phòng & dịch vụ điện nước qua thư điện tử đến sinh viên.
+    - Tự động đính kèm tệp PDF phiếu thu (`QuestPDF`) với mẫu email HTML trang trọng.
+    - Cấu hình linh hoạt máy chủ gửi thư SMTP trong Cài đặt hệ thống.
+
+15. **📊 Phân Hệ Báo Cáo & Phân Tích Tổng Hợp KTX (Reporting & Analytics)**:
+    - Trung tâm tổng hợp 4 loại báo cáo chuyên sâu: **Báo cáo Vi phạm KTX**, **Báo cáo Tài chính & Thu phí**, **Báo cáo Tỷ lệ Lấp đầy & Sức chứa**, **Báo cáo Kiểm kê Tài sản & Trang thiết bị**.
+    - Kết xuất đa định dạng: Bảng tính Excel đa sheet với ClosedXML (định dạng tiền tệ VNĐ, tỷ lệ %, auto-fit cột) và PDF hành chính chuẩn A4 với QuestPDF (font Unicode, thẻ KPI, bảng sọc, 3 khối chữ ký xác nhận pháp lý).
+    - Quản lý lịch sử báo cáo toàn diện: Thẻ KPI thống kê, bộ lọc phân hệ/định dạng, mở tệp trực tiếp, tải về máy và xóa an toàn.
+
+16. **🧪 Khung Kiểm Thử Tự Động Toàn Diện (Unit Tests & Avalonia Headless UI E2E)**:
+    - 171 bài kiểm thử đơn vị & tích hợp kiểm soát chặt chẽ toàn bộ logic nghiệp vụ, tính toán tiền điện nước, trích xuất báo cáo và bảo mật.
+    - 6 kịch bản kiểm thử giao diện tự động không cần màn hình (`Avalonia.Headless.XUnit`) chạy mượt mà trên môi trường CI/CD.
 
 ---
 
-## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature Matrix - Hoàn Thành 100% Cả 5 Giai Đoạn - v2.1.0)
+## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature Matrix - Hoàn Thành 100% Cả 7 Giai Đoạn - v2.3.0)
 
 | Phân hệ / Hạng mục | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel / PDF | Phân Quyền | Trạng Thái |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Xác thực & Phiên (Auth)** | ✅ | — | — | — | — | — | Admin / Manager | **Hoàn thành (Phase 1)** |
 | **Bảng Điều Khiển (Dashboard)** | ✅ | — | — | — | ✅ (Cảnh báo Live & Lọc) | ✅ (`.xlsx` Đa Sheet) | Tất cả | **Hoàn thành (Phase 2 - LiveCharts2 & Analytics)** |
 | **Phòng Ở (Rooms)** | ✅ | ✅ (`RoomDialog`) | ✅ (`RoomDialog`) | ✅ (Xác nhận an toàn) | ✅ | ✅ (`.xlsx`) | Tất cả | **Hoàn thành (Phase 1)** |
@@ -118,7 +133,11 @@
 | **Tự Động Hóa CI/CD & GitHub Releases** | ✅ | ✅ (CI Build & Test) | ✅ (CD Multi-OS Packaging) | — | — | — | GitHub Actions | **Hoàn thành (Phase 4 - CI/CD Pipeline)** |
 | **Quản Lý Tài Sản Phòng (Equipments)** | ✅ | ✅ (`EquipmentDialog`) | ✅ (`EquipmentDialog`) | ✅ (Xác nhận an toàn) | ✅ (Lọc phòng & TT) | — | Admin / Manager | **Hoàn thành (Phase 5 - Equipment Module)** |
 | **In Phiếu Thu PDF (QuestPDF)** | ✅ | — | — | — | — | ✅ (Xuất PDF in ấn) | Tất cả | **Hoàn thành (Phase 5 - PDF Receipts)** |
-| **Kiểm Thử E2E Headless (Avalonia)** | ✅ | ✅ (Auth & Nav E2E) | ✅ (Equipments E2E) | ✅ (Bill PDF E2E) | — | — | Tự động hóa CI/CD | **Hoàn thành (Phase 5 - Headless E2E)** |
+| **Kỷ Luật & Vi Phạm KTX (Violations)** | ✅ | ✅ (`ViolationDialog`) | ✅ (`ViolationDialog`) | ✅ (Xác nhận an toàn) | ✅ (Mức độ, TT, SV) | — | Admin / Manager | **Hoàn thành (Phase 6 - Violations)** |
+| **Gửi Email Hóa Đơn Tự Động (MailKit)** | ✅ | ✅ (Gửi thư kèm PDF) | — | — | — | ✅ (Đính kèm PDF) | Admin / Manager | **Hoàn thành (Phase 6 - Email Invoicing)** |
+| **Báo Cáo & Phân Tích Tổng Hợp** | ✅ | ✅ (Khởi tạo 4 loại BC) | — | ✅ (Xóa lịch sử an toàn) | ✅ (Phân hệ, Định dạng) | ✅ (Excel ClosedXML & PDF QuestPDF) | Tất cả | **Hoàn thành (Phase 7 - Reporting & Analytics)** |
+| **Quản Lý Lịch Sử Báo Cáo** | ✅ | — | — | ✅ (Xóa tệp & bản ghi) | ✅ (Tìm kiếm, Lọc) | ✅ (Mở tệp & Tải về) | Tất cả | **Hoàn thành (Phase 7 - Report History)** |
+| **Kiểm Thử E2E Headless (Avalonia)** | ✅ | ✅ (Auth & Nav E2E) | ✅ (Equipments E2E) | ✅ (Bill PDF E2E) | ✅ (Reports E2E) | — | Tự động hóa CI/CD | **Hoàn thành (Phase 7 - 6/6 Headless E2E)** |
 
 ---
 
@@ -172,7 +191,7 @@ graph TD
 Dormitory-Manager/
 ├── .github/                          # Cấu hình GitHub Actions CI/CD Pipeline
 │   └── workflows/
-│       └── ci-cd.yml                 # Pipeline tự động Build, Test (77/77), Đóng gói & Phát hành Release
+│       └── ci-cd.yml                 # Pipeline tự động Build, Test (177/177), Đóng gói & Phát hành Release
 │
 ├── dist/                             # Thư mục chứa gói xuất bản thành phẩm (DMG, ZIP, TAR.GZ)
 │
@@ -180,6 +199,7 @@ Dormitory-Manager/
 │   ├── images/                       # Ảnh chụp giao diện dashboard
 │   ├── architecture.md               # Tổng quan kiến trúc Clean Architecture & MVVM
 │   ├── packaging-and-deployment.md   # Hướng dẫn đóng gói và triển khai đa nền tảng
+│   ├── phase7/                       # Đặc tả yêu cầu báo cáo & phân tích tổng hợp KTX
 │   ├── spec-modernization.md         # Đặc tả kiến trúc hiện đại hóa
 │   └── user-guide.md                 # Hướng dẫn sử dụng chi tiết các phân hệ
 │
@@ -188,6 +208,8 @@ Dormitory-Manager/
 │   ├── KTX2021/                      # Project WinForms cũ
 │   └── packages/                     # Thư viện NuGet cũ
 │
+├── reports/                          # Thư mục lưu trữ cục bộ các tệp báo cáo Excel & PDF xuất bản
+│
 ├── scripts/
 │   └── package/                      # Bộ kịch bản tự động đóng gói đa nền tảng
 │       ├── build-macos.sh            # Đóng gói macOS App Bundle & tệp DMG (ARM64 & x64)
@@ -195,15 +217,18 @@ Dormitory-Manager/
 │       └── build-linux.sh            # Đóng gói Linux Self-Contained Binary & Tar.gz
 │
 ├── src/
-│   ├── Dormitory.Core/               # Domain: Thực thể và Enums (Room, Equipment, Student, Contract, Bill, Employee, User)
-│   ├── Dormitory.Application/        # Application: DTOs, Services, Interfaces, Business Logic
-│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, QuestPDF, Migrations, BCrypt, DatabaseService
+│   ├── Dormitory.Core/               # Domain: Thực thể và Enums (Room, Equipment, Student, Contract, Bill, Employee, Violation, ReportHistory, User)
+│   ├── Dormitory.Application/        # Application: DTOs, Services, Interfaces, Business Logic (IReportService, IViolationService, IEmailService,...)
+│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, QuestPDF, ClosedXML, MailKit, Migrations, BCrypt, DatabaseService, ReportService
 │   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs, appsettings.json
-│       └── Assets/                   # Nhận diện thương hiệu (AppIcon.ico, AppIcon.png) & Fonts
+│       ├── Assets/                   # Nhận diện thương hiệu (AppIcon.ico, AppIcon.png) & Fonts
+│       ├── Converters/               # Value Converters (ReportFormatConverter, ReportTypeConverter,...)
+│       ├── ViewModels/               # ReportListViewModel, ReportGenerateDialogViewModel, ViolationListViewModel,...
+│       └── Views/                    # ReportListView, ReportGenerateDialogWindow, ViolationListView,...
 │
 ├── tests/
-│   ├── Dormitory.UnitTests/          # Kiểm thử đơn vị & tích hợp xUnit & Moq (74/74 Passed - 100%)
-│   └── Dormitory.E2ETests/           # Kiểm thử giao diện tự động Avalonia Headless UI (3/3 Journeys Passed - 100%)
+│   ├── Dormitory.UnitTests/          # Kiểm thử đơn vị & tích hợp xUnit & FluentAssertions (171/171 Passed - 100%)
+│   └── Dormitory.E2ETests/           # Kiểm thử giao diện tự động Avalonia Headless UI (6/6 Journeys Passed - 100%)
 │
 ├── Dormitory.sln                     # .NET 8 Solution
 └── README.md
@@ -217,10 +242,10 @@ Dormitory-Manager/
 
 Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản cài đặt hoặc gói chạy độc lập (Self-Contained - không yêu cầu cài đặt trước .NET Runtime) tại trang [**GitHub Releases**](https://github.com/nguyendong47/Dormitory-Manager/releases):
 
-- **macOS (Apple Silicon M1/M2/M3/M4)**: Tải tệp `DormitoryManager-v2.0.0-macOS-arm64.dmg` -> Nhấp đúp và kéo thả `DormitoryManager.app` vào thư mục `Applications`.
-- **macOS (Intel x64)**: Tải tệp `DormitoryManager-v2.0.0-macOS-x64.dmg` -> Cài đặt tương tự như trên.
-- **Windows (10/11 64-bit)**: Tải tệp `DormitoryManager-v2.0.0-Windows-x64.zip` -> Giải nén và nhấp đúp vào `Dormitory.Desktop.exe` để chạy ngay.
-- **Linux (Ubuntu, Debian, Fedora x64)**: Tải tệp `DormitoryManager-v2.0.0-Linux-x64.tar.gz` -> Giải nén và thực thi `./Dormitory.Desktop`.
+- **macOS (Apple Silicon M1/M2/M3/M4)**: Tải tệp `DormitoryManager-v2.3.0-macOS-arm64.dmg` -> Nhấp đúp và kéo thả `DormitoryManager.app` vào thư mục `Applications`.
+- **macOS (Intel x64)**: Tải tệp `DormitoryManager-v2.3.0-macOS-x64.dmg` -> Cài đặt tương tự như trên.
+- **Windows (10/11 64-bit)**: Tải tệp `DormitoryManager-v2.3.0-Windows-x64.zip` -> Giải nén và nhấp đúp vào `Dormitory.Desktop.exe` để chạy ngay.
+- **Linux (Ubuntu, Debian, Fedora x64)**: Tải tệp `DormitoryManager-v2.3.0-Linux-x64.tar.gz` -> Giải nén và thực thi `./Dormitory.Desktop`.
 
 ### Yêu Cầu Môi Trường (Dành Cho Lập Trình Viên)
 - **.NET 8 SDK** (hoặc mới hơn) cài đặt trên máy phát triển.
@@ -238,7 +263,7 @@ dotnet build Dormitory.sln
 dotnet run --project src/Dormitory.Desktop
 ```
 
-> 💡 **Ghi chú**: Trong lần khởi chạy đầu tiên, hệ thống sẽ tự động tạo database SQLite cục bộ `dormitory.db` và nạp sẵn dữ liệu mẫu (danh sách phòng, sinh viên, hợp đồng, hóa đơn, nhân viên và tài khoản quản trị).
+> 💡 **Ghi chú**: Trong lần khởi chạy đầu tiên, hệ thống sẽ tự động tạo database SQLite cục bộ `dormitory.db` và nạp sẵn dữ liệu mẫu (danh sách phòng, sinh viên, hợp đồng, hóa đơn, nhân viên, vi phạm và tài khoản quản trị).
 
 ### Tài Khoản Đăng Nhập Mặc Định
 - **Quản trị viên (Admin)**: `admin` / `Admin@123456`
@@ -266,12 +291,12 @@ Thành phẩm sau khi đóng gói sẽ nằm tại thư mục `dist/`.
 
 ## 🧪 Chạy Kiểm Thử Tự Động (Unit Tests & Headless UI E2E)
 
-Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, dịch vụ xuất phiếu thu PDF QuestPDF, quản lý tài sản phòng ở, cấu hình động `appsettings.json`, dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`), và 3 hành trình người dùng E2E chạy hoàn toàn tự động trên nền tảng Avalonia Headless:
+Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, dịch vụ xuất phiếu thu PDF QuestPDF, quản lý tài sản phòng ở, quản lý kỷ luật vi phạm, gửi thư email SMTP hóa đơn, trung tâm báo cáo & phân tích tổng hợp, cấu hình động `appsettings.json`, dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`), và 6 hành trình người dùng E2E chạy hoàn toàn tự động trên nền tảng Avalonia Headless:
 
 ```bash
 dotnet test Dormitory.sln
 ```
 
-Kết quả: **77/77 Tests Passed** (100% Pass: 74 Unit Tests + 3 Avalonia Headless UI E2E Journeys).
+Kết quả: **177/177 Tests Passed** (100% Pass: 171 Unit Tests + 6 Avalonia Headless UI E2E Journeys).
 
 

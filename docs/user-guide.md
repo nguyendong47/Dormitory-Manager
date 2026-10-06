@@ -59,9 +59,11 @@ Thanh menu bên trái giúp chuyển đổi linh hoạt giữa các phân hệ:
 - 🛋️ **Quản lý tài sản**: Quản lý trang thiết bị & tài sản phòng ở, kiểm kê, theo dõi tình trạng hư hỏng và báo sự cố.
 - 🎓 **Sinh viên**: Quản lý hồ sơ cá nhân sinh viên và xuất danh bạ Excel.
 - 📝 **Hợp đồng**: Lập mới, gia hạn, thanh lý hợp đồng và bộ lọc trạng thái.
-- 💵 **Hóa đơn**: Lập phiếu thu điện nước, xác nhận thu tiền, lọc trạng thái, xuất Excel và in PDF (QuestPDF).
+- 💵 **Hóa đơn**: Lập phiếu thu điện nước, xác nhận thu tiền, lọc trạng thái, xuất Excel, gửi email và in PDF (QuestPDF).
 - 👥 **Nhân viên**: Quản lý đội ngũ nhân sự vận hành KTX (**Chỉ dành cho Quản trị viên**).
-- ⚙️ **Cài đặt**: Quản trị CSDL (sao lưu, phục hồi, kiểm tra toàn vẹn), cấu hình chuỗi kết nối và thông tin hệ thống (**Chỉ dành cho Quản trị viên**).
+- ⚖️ **Kỷ luật & Vi phạm**: Quản lý biên bản vi phạm nội quy KTX, xử lý kỷ luật, trừ điểm rèn luyện và phạt tiền.
+- 📊 **Báo cáo & Thống kê**: Trung tâm tổng hợp và phân tích báo cáo chuyên sâu (Vi phạm, Tài chính, Lấp đầy, Thiết bị), xuất bản PDF/Excel và quản lý kho lưu trữ tệp báo cáo.
+- ⚙️ **Cài đặt**: Quản trị CSDL (sao lưu, phục hồi, kiểm tra toàn vẹn), cấu hình máy chủ gửi thư SMTP, chuỗi kết nối và thông tin hệ thống (**Chỉ dành cho Quản trị viên**).
 
 > 🔒 **Cơ chế phân quyền**: Với tài khoản vai trò `Manager`, hai phân hệ **Nhân viên** và **Cài đặt** sẽ tự động được ẩn hoàn toàn khỏi thanh điều hướng để đảm bảo tính an toàn hạ tầng và bảo mật thông tin nội bộ.
 
@@ -361,6 +363,132 @@ Hộp thoại chọn tệp lưu trữ native của hệ điều hành xuất hi�
 
 ---
 
+### 3.10. Quản Lý Vi Phạm Nội Quy & Kỷ Luật Sinh Viên (`Violation`) & Gửi Email Hóa Đơn Tự Động (MailKit / SMTP)
+
+Phân hệ quản lý kỷ luật và thông báo hóa đơn tự động được tích hợp nhằm số hóa quy trình lập biên bản, kiểm soát nề nếp sinh viên và tự động hóa gửi thông báo cước phí:
+
+#### 1. Quản lý vi phạm nội quy & kỷ luật (`Violation`):
+- **Bốn mức độ kỷ luật (`ViolationSeverity`)**:
+  - `Nhắc nhở` (`Minor`): Vi phạm nhẹ lần đầu (ví dụ: phơi đồ sai quy định, để xe lộn xộn).
+  - `Khiển trách` (`Moderate`): Vi phạm tái diễn hoặc có tính chất trung bình (nấu ăn bằng thiết bị cấm, gây mất trật tự sau 23h).
+  - `Cảnh cáo` (`Severe`): Vi phạm nghiêm trọng (uống rượu bia, hút thuốc lá trong phòng, làm hư hỏng tài sản).
+  - `Buộc rời KTX` (`Critical`): Vi phạm đặc biệt nghiêm trọng (đánh nhau, đưa người lạ ở qua đêm không khai báo, tàng trữ chất cấm).
+- **Thẻ KPI thống kê kỷ luật**: Tổng số biên bản, Chờ xử lý (`Pending`), Đã giải quyết (`Resolved`), Vi phạm nghiêm trọng (`Critical`).
+- **Lập biên bản vi phạm (`+ Lập biên bản`)**: Mở hộp thoại `ViolationDialogWindow`, chọn sinh viên, chọn phòng, chọn mức độ, nhập tiêu đề, mô tả hành vi, điểm rèn luyện bị trừ và số tiền phạt vi phạm.
+- **Giải quyết & Xử lý biên bản (`Xử lý`)**: Cập nhật kết luận xử lý kỷ luật, ghi chú hoàn thành nộp phạt hoặc khắc phục hậu quả, chuyển trạng thái sang `Resolved` hoặc `Dismissed`.
+
+#### 2. Gửi Email thông báo hóa đơn tự động đính kèm PDF (`MailKit / SMTP`):
+- **Cấu hình máy chủ SMTP**: Tại màn hình **Cài đặt hệ thống**, Quản trị viên cấu hình thông số gửi thư (SMTP Server, Port, Email người gửi, Mật khẩu ứng dụng/App Password, SSL/TLS) và kiểm tra kết nối với nút **"Kiểm tra kết nối SMTP"**.
+- **Gửi email nhanh từ danh sách hóa đơn**: Trên màn hình **Hóa đơn & Dịch vụ**, chọn một hóa đơn và nhấn nút **"📧 Gửi email hóa đơn"** trên thanh công cụ hoặc bấm biểu tượng 📧 trên từng dòng.
+- **Nội dung email tự động**: Hệ thống tự động tạo thư HTML trang trọng gồm biểu trưng ký túc xá, lời chào cá nhân hóa, bảng kê tiền phòng/điện/nước/phụ phí, thông tin tài khoản chuyển khoản ngân hàng và tự động đính kèm tệp PDF phiếu thu `PhieuThu_{BillCode}.pdf`.
+
+---
+
+### 3.11. 📊 Phân Hệ Báo Cáo & Phân Tích Tổng Hợp KTX (Reporting & Analytics)
+
+Trung tâm Báo cáo & Phân tích tổng hợp cung cấp giải pháp thống kê, phân tích dữ liệu chuyên sâu và kết xuất tài liệu quản trị phục vụ Ban Quản lý KTX và Lãnh đạo Nhà trường:
+
+#### 1. Bốn (4) Loại Báo Cáo Nghiệp Vụ Chuyên Sâu:
+
+1. **Báo Cáo Vi Phạm & Kỷ Luật KTX (`ViolationReport`)**:
+   - **Mục đích**: Tổng kết tình hình an ninh trật tự, nề nếp sinh viên nội trú theo kỳ học hoặc năm học.
+   - **Khoảng thời gian linh hoạt**: Lọc dữ liệu theo khoảng thời gian tùy chọn (Từ ngày - Đến ngày) hoặc toàn bộ lịch sử.
+   - **Chỉ số tổng hợp**:
+     * Tổng số lượng biên bản vi phạm phát sinh.
+     * Cơ cấu vi phạm theo 4 mức độ: Nhắc nhở, Khiển trách, Cảnh cáo, Buộc rời KTX.
+     * Tỷ lệ phân bố trạng thái: Đang chờ xử lý, Đã giải quyết, Bác bỏ.
+     * Tổng số điểm rèn luyện bị khấu trừ và tổng tiền phạt phát sinh (VNĐ).
+     * Tỷ lệ giải quyết vi phạm thành công (`Resolution Rate %`).
+   - **Danh sách phân tích trọng điểm**:
+     * **Top 5 sinh viên vi phạm nhiều nhất**: Hiển thị họ tên, MSSV, số lần vi phạm và tổng điểm trừ rèn luyện.
+     * **Top phòng vi phạm nhiều nhất**: Thống kê số lượng vi phạm tập trung theo từng phòng và tòa nhà để ban quản lý tăng cường giám sát.
+
+2. **Báo Cáo Tài Chính & Thu Phí KTX (`FinancialReport`)**:
+   - **Mục đích**: Kiểm soát dòng tiền, theo dõi công nợ, phân tích cơ cấu doanh thu và hiệu quả thu hồi phí KTX.
+   - **Chỉ số doanh thu & công nợ**:
+     * **Doanh thu kỳ vọng (Expected Revenue)**: Tổng giá trị các hóa đơn phát hành trong kỳ.
+     * **Doanh thu thực thu (Actual Revenue)**: Tổng số tiền đã thu thành công (`Paid`).
+     * **Doanh thu chưa thu (Unpaid Revenue)**: Tổng số tiền công nợ đang tồn đọng.
+     * **Tỷ lệ thu hồi công nợ (Collection Rate %)**: Tỷ lệ phần trăm giữa thực thu trên tổng phải thu.
+   - **Bóc tách cơ cấu nguồn thu**:
+     * Doanh thu tiền phòng (Room Fees).
+     * Doanh thu tiền điện tiêu thụ (Electricity Fees) & Tổng sản lượng điện năng (kWh).
+     * Doanh thu tiền nước sinh hoạt (Water Fees) & Tổng khối lượng nước sạch (m³).
+     * Doanh thu phụ phí dịch vụ (Vệ sinh, Internet băng thông rộng).
+   - **Danh sách công nợ quá hạn (Overdue Debts)**:
+     * Liệt kê chi tiết các hóa đơn chưa thanh toán đã quá ngày hạn nộp: Mã hóa đơn, Phòng ở, Họ tên sinh viên đại diện, Số tiền nợ và Số ngày quá hạn, giúp cán bộ kế toán đôn đốc kịp thời.
+
+3. **Báo Cáo Tỷ Lệ Lấp Đầy & Sức Chứa KTX (`OccupancyReport`)**:
+   - **Mục đích**: Tối ưu hóa hiệu suất khai thác phòng ở, dự báo năng lực tiếp nhận sinh viên mới.
+   - **Chỉ số công suất toàn hệ thống**:
+     * Tổng số phòng và tổng số giường thiết kế.
+     * Số sinh viên đang lưu trú thực tế (giường đã lấp đầy).
+     * Số chỗ trống còn khả dụng sẵn sàng bàn giao cho sinh viên.
+     * Số phòng đang tạm khóa để bảo trì, sửa chữa kỹ thuật.
+     * **Tỷ lệ lấp đầy toàn hệ thống (Occupancy Rate %)**.
+   - **Bảng phân tích theo từng tòa nhà (Building Breakdown)**:
+     * Tổng hợp riêng cho từng tòa (Tòa A, Tòa B,...): Tổng phòng, tổng giường, số chỗ đã ở, số chỗ trống và tỷ lệ lấp đầy %.
+   - **Danh sách phòng còn chỗ trống**:
+     * Bảng kê chi tiết các phòng còn giường trống: Mã phòng, Tòa nhà, Loại phòng, Giới tính quy định, Đơn giá và số chỗ trống thực tế tiếp nhận sinh viên.
+
+4. **Báo Cáo Kiểm Kê Tài Sản & Trang Thiết Bị (`AssetInventoryReport`)**:
+   - **Mục đích**: Đánh giá hiện trạng cơ sở vật chất, lên kế hoạch mua sắm thay thế và bảo dưỡng thiết bị KTX.
+   - **Chỉ số tài sản tổng hợp**:
+     * Tổng số lượng trang thiết bị trên toàn hệ thống.
+     * Tổng giá trị tài sản ước tính (VNĐ).
+     * Phân loại chất lượng trang thiết bị:
+       - **Hoạt động tốt** (`Good`): Thiết bị đang vận hành ổn định.
+       - **Cần sửa chữa** (`NeedsRepair`): Thiết bị có dấu hiệu hư hại hoặc đến hạn bảo trì.
+       - **Hỏng hóc hoàn toàn** (`Broken`): Thiết bị mất khả năng sử dụng, cần thanh lý hoặc thay mới.
+     * **Tỷ lệ khả dụng trang thiết bị (Availability Rate %)**: Tỷ lệ phần trăm thiết bị hoạt động tốt trên tổng số tài sản.
+   - **Bảng phân bổ chi tiết theo phòng**:
+     * Liệt kê danh mục thiết bị của từng phòng, số lượng, hiện trạng và đơn giá ước tính.
+
+#### 2. Xuất Báo Cáo Đa Định Dạng: Excel (ClosedXML) & PDF (QuestPDF)
+
+Hệ thống hỗ trợ xuất dữ liệu ra hai định dạng chuẩn mực phục vụ các mục đích nghiệp vụ khác nhau:
+
+- **Bảng tính Excel đa tầng (`ClosedXML` - `.xlsx`)**:
+  * **Cấu trúc nhiều Worksheets**: Mỗi báo cáo được bóc tách khoa học thành nhiều trang tính (Trang Tổng quan KPI, Trang Bảng số liệu chi tiết, Trang Phân tích theo phòng/tòa).
+  * **Định dạng số liệu kế toán**: Áp dụng định dạng tiền tệ VNĐ phân cách hàng nghìn (`#,##0 ₫`), định dạng tỷ lệ phần trăm (`0.0%`), ngày tháng chuẩn (`dd/MM/yyyy`).
+  * **Trang trí nhận diện chuyên nghiệp**: Header bảng màu xanh thương hiệu (#0078D4) chữ trắng in đậm, đường kẻ ô mỏng rõ nét, các dòng tổng cộng được in đậm và viền đôi.
+  * **Tự động căn chỉnh độ rộng cột (Auto-fit Columns)**: Đảm bảo toàn bộ văn bản và số liệu hiển thị nguyên vẹn, không bị che khuất hay hiện dấu lỗi `###`.
+  * **Tương thích cao**: Mở trơn tru trên Microsoft Excel, Google Sheets, Apple Numbers và LibreOffice Calc.
+
+- **Văn bản hành chính chuẩn in ấn A4 (`QuestPDF` - `.pdf`)**:
+  * **Thể thức hành chính Việt Nam**: Khổ giấy A4 chuẩn mực, canh lề trang cân đối, bố cục trang trọng.
+  * **Hỗ trợ Unicode toàn diện**: Sử dụng hệ thống font chuẩn hiển thị tiếng Việt sắc nét, không bị lỗi font hay mất dấu thanh.
+  * **Khối đầu trang (Header)**: Hiển thị tên cơ quan chủ quản: **BAN QUẢN LÝ KÝ TÚC XÁ**, tiêu đề báo cáo in hoa đậm, khoảng thời gian áp dụng và thời điểm kết xuất dữ liệu.
+  * **Thẻ chỉ số KPI trực quan**: Khối tóm tắt các chỉ số trọng yếu có màu sắc nổi bật, viền mảnh và biểu tượng trực quan.
+  * **Bảng số liệu dạng dải (Striped Tables)**: Các hàng dữ liệu xen kẽ màu nền nhẹ nhàng, tăng tính thẩm mỹ và dễ đọc khi in ấn trên giấy.
+  * **Ba khối chữ ký xác nhận pháp lý (Footer)**: Đặt ở chân trang gồm:
+    1. **Người lập báo cáo** (Cán bộ phụ trách ký và ghi rõ họ tên).
+    2. **Kế toán trưởng / Cán bộ quản lý** (Kiểm tra và ký xác nhận).
+    3. **Giám đốc Ban Quản lý KTX** (Phê duyệt và đóng dấu).
+
+#### 3. Quy Trình Vận Hành & Quản Lý Lịch Sử Báo Cáo (`Report Management`):
+
+- **Màn hình Danh sách Báo cáo (`ReportListView`)**:
+  * Bốn thẻ KPI tổng hợp: *Tổng số báo cáo*, *Báo cáo Excel*, *Báo cáo PDF*, *Báo cáo tháng này*.
+  * Bộ lọc tìm kiếm nhanh:
+    - **Lọc theo loại báo cáo**: *Tất cả*, *Vi phạm*, *Tài chính*, *Lấp đầy*, *Tài sản*.
+    - **Lọc theo định dạng**: *Tất cả*, *Excel (.xlsx)*, *PDF (.pdf)*.
+    - **Tìm kiếm từ khóa**: Nhập tên tệp báo cáo hoặc ghi chú để lọc tức thì.
+- **Hộp thoại Khởi tạo Báo cáo mới (`ReportGenerateDialogWindow`)**:
+  * Bấm nút **"+ Lập báo cáo mới"** trên thanh công cụ.
+  * Chọn loại báo cáo mong muốn (Vi phạm, Tài chính, Lấp đầy, Kiểm kê tài sản).
+  * Chọn định dạng xuất tệp: **Excel (.xlsx)** hoặc **PDF (.pdf)**.
+  * Thiết lập khoảng thời gian: Chọn *Từ ngày* và *Đến ngày*, hoặc tích chọn *Toàn thời gian*.
+  * Nhập ghi chú mục đích lập báo cáo (tùy chọn).
+  * Nhấn **"🚀 Khởi tạo báo cáo"**: Hệ thống tiến hành tổng hợp số liệu, xuất tệp ra đĩa và lưu thông tin vào nhật ký lịch sử `ReportHistory`.
+- **Thao tác trên từng báo cáo đã lưu**:
+  * **Mở tệp trực tiếp (`Open`)**: Bấm nút **"Mở tệp"** để khởi chạy ngay tệp báo cáo bằng trình đọc mặc định trên máy tính (Excel Viewer hoặc PDF Reader).
+  * **Tải về máy (`Download`)**: Bấm nút **"Tải về"** để lưu bản sao tệp báo cáo ra thư mục bất kỳ trên ổ cứng thông qua hộp thoại chọn tệp hệ thống.
+  * **Xóa an toàn (`Delete`)**: Bấm nút **"Xóa"** để loại bỏ báo cáo cũ; hệ thống sẽ yêu cầu xác nhận an toàn trước khi xóa bản ghi lịch sử và tệp vật lý trên đĩa.
+- **Vị trí lưu trữ tệp cục bộ**: Toàn bộ các tệp báo cáo được lưu trữ tự động trong thư mục **`reports/`** tại vị trí chạy ứng dụng, bảo đảm tính độc lập và bảo mật cục bộ.
+
+---
+
 ## 4. Các Lưu Ý Về An Toàn Dữ Liệu & Ràng Buộc Hệ Thống
 
 1. **Bảo mật và phân quyền**:
@@ -372,34 +500,37 @@ Hộp thoại chọn tệp lưu trữ native của hệ điều hành xuất hi�
 3. **Sao lưu dữ liệu định kỳ**:
    - Quản trị viên nên tạo bản sao lưu dữ liệu `.bak` ít nhất một lần mỗi tuần hoặc trước các kỳ quyết toán tài chính, bàn giao phòng đầu/cuối năm học.
    - Lưu trữ các tệp sao lưu tại các thiết bị lưu trữ ngoài hoặc dịch vụ lưu trữ đám mây có bảo mật.
-4. **Xuất file Excel an toàn**:
+4. **Xuất file Excel & PDF an toàn**:
    - Hệ thống sử dụng bộ chọn tệp native của hệ điều hành (`IFileService` kết hợp Avalonia `StorageProvider`), đảm bảo tính tương thích cao và không xảy ra xung đột quyền ghi đĩa.
-   - Khi xuất file, có thể mở trực tiếp bằng Microsoft Excel, Google Sheets hoặc LibreOffice mà không bị lỗi font hay định dạng.
+   - Khi xuất file, có thể mở trực tiếp bằng Microsoft Excel, Google Sheets, Adobe Acrobat Reader hoặc các ứng dụng tương đương mà không bị lỗi font hay sai lệch định dạng.
 
 ---
 
 ## 5. Khung Kiểm Thử Tự Động & Đảm Bảo Chất Lượng (Headless UI E2E Testing & Unit Tests)
 
-Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **77/77 Tests Passing (100%)** qua cấu trúc kiểm thử 2 tầng chuyên sâu:
+Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **177/177 Tests Passing (100%)** qua cấu trúc kiểm thử 2 tầng chuyên sâu:
 
-### 5.1. Bộ Kiểm Thử Đơn Vị & Tích Hợp (74 Unit & Integration Tests)
-- Được tổ chức tại dự án `tests/Dormitory.UnitTests/` sử dụng **xUnit**, **Moq** và **Microsoft.EntityFrameworkCore.InMemory**.
+### 5.1. Bộ Kiểm Thử Đơn Vị & Tích Hợp (171 Unit & Integration Tests)
+- Được tổ chức tại dự án `tests/Dormitory.UnitTests/` sử dụng **xUnit**, **Moq**, **FluentAssertions** và **Microsoft.EntityFrameworkCore.InMemory**.
 - Kiểm tra toàn diện mọi tầng nghiệp vụ:
+  - **Dịch vụ báo cáo & phân tích (`ReportServiceTests`, `ReportDtoTests`, `ReportHistoryTests`)**: Kiểm tra trích xuất số liệu 4 loại báo cáo, tính toán KPI, xuất Excel ClosedXML đa sheet, xuất PDF QuestPDF chuẩn A4 và quản lý vòng đời tệp báo cáo.
+  - **ViewModels báo cáo (`ReportListViewModelTests`, `ReportGenerateDialogViewModelTests`)**: Kiểm thử logic bộ lọc, phân trang, lệnh mở/tải/xóa báo cáo và xác thực tham số form tạo báo cáo.
+  - **Dịch vụ vi phạm & email (`ViolationServiceTests`, `EmailServiceTests`)**: Kiểm tra lập biên bản, phân loại kỷ luật, giải quyết vi phạm và gửi email hóa đơn SMTP kèm tệp PDF đính kèm.
   - **Dịch vụ thiết bị (`EquipmentServiceTests`)**: Xác thực vòng đời thêm, sửa, xóa, tìm kiếm, kiểm tra số lượng tồn và bắt ngoại lệ khi phòng không tồn tại.
-  - **Dịch vụ xuất PDF (`PdfExportServiceTests`)**: Kiểm tra sinh dữ liệu byte PDF đầy đủ từ hóa đơn và hợp đồng, bắt lỗi không tìm thấy hóa đơn.
+  - **Dịch vụ xuất PDF hóa đơn (`PdfExportServiceTests`)**: Kiểm tra sinh dữ liệu byte PDF đầy đủ từ hóa đơn và hợp đồng.
   - **Dịch vụ hóa đơn & tính toán (`BillCalculationTests`)**: Tính toán chính xác điện, nước lũy tiến, phụ phí vệ sinh/internet và hạn nộp tiền.
   - **Dịch vụ phòng & hợp đồng (`RoomServiceTests`, `ContractServiceTests`)**: Ràng buộc sĩ số, phân bổ phòng theo giới tính, gia hạn và thanh lý hợp đồng.
   - **Dịch vụ CSDL & an toàn hệ thống (`DatabaseServiceTests`)**: Sao lưu SQLite Online Backup, khôi phục CSDL an toàn, kiểm tra tính toàn vẹn `PRAGMA integrity_check`.
   - **Bảo mật & mã hóa (`PasswordHasherTests`)**: Xác thực thuật toán băm mật khẩu an toàn BCrypt.
 
-### 5.2. Bộ Kiểm Thử Giao Diện Headless E2E Tự Động (3 Avalonia Headless UI Journeys)
+### 5.2. Bộ Kiểm Thử Giao Diện Headless E2E Tự Động (6 Avalonia Headless UI Journeys)
 - Được tổ chức tại dự án `tests/Dormitory.E2ETests/` sử dụng công nghệ **`Avalonia.Headless.XUnit`**.
 - Khung kiểm thử giao diện headless cho phép khởi chạy và tương tác toàn diện với ứng dụng Avalonia UI mà không cần màn hình hiển thị thật (Display Server) hay card đồ họa GPU, bảo đảm chạy ổn định 100% trên cả máy phát triển và môi trường CI/CD GitHub Actions Ubuntu.
-- **3 Hành trình người dùng trọng yếu (Critical User Journeys)**:
+- **6 Hành trình người dùng trọng yếu (Critical User Journeys)**:
   1. **Hành trình 1 - Xác thực & Điều hướng toàn hệ thống (`AuthAndNavigationE2ETests`)**:
      - Khởi chạy màn hình đăng nhập `LoginView`.
      - Nhập thông tin tài khoản Quản trị viên `admin` / `Admin@123456`.
-     - Xác thực thành công và điều hướng tuần tự qua tất cả 8 phân hệ: *Dashboard, Phòng ở, Thiết bị, Sinh viên, Hợp đồng, Hóa đơn, Nhân viên, Cài đặt hệ thống*.
+     - Xác thực thành công và điều hướng tuần tự qua tất cả 10 phân hệ: *Dashboard, Phòng ở, Thiết bị, Sinh viên, Hợp đồng, Hóa đơn, Nhân viên, Kỷ luật & Vi phạm, Báo cáo & Thống kê, Cài đặt hệ thống*.
      - Kiểm tra dữ liệu nạp đầy đủ trên từng View và không xuất hiện ngoại lệ UI.
   2. **Hành trình 2 - Vòng đời quản lý thiết bị phòng (`EquipmentManagementE2ETests`)**:
      - Điều hướng tới phân hệ Quản lý tài sản `EquipmentListView`.
@@ -412,17 +543,28 @@ Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **77/77 Tests
      - Tải danh sách hóa đơn hiện có trong cơ sở dữ liệu.
      - Kích hoạt lệnh xuất PDF `ExportBillPdfCommand`.
      - Kiểm tra kết quả trả về là mảng byte tệp PDF hợp lệ, bắt đầu bằng magic header `%PDF-` chuẩn ISO 32000 và kích thước dữ liệu hoàn chỉnh.
+  4. **Hành trình 4 - Quản lý lịch sử báo cáo & KPI (`ReportManagementE2ETests - ReportListView_ShouldLoadReportsAndCalculateKpisCorrectly`)**:
+     - Nạp danh sách lịch sử báo cáo KTX.
+     - Kiểm tra các thẻ KPI: Tổng số báo cáo, Báo cáo Excel, Báo cáo PDF, Báo cáo tháng này.
+  5. **Hành trình 5 - Bộ lọc danh sách báo cáo (`ReportManagementE2ETests - FilterReports_ByTypeAndFormat_ShouldFilterCorrectly`)**:
+     - Lọc theo từng loại báo cáo (Vi phạm, Tài chính, Lấp đầy, Thiết bị) và định dạng tệp (Excel, PDF).
+     - Xác minh DataGrid chỉ hiển thị các bản ghi khớp với điều kiện lọc.
+  6. **Hành trình 6 - Khởi tạo báo cáo mới (`ReportManagementE2ETests - GenerateReport_WhenConfirmed_ShouldCallServiceAndReload`)**:
+     - Mở hộp thoại `ReportGenerateDialogWindow`.
+     - Chọn loại báo cáo, định dạng và khoảng thời gian.
+     - Xác nhận sinh báo cáo -> Kiểm tra gọi service thành công, sinh tệp và nạp lại danh sách.
 
 ### 5.3. Lệnh Chạy Toàn Bộ Kiểm Thử
-Để thực thi toàn bộ 77 bài kiểm thử của hệ thống:
+Để thực thi toàn bộ 177 bài kiểm thử của hệ thống:
 ```bash
 dotnet test Dormitory.sln -c Release --verbosity normal
 ```
 Kết quả:
 ```
-Passed!  - Failed: 0, Passed: 74, Skipped: 0, Total: 74 (Dormitory.UnitTests.dll)
-Passed!  - Failed: 0, Passed:  3, Skipped: 0, Total:  3 (Dormitory.E2ETests.dll)
-Test Run Successful. Total tests: 77. Passed: 77. (100% Pass)
+Passed!  - Failed: 0, Passed: 171, Skipped: 0, Total: 171 (Dormitory.UnitTests.dll)
+Passed!  - Failed: 0, Passed:   6, Skipped: 0, Total:   6 (Dormitory.E2ETests.dll)
+Test Run Successful. Total tests: 177. Passed: 177. (100% Pass)
 ```
+
 
 
