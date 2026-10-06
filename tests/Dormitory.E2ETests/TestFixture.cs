@@ -165,6 +165,8 @@ public class TestFixture : IDisposable
     public EquipmentListViewModel CreateEquipmentListViewModel() => GetService<EquipmentListViewModel>();
     public BillListViewModel CreateBillListViewModel() => GetService<BillListViewModel>();
     public ViolationListViewModel CreateViolationListViewModel() => GetService<ViolationListViewModel>();
+    public ReportListViewModel CreateReportListViewModel() => GetService<ReportListViewModel>();
+    public ReportGenerateDialogViewModel CreateReportGenerateDialogViewModel() => GetService<ReportGenerateDialogViewModel>();
 
     public void Dispose()
     {
