@@ -58,6 +58,11 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
     /// </summary>
     public DbSet<Violation> Violations => Set<Violation>();
 
+    /// <summary>
+    /// Bảng lịch sử các lượt xuất báo cáo nghiệp vụ
+    /// </summary>
+    public DbSet<ReportHistory> ReportHistories => Set<ReportHistory>();
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -204,6 +209,21 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
                 .WithMany()
                 .HasForeignKey(v => v.RoomId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Cấu hình bảng ReportHistory
+        modelBuilder.Entity<ReportHistory>(entity =>
+        {
+            entity.HasKey(rh => rh.Id);
+            entity.Property(rh => rh.Title).IsRequired().HasMaxLength(200);
+            entity.Property(rh => rh.FileName).HasMaxLength(260);
+            entity.Property(rh => rh.FilePath).HasMaxLength(500);
+            entity.Property(rh => rh.ErrorMessage).HasMaxLength(1000);
+            entity.Property(rh => rh.GeneratedBy).HasMaxLength(100);
+
+            entity.HasIndex(rh => rh.GeneratedAt);
+            entity.HasIndex(rh => rh.ReportType);
+            entity.HasIndex(rh => new { rh.ReportType, rh.GeneratedAt });
         });
     }
 }
