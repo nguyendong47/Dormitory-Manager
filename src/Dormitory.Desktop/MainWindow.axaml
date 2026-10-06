@@ -37,6 +37,9 @@
         <DataTemplate DataType="{x:Type vm:ViolationListViewModel}">
             <views:ViolationListView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ReportListViewModel}">
+            <views:ReportListView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:SystemSettingsViewModel}">
             <views:SystemSettingsView/>
         </DataTemplate>
@@ -98,6 +101,11 @@
 
                         <Button Content="⚖️  Kỷ luật &amp; Vi phạm"
                                 Command="{Binding NavigateToViolationsCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
+
+                        <Button Content="📊  Báo cáo &amp; Thống kê"
+                                Command="{Binding NavigateToReportsCommand}"
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                                 Padding="12,10" CornerRadius="6"/>
 

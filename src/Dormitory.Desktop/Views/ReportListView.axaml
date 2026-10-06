@@ -1,0 +1,274 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             xmlns:dto="using:Dormitory.Application.DTOs"
+             xmlns:conv="using:Dormitory.Desktop.Converters"
+             xmlns:views="using:Dormitory.Desktop.Views"
+             x:Class="Dormitory.Desktop.Views.ReportListView"
+             x:DataType="vm:ReportListViewModel"
+             x:Name="ReportViewRoot">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="24">
+        <!-- 1. Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="📊 Báo Cáo &amp; Phân Tích KTX" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Tổng hợp số liệu vi phạm, thu phí, sức chứa và kiểm kê tài sản" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Button Content="🔄 Làm mới" Command="{Binding LoadReportHistoriesCommand}"/>
+                <Button Content="➕ Tạo báo cáo mới" 
+                        Command="{Binding OpenGenerateDialogCommand}"
+                        Background="#0078D4" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- 2. Khối 4 Quick Action Cards -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Margin="0,0,0,16">
+            <!-- Card 1: Vi phạm kỷ luật -->
+            <Border Grid.Column="0" Margin="0,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="14" BorderBrush="#F19999" BorderThickness="1">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Row="0" Spacing="4">
+                        <TextBlock Text="⚖️ Báo Cáo Vi Phạm" FontSize="14" FontWeight="Bold" Foreground="#C42B1C"/>
+                        <TextBlock Text="Kỷ luật, điểm trừ, tiền phạt" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <TextBlock Grid.Row="1" Text="Xuất bản dữ liệu biên bản vi phạm và thống kê mức độ kỷ luật sinh viên" 
+                               FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}" TextWrapping="Wrap" Margin="0,6,0,10"/>
+                    <Button Grid.Row="2" Content="🚀 Tạo báo cáo" 
+                            Command="{Binding QuickGenerateCommand}" CommandParameter="Violations"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Background="#FDE7E9" Foreground="#C42B1C" FontWeight="SemiBold" CornerRadius="4" Padding="0,6"/>
+                </Grid>
+            </Border>
+
+            <!-- Card 2: Tài chính & Thu phí -->
+            <Border Grid.Column="1" Margin="8,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="14" BorderBrush="#A8DAB5" BorderThickness="1">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Row="0" Spacing="4">
+                        <TextBlock Text="💵 Báo Cáo Tài Chính" FontSize="14" FontWeight="Bold" Foreground="#107C41"/>
+                        <TextBlock Text="Tiền phòng, điện nước, công nợ" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <TextBlock Grid.Row="1" Text="Tổng hợp hóa đơn thu phí, công nợ quá hạn và doanh thu thực tế" 
+                               FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}" TextWrapping="Wrap" Margin="0,6,0,10"/>
+                    <Button Grid.Row="2" Content="🚀 Tạo báo cáo" 
+                            Command="{Binding QuickGenerateCommand}" CommandParameter="Financial"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Background="#E6F4EA" Foreground="#107C41" FontWeight="SemiBold" CornerRadius="4" Padding="0,6"/>
+                </Grid>
+            </Border>
+
+            <!-- Card 3: Lấp đầy & Sức chứa -->
+            <Border Grid.Column="2" Margin="8,0,8,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="14" BorderBrush="#A0C5E8" BorderThickness="1">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Row="0" Spacing="4">
+                        <TextBlock Text="🏠 Báo Cáo Lấp Đầy" FontSize="14" FontWeight="Bold" Foreground="#0078D4"/>
+                        <TextBlock Text="Tỷ lệ lấp đầy, phòng trống" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <TextBlock Grid.Row="1" Text="Theo dõi công suất khai thác, sức chứa từng tòa nhà và số chỗ trống" 
+                               FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}" TextWrapping="Wrap" Margin="0,6,0,10"/>
+                    <Button Grid.Row="2" Content="🚀 Tạo báo cáo" 
+                            Command="{Binding QuickGenerateCommand}" CommandParameter="Occupancy"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Background="#E8F3FF" Foreground="#0078D4" FontWeight="SemiBold" CornerRadius="4" Padding="0,6"/>
+                </Grid>
+            </Border>
+
+            <!-- Card 4: Kiểm kê Tài sản -->
+            <Border Grid.Column="3" Margin="8,0,0,0" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="14" BorderBrush="#80D1C7" BorderThickness="1">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Row="0" Spacing="4">
+                        <TextBlock Text="🛋️ Kiểm Kê Tài Sản" FontSize="14" FontWeight="Bold" Foreground="#008272"/>
+                        <TextBlock Text="Tình trạng thiết bị, hư hỏng" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <TextBlock Grid.Row="1" Text="Thống kê cơ sở vật chất phòng ở, số lượng bảo trì và hỏng hóc" 
+                               FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}" TextWrapping="Wrap" Margin="0,6,0,10"/>
+                    <Button Grid.Row="2" Content="🚀 Tạo báo cáo" 
+                            Command="{Binding QuickGenerateCommand}" CommandParameter="Equipment"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Background="#E6F8F5" Foreground="#008272" FontWeight="SemiBold" CornerRadius="4" Padding="0,6"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 3. KPI Counter Strip -->
+        <Border Grid.Row="2" Background="{DynamicResource SystemAltHighColor}"
+                CornerRadius="8" Padding="14,10" Margin="0,0,0,14"
+                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+            <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="📁 Tổng số báo cáo:" FontWeight="Medium" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding TotalReportsCount}" FontWeight="Bold" Foreground="#0078D4"/>
+                </StackPanel>
+
+                <Separator Grid.Column="1" Margin="12,0"/>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="📄 Tệp PDF:" FontWeight="Medium" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding PdfReportsCount}" FontWeight="Bold" Foreground="#C42B1C"/>
+                </StackPanel>
+
+                <Separator Grid.Column="3" Margin="12,0"/>
+
+                <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="📊 Tệp Excel:" FontWeight="Medium" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding ExcelReportsCount}" FontWeight="Bold" Foreground="#107C41"/>
+                </StackPanel>
+
+                <Separator Grid.Column="5" Margin="12,0"/>
+
+                <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="🕒 Mới nhất:" FontWeight="Medium" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                    <TextBlock Text="{Binding LatestReportTitle}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="260"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 4. Main Content (Toolbar + DataGrid) -->
+        <Grid Grid.Row="3" RowDefinitions="Auto,*">
+            <!-- Toolbar tìm kiếm và lọc dữ liệu -->
+            <WrapPanel Grid.Row="0" Margin="0,0,0,12" VerticalAlignment="Center">
+                <!-- Thanh tìm kiếm -->
+                <TextBox Width="260" 
+                         Watermark="Tìm tiêu đề, người tạo, tên tệp..." 
+                         Text="{Binding SearchText}"
+                         Margin="0,0,10,6"/>
+                <Button Content="🔍 Tìm" 
+                        Command="{Binding LoadReportHistoriesCommand}"
+                        Margin="0,0,10,6"/>
+
+                <!-- Lọc theo loại báo cáo -->
+                <TextBlock Text="Loại báo cáo:" VerticalAlignment="Center" Margin="6,0,6,6" FontWeight="Medium"/>
+                <ComboBox ItemsSource="{Binding TypeFilterOptions}"
+                          SelectedItem="{Binding SelectedTypeFilter}"
+                          Width="140"
+                          Margin="0,0,10,6"/>
+
+                <!-- Lọc theo định dạng -->
+                <TextBlock Text="Định dạng:" VerticalAlignment="Center" Margin="6,0,6,6" FontWeight="Medium"/>
+                <ComboBox ItemsSource="{Binding FormatFilterOptions}"
+                          SelectedItem="{Binding SelectedFormatFilter}"
+                          Width="110"
+                          Margin="0,0,10,6"/>
+
+                <!-- Nút xóa bộ lọc -->
+                <Button Content="❌ Xóa lọc" 
+                        Command="{Binding ClearFiltersCommand}"
+                        Margin="0,0,10,6"/>
+            </WrapPanel>
+
+            <!-- Bảng dữ liệu DataGrid -->
+            <Border Grid.Row="1" Background="{DynamicResource SystemAltHighColor}"
+                    CornerRadius="8" Padding="8" BorderBrush="{DynamicResource SystemControlTransientBorderBrush}" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding ReportHistories}"
+                          SelectedItem="{Binding SelectedReport}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          CanUserResizeColumns="True"
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <!-- Biểu tượng -->
+                        <DataGridTemplateColumn Header="Định dạng" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ReportHistoryDto">
+                                    <Border Background="{Binding Format, Converter={x:Static conv:ReportFormatToBadgeBackgroundConverter.Instance}}"
+                                            BorderBrush="{Binding Format, Converter={x:Static conv:ReportFormatToBadgeBorderConverter.Instance}}"
+                                            BorderThickness="1"
+                                            CornerRadius="6"
+                                            Padding="6,2"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding FormatText}" 
+                                                   Foreground="{Binding Format, Converter={x:Static conv:ReportFormatToBadgeForegroundConverter.Instance}}"
+                                                   FontSize="11" 
+                                                   FontWeight="Bold"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Tiêu đề báo cáo -->
+                        <DataGridTemplateColumn Header="Tiêu đề báo cáo" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ReportHistoryDto">
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding FileName}" FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Phân hệ báo cáo (Badge) -->
+                        <DataGridTemplateColumn Header="Phân hệ" Width="170">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ReportHistoryDto">
+                                    <Border Background="{Binding ReportType, Converter={x:Static conv:ReportTypeToBadgeBackgroundConverter.Instance}}"
+                                            BorderBrush="{Binding ReportType, Converter={x:Static conv:ReportTypeToBadgeBorderConverter.Instance}}"
+                                            BorderThickness="1"
+                                            CornerRadius="10"
+                                            Padding="8,3"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding ReportTypeText}" 
+                                                   Foreground="{Binding ReportType, Converter={x:Static conv:ReportTypeToBadgeForegroundConverter.Instance}}"
+                                                   FontSize="12" 
+                                                   FontWeight="SemiBold"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Dung lượng tệp tin -->
+                        <DataGridTextColumn Header="Dung lượng" 
+                                            Binding="{Binding FormattedFileSize, Mode=OneWay}" 
+                                            Width="105"/>
+
+                        <!-- Người tạo -->
+                        <DataGridTextColumn Header="Người tạo" 
+                                            Binding="{Binding GeneratedBy, Mode=OneWay}" 
+                                            Width="120"/>
+
+                        <!-- Thời gian tạo -->
+                        <DataGridTextColumn Header="Thời gian tạo" 
+                                            Binding="{Binding GeneratedAt, Mode=OneWay, StringFormat='dd/MM/yyyy HH:mm'}" 
+                                            Width="140"/>
+
+                        <!-- Thao tác trên từng dòng -->
+                        <DataGridTemplateColumn Header="Thao tác" Width="140">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="dto:ReportHistoryDto">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <Button Content="📂" 
+                                                ToolTip.Tip="Mở tệp báo cáo"
+                                                Command="{Binding #ReportViewRoot.((vm:ReportListViewModel)DataContext).OpenReportCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="6,4" FontSize="12"/>
+                                        <Button Content="⬇️" 
+                                                ToolTip.Tip="Tải xuống tệp tin"
+                                                Command="{Binding #ReportViewRoot.((vm:ReportListViewModel)DataContext).DownloadReportCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="6,4" FontSize="12"/>
+                                        <Button Content="🗑️" 
+                                                ToolTip.Tip="Xóa lịch sử báo cáo"
+                                                Command="{Binding #ReportViewRoot.((vm:ReportListViewModel)DataContext).DeleteReportCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="6,4" FontSize="12"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

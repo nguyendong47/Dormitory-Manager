@@ -1,0 +1,294 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        xmlns:dto="using:Dormitory.Application.DTOs"
+        x:Class="Dormitory.Desktop.Views.ReportGenerateDialogWindow"
+        x:DataType="vm:ReportGenerateDialogViewModel"
+        Title="{Binding Title, FallbackValue='Tạo Báo Cáo &amp; Phân Tích KTX'}"
+        Width="580"
+        Height="680"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="24" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+            <!-- 1. Tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="📊 Tạo Báo Cáo &amp; Phân Tích KTX" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="Tùy chỉnh thông số, bộ lọc và xuất bản tệp báo cáo PDF hoặc Excel" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" 
+                           FontSize="13"/>
+            </StackPanel>
+
+            <!-- 2. Thông báo lỗi nếu có -->
+            <Border Grid.Row="1"
+                    Background="#FDE7E9"
+                    BorderBrush="#D13438"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10"
+                    Margin="0,0,0,14"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="⚠️" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#A80000"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 3. Nội dung biểu mẫu cấu hình -->
+            <ScrollViewer Grid.Row="2">
+                <StackPanel Spacing="14">
+                    <!-- Chọn loại báo cáo và Định dạng xuất -->
+                    <Grid ColumnDefinitions="*,16,*">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Loại báo cáo *" FontWeight="Medium" FontSize="13"/>
+                            <ComboBox ItemsSource="{Binding ReportTypeOptions}"
+                                      SelectedItem="{Binding SelectedReportTypeOption}"
+                                      HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ReportTypeOption">
+                                        <TextBlock Text="{Binding DisplayName}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="Định dạng xuất *" FontWeight="Medium" FontSize="13"/>
+                            <ComboBox ItemsSource="{Binding ReportFormatOptions}"
+                                      SelectedItem="{Binding SelectedFormatOption}"
+                                      HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ReportFormatOption">
+                                        <TextBlock Text="{Binding DisplayName}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Tiêu đề báo cáo -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Tiêu đề báo cáo *" FontWeight="Medium" FontSize="13"/>
+                        <TextBox Text="{Binding Title}"
+                                 Watermark="VD: Báo cáo vi phạm kỷ luật tháng 10/2026..."/>
+                    </StackPanel>
+
+                    <!-- Chu kỳ và Mẫu nhanh -->
+                    <Border Background="{DynamicResource SystemChromeMediumLowColor}"
+                            CornerRadius="6" Padding="12">
+                        <StackPanel Spacing="10">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0" Text="📅 Chu kỳ thời gian" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6">
+                                    <Button Content="⚡ Tháng này" 
+                                            Command="{Binding ApplyPresetThisMonthCommand}"
+                                            Padding="8,4" FontSize="11" CornerRadius="4"/>
+                                    <Button Content="⚡ Tháng trước" 
+                                            Command="{Binding ApplyPresetLastMonthCommand}"
+                                            Padding="8,4" FontSize="11" CornerRadius="4"/>
+                                    <Button Content="⚡ Năm nay" 
+                                            Command="{Binding ApplyPresetThisYearCommand}"
+                                            Padding="8,4" FontSize="11" CornerRadius="4"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,16,*">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Tháng báo cáo" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <ComboBox ItemsSource="{Binding MonthOptions}"
+                                              SelectedItem="{Binding SelectedMonth}"
+                                              HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <TextBlock Text="Năm báo cáo" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <ComboBox ItemsSource="{Binding YearOptions}"
+                                              SelectedItem="{Binding SelectedYear}"
+                                              HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,16,*">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Từ ngày" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <DatePicker SelectedDate="{Binding FromDate}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <TextBlock Text="Đến ngày" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <DatePicker SelectedDate="{Binding ToDate}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Phạm vi tòa nhà và phòng -->
+                    <Border Background="{DynamicResource SystemChromeMediumLowColor}"
+                            CornerRadius="6" Padding="12">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="🏢 Phạm vi áp dụng" FontWeight="SemiBold" FontSize="13"/>
+                            <Grid ColumnDefinitions="*,16,*">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Tòa nhà" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <ComboBox ItemsSource="{Binding Buildings}"
+                                              SelectedItem="{Binding SelectedBuilding}"
+                                              HorizontalAlignment="Stretch">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="dto:BuildingDto">
+                                                <TextBlock Text="{Binding DisplayName}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <TextBlock Text="Phòng ở" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <ComboBox ItemsSource="{Binding Rooms}"
+                                              SelectedItem="{Binding SelectedRoom}"
+                                              HorizontalAlignment="Stretch">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="dto:RoomDto">
+                                                <TextBlock Text="{Binding RoomNumber}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bộ lọc theo từng loại báo cáo -->
+                    <!-- 1. Vi phạm -->
+                    <Border Background="{DynamicResource SystemChromeMediumLowColor}"
+                            CornerRadius="6" Padding="12"
+                            IsVisible="{Binding IsViolationsReport}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="⚖️ Bộ lọc vi phạm kỷ luật" FontWeight="SemiBold" FontSize="13"/>
+                            <Grid ColumnDefinitions="*,16,*">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Mức độ nghiêm trọng" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <ComboBox ItemsSource="{Binding SeverityOptions}"
+                                              SelectedItem="{Binding SelectedSeverityOption}"
+                                              HorizontalAlignment="Stretch">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:SeverityFilterOption">
+                                                <TextBlock Text="{Binding DisplayName}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <TextBlock Text="Trạng thái xử lý" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <ComboBox ItemsSource="{Binding ViolationStatusOptions}"
+                                              SelectedItem="{Binding SelectedViolationStatusOption}"
+                                              HorizontalAlignment="Stretch">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:ViolationStatusFilterOption">
+                                                <TextBlock Text="{Binding DisplayName}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 2. Tài chính -->
+                    <Border Background="{DynamicResource SystemChromeMediumLowColor}"
+                            CornerRadius="6" Padding="12"
+                            IsVisible="{Binding IsFinancialReport}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="💵 Bộ lọc tài chính &amp; Thu phí" FontWeight="SemiBold" FontSize="13"/>
+                            <CheckBox Content="Chỉ thống kê công nợ / hóa đơn quá hạn chưa thanh toán"
+                                      IsChecked="{Binding OnlyOverdue}"
+                                      FontSize="13"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 3. Lấp đầy -->
+                    <Border Background="{DynamicResource SystemChromeMediumLowColor}"
+                            CornerRadius="6" Padding="12"
+                            IsVisible="{Binding IsOccupancyReport}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="🏠 Bộ lọc sức chứa &amp; Tỷ lệ lấp đầy" FontWeight="SemiBold" FontSize="13"/>
+                            <Grid ColumnDefinitions="*,16,*">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Loại phòng" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <ComboBox ItemsSource="{Binding RoomTypeOptions}"
+                                              SelectedItem="{Binding SelectedRoomTypeOption}"
+                                              HorizontalAlignment="Stretch">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:RoomTypeFilterOption">
+                                                <TextBlock Text="{Binding DisplayName}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                    <CheckBox Content="Chỉ phòng còn chỗ trống"
+                                              IsChecked="{Binding OnlyVacant}"
+                                              FontSize="13" Margin="0,18,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 4. Thiết bị -->
+                    <Border Background="{DynamicResource SystemChromeMediumLowColor}"
+                            CornerRadius="6" Padding="12"
+                            IsVisible="{Binding IsEquipmentReport}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="🛋️ Bộ lọc kiểm kê tài sản thiết bị" FontWeight="SemiBold" FontSize="13"/>
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Tình trạng thiết bị" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                <ComboBox ItemsSource="{Binding EquipmentStatusOptions}"
+                                          SelectedItem="{Binding SelectedEquipmentStatusOption}"
+                                          HorizontalAlignment="Stretch">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:EquipmentStatusFilterOption">
+                                            <TextBlock Text="{Binding DisplayName}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- 4. Nút hành động đáy -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="12"
+                        Margin="0,16,0,0">
+                <Button Content="❌ Hủy bỏ"
+                        Command="{Binding CancelCommand}"
+                        Width="100"
+                        Height="34"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+                <Button Content="🚀 Khởi tạo &amp; Lưu báo cáo"
+                        Command="{Binding GenerateCommand}"
+                        IsEnabled="{Binding !IsGenerating}"
+                        Width="190"
+                        Height="34"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        CornerRadius="6"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

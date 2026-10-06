@@ -153,6 +153,23 @@ public class GenerateReportRequestDto
     public string? GeneratedBy { get; set; }
 }
 
+/// <summary>
+/// DTO thông tin tòa nhà phục vụ lựa chọn trên giao diện báo cáo
+/// </summary>
+public class BuildingDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+
+    public BuildingDto() { }
+
+    public BuildingDto(string name, string? displayName = null)
+    {
+        Name = name;
+        DisplayName = displayName ?? (!string.IsNullOrEmpty(name) ? $"Tòa {name}" : "-- Tất cả tòa nhà --");
+    }
+}
+
 // =========================================================================
 // 1. DTOs BÁO CÁO VI PHẠM NỘI QUY & KỶ LUẬT (VIOLATIONS)
 // =========================================================================

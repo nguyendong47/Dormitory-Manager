@@ -138,6 +138,7 @@ public class TestFixture : IDisposable
         services.AddScoped<IPdfExportService, PdfExportService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IDatabaseService, DatabaseService>();
+        services.AddScoped<IReportService, ReportService>();
 
         services.AddTransient<LoginViewModel>();
         services.AddTransient<DashboardViewModel>();
@@ -150,6 +151,8 @@ public class TestFixture : IDisposable
         services.AddTransient<EmployeeListViewModel>();
         services.AddTransient<ViolationListViewModel>();
         services.AddTransient<ViolationDialogViewModel>();
+        services.AddTransient<ReportListViewModel>();
+        services.AddTransient<ReportGenerateDialogViewModel>();
         services.AddTransient<SystemSettingsViewModel>();
         services.AddTransient<MainWindowViewModel>();
 

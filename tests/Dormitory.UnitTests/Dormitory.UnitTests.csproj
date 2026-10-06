@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\src\Dormitory.Core\Dormitory.Core.csproj" />
     <ProjectReference Include="..\..\src\Dormitory.Application\Dormitory.Application.csproj" />
     <ProjectReference Include="..\..\src\Dormitory.Infrastructure\Dormitory.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Dormitory.Desktop\Dormitory.Desktop.csproj" />
   </ItemGroup>
 
 </Project>

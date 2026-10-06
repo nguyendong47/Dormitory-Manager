@@ -90,7 +90,12 @@ public class AuthAndNavigationE2ETests : IDisposable
         vm.CurrentView.Should().BeOfType<ViolationListViewModel>();
         vm.ActiveMenu.Should().Be("Violations");
 
-        // 5.8 Điều hướng tới cài đặt hệ thống (Admin)
+        // 5.8 Điều hướng tới báo cáo & thống kê
+        vm.NavigateToReportsCommand.Execute(null);
+        vm.CurrentView.Should().BeOfType<ReportListViewModel>();
+        vm.ActiveMenu.Should().Be("Reports");
+
+        // 5.9 Điều hướng tới cài đặt hệ thống (Admin)
         await vm.NavigateToSettingsCommand.ExecuteAsync(null);
         vm.CurrentView.Should().BeOfType<SystemSettingsViewModel>();
         vm.ActiveMenu.Should().Be("Settings");
