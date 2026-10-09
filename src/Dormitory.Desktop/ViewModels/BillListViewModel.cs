@@ -26,6 +26,8 @@ public partial class BillListViewModel : ViewModelBase
     private readonly IEmailService _emailService;
     private readonly IContractService _contractService;
     private readonly IStudentService _studentService;
+    private readonly IBankSettingsService? _bankSettingsService;
+    private readonly IVietQrService? _vietQrService;
 
     public ObservableCollection<string> StatusFilterOptions { get; } = new()
     {
@@ -45,6 +47,7 @@ public partial class BillListViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(DeleteBillCommand))]
     [NotifyCanExecuteChangedFor(nameof(ExportBillPdfCommand))]
     [NotifyCanExecuteChangedFor(nameof(SendBillEmailCommand))]
+    [NotifyCanExecuteChangedFor(nameof(OpenVietQrDialogCommand))]
     private BillDto? _selectedBill;
 
     [ObservableProperty]
@@ -68,7 +71,9 @@ public partial class BillListViewModel : ViewModelBase
         IPdfExportService pdfExportService,
         IEmailService emailService,
         IContractService contractService,
-        IStudentService studentService)
+        IStudentService studentService,
+        IBankSettingsService? bankSettingsService = null,
+        IVietQrService? vietQrService = null)
     {
         _billService = billService;
         _roomService = roomService;
@@ -79,6 +84,8 @@ public partial class BillListViewModel : ViewModelBase
         _emailService = emailService;
         _contractService = contractService;
         _studentService = studentService;
+        _bankSettingsService = bankSettingsService;
+        _vietQrService = vietQrService;
     }
 
     /// <summary>
@@ -336,6 +343,89 @@ public partial class BillListViewModel : ViewModelBase
         catch (Exception ex)
         {
             await _dialogService.ShowMessageAsync("Lỗi", ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Lấy họ tên sinh viên đang thuê hoặc cư trú tại phòng của hóa đơn
+    /// </summary>
+    private async Task<string> GetStudentNameForRoomAsync(int roomId)
+    {
+        var contracts = await _contractService.GetAllContractsAsync(ContractStatus.Active, roomId: roomId);
+        var activeContract = contracts.FirstOrDefault();
+
+        if (activeContract != null)
+        {
+            var student = await _studentService.GetStudentByIdAsync(activeContract.StudentId);
+            if (student != null && !string.IsNullOrWhiteSpace(student.FullName))
+            {
+                return student.FullName;
+            }
+        }
+
+        var roomStudents = await _studentService.GetAllStudentsAsync(roomId: roomId);
+        var firstStudent = roomStudents.FirstOrDefault();
+        return firstStudent?.FullName ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Ủy nhiệm hiển thị cửa sổ VietQR (cho phép thay thế hoặc mock trong unit test)
+    /// </summary>
+    public Func<VietQrDialogViewModel, Task<bool>>? ShowVietQrDialogHandler { get; set; }
+
+    /// <summary>
+    /// Mở cửa sổ quét mã VietQR động tại quầy thu ngân cho hóa đơn
+    /// </summary>
+    [RelayCommand]
+    public async Task OpenVietQrDialogAsync(BillDto? bill = null)
+    {
+        var target = bill ?? SelectedBill;
+        if (target == null)
+        {
+            await _dialogService.ShowMessageAsync("Thông báo", "Vui lòng chọn một hóa đơn cần quét mã VietQR.");
+            return;
+        }
+
+        if (_bankSettingsService == null || _vietQrService == null)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", "Dịch vụ ngân hàng và VietQR chưa được cấu hình.");
+            return;
+        }
+
+        try
+        {
+            string studentName = await GetStudentNameForRoomAsync(target.RoomId);
+
+            var dialogVm = new VietQrDialogViewModel(
+                target,
+                studentName,
+                _bankSettingsService,
+                _vietQrService,
+                _billService,
+                _fileService,
+                _dialogService);
+
+            await dialogVm.InitializeAsync();
+
+            bool result;
+            if (ShowVietQrDialogHandler != null)
+            {
+                result = await ShowVietQrDialogHandler(dialogVm);
+            }
+            else
+            {
+                var dialog = new VietQrDialogWindow(dialogVm);
+                result = await _dialogService.ShowDialogAsync<bool>(dialog);
+            }
+
+            if (result)
+            {
+                await LoadBillsAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", $"Không thể mở cửa sổ VietQR: {ex.Message}");
         }
     }
 

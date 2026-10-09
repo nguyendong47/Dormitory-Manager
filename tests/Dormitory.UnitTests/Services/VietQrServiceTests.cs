@@ -402,8 +402,11 @@ public class VietQrServiceTests
         var settings = new BankSettingsDto();
 
         // Act & Assert
-        var act1 = () => _service.GeneratePayloadForBill(null!, "Sinh Vien", settings);
+        var act1 = () => _service.GeneratePayloadForBill((Bill)null!, "Sinh Vien", settings);
         act1.Should().Throw<ArgumentNullException>();
+
+        var act1Dto = () => _service.GeneratePayloadForBill((BillDto)null!, "Sinh Vien", settings);
+        act1Dto.Should().Throw<ArgumentNullException>();
 
         var act2 = () => _service.GeneratePayloadForBill(bill, "Sinh Vien", null!);
         act2.Should().Throw<ArgumentNullException>();

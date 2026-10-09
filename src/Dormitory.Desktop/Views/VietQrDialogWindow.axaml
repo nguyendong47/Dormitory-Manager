@@ -1,0 +1,182 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        x:Class="Dormitory.Desktop.Views.VietQrDialogWindow"
+        x:DataType="vm:VietQrDialogViewModel"
+        Title="Mã Thanh Toán VietQR (NAPAS 247)"
+        Width="560"
+        Height="730"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="24" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,*,Auto">
+            <!-- Header tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,14" Spacing="4">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Spacing="2">
+                        <TextBlock Text="MÃ THANH TOÁN VIETQR ĐỘNG (NAPAS 247)" 
+                                   FontSize="17" 
+                                   FontWeight="Bold" 
+                                   Foreground="#0078D4"/>
+                        <TextBlock Text="Quét mã QR bằng ứng dụng ngân hàng hoặc ví điện tử để chuyển khoản" 
+                                   Foreground="{DynamicResource SystemBaseMediumColor}" 
+                                   FontSize="12"/>
+                    </StackPanel>
+
+                    <!-- Huy hiệu trạng thái hóa đơn -->
+                    <Border Grid.Column="1" 
+                            CornerRadius="12" 
+                            Padding="10,4" 
+                            VerticalAlignment="Center"
+                            Background="{Binding IsPaid, Converter={x:Null}}">
+                        <Panel>
+                            <Border Background="#E6F4EA" CornerRadius="12" Padding="10,4" IsVisible="{Binding IsPaid}">
+                                <TextBlock Text="✓ ĐÃ THANH TOÁN" Foreground="#137333" FontWeight="Bold" FontSize="11"/>
+                            </Border>
+                            <Border Background="#FEF7E0" CornerRadius="12" Padding="10,4" IsVisible="{Binding !IsPaid}">
+                                <TextBlock Text="⏳ CHƯA THANH TOÁN" Foreground="#B06000" FontWeight="Bold" FontSize="11"/>
+                            </Border>
+                        </Panel>
+                    </Border>
+                </Grid>
+            </StackPanel>
+
+            <!-- Thân nội dung cuộn được -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="14">
+                    <!-- Khối ảnh mã QR hiển thị ở giữa -->
+                    <Border Background="White"
+                            BorderBrush="#D0D7DE"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="14"
+                            HorizontalAlignment="Center"
+                            BoxShadow="0 4 12 0 #15000000">
+                        <StackPanel HorizontalAlignment="Center" Spacing="8">
+                            <Panel Width="220" Height="220">
+                                <Image Source="{Binding QrBitmap}"
+                                       Width="220" Height="220"
+                                       Stretch="Uniform"
+                                       IsVisible="{Binding QrBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                <TextBlock Text="Đang tạo mã QR..."
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource SystemBaseMediumColor}"
+                                           FontSize="13"
+                                           IsVisible="{Binding QrBitmap, Converter={x:Static ObjectConverters.IsNull}}"/>
+                            </Panel>
+                            <TextBlock Text="NAPAS 247 • VietQR QuickLink" 
+                                       HorizontalAlignment="Center" 
+                                       FontSize="11" 
+                                       Foreground="#5F6368" 
+                                       FontWeight="Medium"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Khối thông báo trạng thái -->
+                    <Border Background="#EBF3FC" 
+                            BorderBrush="#0078D4" 
+                            BorderThickness="1" 
+                            CornerRadius="6" 
+                            Padding="10,6"
+                            IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{Binding StatusMessage}" 
+                                   Foreground="#0078D4" 
+                                   FontSize="12" 
+                                   FontWeight="Medium" 
+                                   HorizontalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Khối chi tiết thông tin thanh toán -->
+                    <Border Background="{DynamicResource SystemChromeLowColor}"
+                            BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="14">
+                        <StackPanel Spacing="10">
+                            <!-- Hóa đơn & Phòng & Sinh viên -->
+                            <Grid ColumnDefinitions="*,*">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="Hóa đơn:" FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <TextBlock Text="{Binding Bill.BillCode, StringFormat='{}{0}'}" FontWeight="SemiBold" FontSize="13"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Spacing="2">
+                                    <TextBlock Text="Phòng / Sinh viên:" FontSize="11" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    <TextBlock Text="{Binding StudentName, StringFormat='Phòng {0} - {1}'}" FontWeight="SemiBold" FontSize="13">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="Phòng {0} - {1}">
+                                                <Binding Path="Bill.RoomNumber"/>
+                                                <Binding Path="StudentName"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Grid>
+
+                            <Separator Height="1" Background="{DynamicResource SystemControlTransientBorderBrush}" Margin="0,2"/>
+
+                            <!-- Ngân hàng thụ hưởng -->
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0" Text="Ngân hàng:" Width="120" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Payload.BankBin, StringFormat='Napas 247 (BIN: {0})'}" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- Số tài khoản thụ hưởng + Nút sao chép -->
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="Số tài khoản:" Width="120" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}" VerticalAlignment="Center"/>
+                                <SelectableTextBlock Grid.Column="1" Text="{Binding Payload.AccountNumber}" FontWeight="Bold" FontSize="15" Foreground="#0078D4" VerticalAlignment="Center"/>
+                                <Button Grid.Column="2" Content="📋 Sao chép" Command="{Binding CopyAccountNumberCommand}" Padding="8,4" FontSize="11" CornerRadius="4"/>
+                            </Grid>
+
+                            <!-- Chủ tài khoản -->
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0" Text="Chủ tài khoản:" Width="120" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Payload.AccountHolder}" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- Số tiền thanh toán -->
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0" Text="Số tiền:" Width="120" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Payload.Amount, StringFormat='{}{0:N0} đ'}" FontWeight="Bold" FontSize="18" Foreground="#D83B01" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- Nội dung chuyển khoản + Nút sao chép -->
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="Nội dung CK:" Width="120" FontSize="12" Foreground="{DynamicResource SystemBaseMediumColor}" VerticalAlignment="Center"/>
+                                <SelectableTextBlock Grid.Column="1" Text="{Binding Payload.TransferContent}" FontWeight="Bold" FontSize="13" FontFamily="Consolas, Menlo, Monospace" VerticalAlignment="Center"/>
+                                <Button Grid.Column="2" Content="📋 Sao chép" Command="{Binding CopyTransferContentCommand}" Padding="8,4" FontSize="11" CornerRadius="4"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Hàng nút chân trang (Footer actions) -->
+            <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,16,0,0">
+                <Button Grid.Column="0"
+                        Content="💾 Lưu ảnh QR"
+                        Command="{Binding SaveQrImageCommand}"
+                        Padding="14,9"
+                        CornerRadius="6"/>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
+                    <Button Content="✅ Xác nhận đã thu tiền"
+                            Command="{Binding ConfirmPaymentCommand}"
+                            IsEnabled="{Binding CanConfirmPayment}"
+                            Background="#107C41"
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            Padding="16,9"
+                            CornerRadius="6"/>
+
+                    <Button Content="Đóng"
+                            Command="{Binding CloseCommand}"
+                            Padding="16,9"
+                            CornerRadius="6"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

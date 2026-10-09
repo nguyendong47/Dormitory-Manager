@@ -1,7 +1,12 @@
 using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Dormitory.Application.Common;
 using Dormitory.Application.DTOs;
 using Dormitory.Application.Interfaces;
 using Dormitory.Desktop.Services;
@@ -18,12 +23,36 @@ public partial class SystemSettingsViewModel : ViewModelBase
     private readonly IDialogService _dialogService;
     private readonly IUserSession _userSession;
     private readonly IEmailService _emailService;
+    private readonly IBankSettingsService _bankSettingsService;
+    private readonly IVietQrService _vietQrService;
 
     [ObservableProperty]
     private DatabaseInfoDto _databaseInfo = new();
 
     [ObservableProperty]
     private EmailSettingsDto _emailSettings = new();
+
+    [ObservableProperty]
+    private BankSettingsDto _bankSettings = new();
+
+    public ObservableCollection<BankInfoDto> AvailableBanks { get; } = new(VietQrBankDirectory.GetAllBanks());
+
+    [ObservableProperty]
+    private BankInfoDto? _selectedBank;
+
+    public ObservableCollection<string> AvailableTemplates { get; } = new()
+    {
+        "compact",
+        "compact2",
+        "qr_only",
+        "print"
+    };
+
+    [ObservableProperty]
+    private string _bankStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private Bitmap? _previewQrBitmap;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -44,17 +73,35 @@ public partial class SystemSettingsViewModel : ViewModelBase
         IFileService fileService,
         IDialogService dialogService,
         IUserSession userSession,
-        IEmailService emailService)
+        IEmailService emailService,
+        IBankSettingsService bankSettingsService,
+        IVietQrService vietQrService)
     {
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _userSession = userSession ?? throw new ArgumentNullException(nameof(userSession));
         _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+        _bankSettingsService = bankSettingsService ?? throw new ArgumentNullException(nameof(bankSettingsService));
+        _vietQrService = vietQrService ?? throw new ArgumentNullException(nameof(vietQrService));
 
         _userSession.SessionChanged += () => OnPropertyChanged(nameof(IsAdmin));
 
         _ = LoadEmailSettingsAsync();
+        _ = LoadBankSettingsAsync();
+    }
+
+    /// <summary>
+    /// Xử lý cập nhật thông tin ngân hàng trong cấu hình khi người dùng chọn ngân hàng khác
+    /// </summary>
+    partial void OnSelectedBankChanged(BankInfoDto? value)
+    {
+        if (value != null && BankSettings != null)
+        {
+            BankSettings.BankBin = value.Bin;
+            BankSettings.BankName = value.Name;
+            BankSettings.BankShortName = value.ShortName;
+        }
     }
 
     /// <summary>
@@ -256,6 +303,104 @@ public partial class SystemSettingsViewModel : ViewModelBase
         finally
         {
             IsEmailTesting = false;
+        }
+    }
+
+    /// <summary>
+    /// Tải thông số cấu hình tài khoản ngân hàng thụ hưởng và VietQR hiện tại
+    /// </summary>
+    [RelayCommand]
+    public async Task LoadBankSettingsAsync()
+    {
+        try
+        {
+            BankSettings = await _bankSettingsService.GetBankSettingsAsync();
+            if (BankSettings != null && !string.IsNullOrEmpty(BankSettings.BankBin))
+            {
+                SelectedBank = AvailableBanks.FirstOrDefault(b => b.Bin == BankSettings.BankBin);
+            }
+            BankStatusMessage = "Đã tải cấu hình tài khoản ngân hàng và VietQR.";
+        }
+        catch (Exception ex)
+        {
+            BankStatusMessage = $"Lỗi khi tải cấu hình ngân hàng: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Lưu thông số cấu hình tài khoản ngân hàng thụ hưởng và VietQR vào hệ thống
+    /// </summary>
+    [RelayCommand]
+    public async Task SaveBankSettingsAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            BankStatusMessage = "Đang lưu cấu hình ngân hàng...";
+            var success = await _bankSettingsService.SaveBankSettingsAsync(BankSettings);
+            if (success)
+            {
+                BankStatusMessage = "Lưu cấu hình tài khoản ngân hàng thành công.";
+                await _dialogService.ShowMessageAsync("Thành công", "Đã lưu cấu hình tài khoản ngân hàng thụ hưởng và VietQR thành công!");
+            }
+            else
+            {
+                BankStatusMessage = "Lỗi khi lưu tệp cấu hình ngân hàng.";
+                await _dialogService.ShowMessageAsync("Lỗi", "Không thể lưu tệp cấu hình ngân hàng.");
+            }
+        }
+        catch (Exception ex)
+        {
+            BankStatusMessage = $"Lỗi: {ex.Message}";
+            await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi lưu cấu hình ngân hàng: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Sinh mã QR thử nghiệm với số tiền mẫu 100.000 đ và nội dung kiểm tra
+    /// </summary>
+    [RelayCommand]
+    public async Task TestGenerateQrAsync()
+    {
+        try
+        {
+            BankStatusMessage = "Đang tạo mã QR thử nghiệm...";
+            var prefix = !string.IsNullOrWhiteSpace(BankSettings.TransferPrefix) ? BankSettings.TransferPrefix.Trim() : "KTX";
+            var testContent = $"{prefix} TEST".Trim();
+
+            var payload = _vietQrService.GeneratePayload(
+                BankSettings.BankBin,
+                BankSettings.AccountNumber,
+                BankSettings.AccountHolder,
+                100000m,
+                testContent,
+                "TEST",
+                BankSettings.QrTemplate);
+
+            var qrBytes = _vietQrService.GenerateQrCodePng(payload.EmvCoPayload, 10);
+            if (qrBytes != null && qrBytes.Length > 0)
+            {
+                try
+                {
+                    using var stream = new MemoryStream(qrBytes);
+                    PreviewQrBitmap = new Bitmap(stream);
+                }
+                catch
+                {
+                    PreviewQrBitmap = null;
+                }
+                BankStatusMessage = "Đã tạo mã QR thử nghiệm thành công (100.000 đ)!";
+                await _dialogService.ShowMessageAsync("Thành công", "Sinh mã QR VietQR thử nghiệm thành công! Bạn có thể xem ảnh xem trước bên dưới.");
+            }
+        }
+        catch (Exception ex)
+        {
+            BankStatusMessage = $"Lỗi tạo mã QR: {ex.Message}";
+            await _dialogService.ShowMessageAsync("Lỗi", $"Không thể tạo mã QR thử nghiệm: {ex.Message}");
         }
     }
 }

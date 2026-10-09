@@ -237,6 +237,30 @@ public class VietQrService : IVietQrService
     }
 
     /// <inheritdoc />
+    public VietQrPayloadDto GeneratePayloadForBill(BillDto bill, string studentName, BankSettingsDto bankSettings)
+    {
+        ArgumentNullException.ThrowIfNull(bill);
+        ArgumentNullException.ThrowIfNull(bankSettings);
+
+        var billIdentifier = !string.IsNullOrWhiteSpace(bill.BillCode) ? bill.BillCode.Trim() : bill.Id.ToString();
+        var prefix = !string.IsNullOrWhiteSpace(bankSettings.TransferPrefix) ? bankSettings.TransferPrefix.Trim() : "KTX";
+        var cleanStudent = SanitizeTransferContent(studentName);
+
+        var transferContent = !string.IsNullOrWhiteSpace(cleanStudent)
+            ? $"{prefix} {billIdentifier} {cleanStudent}".Trim()
+            : $"{prefix} {billIdentifier}".Trim();
+
+        return GeneratePayload(
+            bankSettings.BankBin,
+            bankSettings.AccountNumber,
+            bankSettings.AccountHolder,
+            bill.TotalAmount,
+            transferContent,
+            billIdentifier,
+            bankSettings.QrTemplate);
+    }
+
+    /// <inheritdoc />
     public byte[] GenerateQrCodePng(string qrContent, int pixelsPerModule = 10)
     {
         if (string.IsNullOrEmpty(qrContent))

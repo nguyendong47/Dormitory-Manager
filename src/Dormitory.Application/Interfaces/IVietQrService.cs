@@ -67,6 +67,15 @@ public interface IVietQrService
     VietQrPayloadDto GeneratePayloadForBill(Bill bill, string studentName, BankSettingsDto bankSettings);
 
     /// <summary>
+    /// Khởi tạo dữ liệu DTO VietQrPayloadDto tự động cho thông tin hóa đơn (BillDto) và thông tin sinh viên
+    /// </summary>
+    /// <param name="bill">Đối tượng DTO hóa đơn cần thanh toán</param>
+    /// <param name="studentName">Họ và tên sinh viên thanh toán</param>
+    /// <param name="bankSettings">Cấu hình tài khoản ngân hàng thụ hưởng của Ký túc xá</param>
+    /// <returns>Đối tượng VietQrPayloadDto đã được điền đầy đủ dữ liệu thanh toán</returns>
+    VietQrPayloadDto GeneratePayloadForBill(BillDto bill, string studentName, BankSettingsDto bankSettings);
+
+    /// <summary>
     /// Sinh mảng byte hình ảnh PNG mã QR offline bằng thư viện QRCoder
     /// </summary>
     /// <param name="qrContent">Nội dung cần mã hóa thành QR Code</param>

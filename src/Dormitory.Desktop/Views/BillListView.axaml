@@ -33,6 +33,13 @@
                         Command="{Binding MarkPaidCommand}"/>
                 <Button Content="🗑️ Xóa hóa đơn" 
                         Command="{Binding DeleteBillCommand}"/>
+                <Button Content="💳  Quét VietQR" 
+                        Command="{Binding OpenVietQrDialogCommand}" 
+                        CommandParameter="{Binding SelectedBill}" 
+                        IsEnabled="{Binding SelectedBill, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        Background="#107C41"
+                        Foreground="White"
+                        FontWeight="SemiBold"/>
                 <Button Content="📄  In phiếu thu (PDF)" 
                         Command="{Binding ExportBillPdfCommand}" 
                         CommandParameter="{Binding SelectedBill}" 
@@ -63,6 +70,9 @@
                           BorderThickness="0">
                     <DataGrid.ContextMenu>
                         <ContextMenu>
+                            <MenuItem Header="💳 Quét mã VietQR (NAPAS 247)" 
+                                      Command="{Binding OpenVietQrDialogCommand}" 
+                                      CommandParameter="{Binding SelectedBill}"/>
                             <MenuItem Header="📄 In phiếu thu (PDF)" 
                                       Command="{Binding ExportBillPdfCommand}" 
                                       CommandParameter="{Binding SelectedBill}"/>
@@ -90,10 +100,17 @@
                         <DataGridTextColumn Header="Tổng cộng (đ)" Binding="{Binding TotalAmount, StringFormat='{}{0:N0}', Mode=OneWay}" Width="130"/>
                         <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status, Mode=OneWay}" Width="120"/>
                         <DataGridTextColumn Header="Hạn nộp" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}', Mode=OneWay}" Width="110"/>
-                        <DataGridTemplateColumn Header="Thao tác" Width="180">
+                        <DataGridTemplateColumn Header="Thao tác" Width="260">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="dto:BillDto">
                                     <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Button Content="💳 VietQR"
+                                                ToolTip.Tip="Mở cửa sổ quét mã VietQR động thanh toán tại quầy"
+                                                Command="{Binding #BillViewRoot.((vm:BillListViewModel)DataContext).OpenVietQrDialogCommand}"
+                                                CommandParameter="{Binding}"
+                                                Padding="8,3" FontSize="11"
+                                                Background="#107C41"
+                                                Foreground="White"/>
                                         <Button Content="📄 In PDF"
                                                 ToolTip.Tip="In phiếu thu tiền phòng &amp; dịch vụ định dạng PDF"
                                                 Command="{Binding #BillViewRoot.((vm:BillListViewModel)DataContext).ExportBillPdfCommand}"

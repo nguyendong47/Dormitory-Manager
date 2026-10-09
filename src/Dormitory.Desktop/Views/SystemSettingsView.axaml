@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             xmlns:dto="using:Dormitory.Application.DTOs"
              x:Class="Dormitory.Desktop.Views.SystemSettingsView"
              x:DataType="vm:SystemSettingsViewModel">
 
@@ -229,6 +230,138 @@
 
                         <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsEmailTesting}" Width="100" Height="4" VerticalAlignment="Center"/>
                     </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Card 5: Cấu hình Tài khoản Ngân hàng Thụ hưởng & VietQR (NAPAS 247) -->
+            <Border Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="💳" FontSize="18" VerticalAlignment="Center"/>
+                        <TextBlock Text="Cấu Hình Tài Khoản Ngân Hàng Thụ Hưởng &amp; VietQR (NAPAS 247)" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Cấu hình thông tin tài khoản ngân hàng ký túc xá để tự động sinh mã VietQR chuẩn NAPAS 247 trên hóa đơn và cửa sổ quét mã tại quầy thu ngân."
+                               Foreground="{DynamicResource SystemBaseMediumColor}"
+                               TextWrapping="Wrap"
+                               FontSize="13"/>
+
+                    <!-- Khối thông báo trạng thái Ngân hàng -->
+                    <Border Background="#EBF3FC" BorderBrush="#0078D4" BorderThickness="1" CornerRadius="6" Padding="12,8"
+                            IsVisible="{Binding BankStatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{Binding BankStatusMessage}" Foreground="#0078D4" FontSize="13" FontWeight="Medium"/>
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+                        <!-- Cột 1 & 2, Hàng 0: CheckBox bật VietQR -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="24" Margin="0,0,0,12">
+                            <CheckBox Content="Kích hoạt tính năng thanh toán quét mã VietQR trong toàn hệ thống"
+                                      IsChecked="{Binding BankSettings.IsEnabled}"/>
+                        </StackPanel>
+
+                        <!-- Cột 1 & 2, Hàng 1: Ngân hàng thụ hưởng -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,12" Spacing="6">
+                            <TextBlock Text="Ngân hàng thụ hưởng (Napas 247):" FontWeight="Medium" FontSize="13"/>
+                            <ComboBox ItemsSource="{Binding AvailableBanks}"
+                                      SelectedItem="{Binding SelectedBank}"
+                                      HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="dto:BankInfoDto">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding ShortName}" FontWeight="SemiBold" Width="120"/>
+                                            <TextBlock Text="{Binding Name}" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                            <TextBlock Text="{Binding Bin, StringFormat='(BIN: {0})'}" Foreground="#0078D4" FontSize="12"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Cột 1, Hàng 2: Số tài khoản thụ hưởng -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,12" Spacing="6">
+                            <TextBlock Text="Số tài khoản ngân hàng thụ hưởng:" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding BankSettings.AccountNumber}" Watermark="Ví dụ: 0123456789"/>
+                        </StackPanel>
+
+                        <!-- Cột 2, Hàng 2: Tên chủ tài khoản thụ hưởng -->
+                        <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,12" Spacing="6">
+                            <TextBlock Text="Tên chủ tài khoản (Account Name):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding BankSettings.AccountHolder}" Watermark="BAN QUAN LY KTX"/>
+                        </StackPanel>
+
+                        <!-- Cột 1, Hàng 3: Mẫu hiển thị QR -->
+                        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,12,12" Spacing="6">
+                            <TextBlock Text="Mẫu giao diện VietQR QuickLink (Template):" FontWeight="Medium" FontSize="13"/>
+                            <ComboBox ItemsSource="{Binding AvailableTemplates}"
+                                      SelectedItem="{Binding BankSettings.QrTemplate}"
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
+                        <!-- Cột 2, Hàng 3: Tiền tố nội dung CK -->
+                        <StackPanel Grid.Row="3" Grid.Column="1" Margin="12,0,0,12" Spacing="6">
+                            <TextBlock Text="Tiền tố nội dung chuyển khoản (Prefix):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding BankSettings.TransferPrefix}" Watermark="KTX"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Vùng xem trước mã QR thử nghiệm -->
+                    <Border Background="{DynamicResource SystemChromeLowColor}"
+                            BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="0,4,0,0">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <!-- Ảnh xem trước QR -->
+                            <Border Grid.Column="0"
+                                    Width="160" Height="160"
+                                    Background="White"
+                                    BorderBrush="#E0E0E0"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center">
+                                <Panel>
+                                    <TextBlock Text="Chưa tạo mã QR"
+                                               Foreground="{DynamicResource SystemBaseMediumColor}"
+                                               FontSize="12"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               IsVisible="{Binding PreviewQrBitmap, Converter={x:Static ObjectConverters.IsNull}}"/>
+                                    <Image Source="{Binding PreviewQrBitmap}"
+                                           Width="150" Height="150"
+                                           Stretch="Uniform"
+                                           IsVisible="{Binding PreviewQrBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                </Panel>
+                            </Border>
+
+                            <!-- Hướng dẫn & Nút hành động -->
+                            <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center" Spacing="10">
+                                <TextBlock Text="Xem trước mã VietQR kiểm tra:" FontWeight="SemiBold" FontSize="14"/>
+                                <TextBlock Text="Bấm 'Thử nghiệm tạo mã QR' bên dưới để kiểm tra tính năng sinh mã QR chuẩn NAPAS 247 theo các thông số ngân hàng đã cấu hình."
+                                           Foreground="{DynamicResource SystemBaseMediumColor}"
+                                           TextWrapping="Wrap"
+                                           FontSize="13"/>
+                                <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+                                    <Button Content="🧪  Thử nghiệm tạo mã QR"
+                                            Command="{Binding TestGenerateQrCommand}"
+                                            CornerRadius="6"
+                                            Padding="14,8"/>
+                                    <Button Content="💾  Lưu cấu hình Ngân hàng"
+                                            Command="{Binding SaveBankSettingsCommand}"
+                                            Background="#0078D4"
+                                            Foreground="White"
+                                            FontWeight="SemiBold"
+                                            CornerRadius="6"
+                                            Padding="16,8"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
                 </StackPanel>
             </Border>
         </StackPanel>

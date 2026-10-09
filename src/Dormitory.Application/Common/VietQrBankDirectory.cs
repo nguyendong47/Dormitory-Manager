@@ -61,6 +61,11 @@ public static class VietQrBankDirectory
     }
 
     /// <summary>
+    /// Lấy toàn bộ danh sách các ngân hàng hỗ trợ chuẩn Napas / VietQR (alias cho GetSupportedBanks)
+    /// </summary>
+    public static IReadOnlyList<BankInfoDto> GetAllBanks() => GetSupportedBanks();
+
+    /// <summary>
     /// Tìm kiếm thông tin ngân hàng theo mã BIN 6 chữ số (ví dụ: "970436")
     /// </summary>
     /// <param name="bin">Mã BIN ngân hàng cần tra cứu</param>
