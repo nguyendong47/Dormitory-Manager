@@ -22,7 +22,7 @@
 
 - [x] **Task 1: Cấu hình Tài khoản Ngân hàng KTX & Mô hình DTOs (Backend & DTOs)**
 - [x] **Task 2: Dịch vụ sinh chuỗi & hình ảnh VietQR EMVCo chuẩn NAPAS 247 (TDD)**
-- [ ] **Task 3: Tích hợp VietQR vào Phiếu thu PDF QuestPDF & Email thông báo MailKit**
+- [x] **Task 3: Tích hợp VietQR vào Phiếu thu PDF QuestPDF & Email thông báo MailKit**
 - [ ] **Task 4: Giao diện Desktop Cài đặt Ngân hàng & Cửa sổ quét mã VietQR tại quầy**
 - [ ] **Task 5: Kiểm thử tự động E2E Headless & Unit Tests mở rộng**
 - [ ] **Task 6: Tài liệu, CI/CD, GitNexus Sync & Phát hành v2.4.0**

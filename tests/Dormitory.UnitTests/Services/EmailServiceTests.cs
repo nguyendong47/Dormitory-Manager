@@ -11,6 +11,7 @@ using Dormitory.Infrastructure.Services;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace Dormitory.UnitTests.Services;
@@ -242,5 +243,91 @@ public class EmailServiceTests : IDisposable
         retrieved.Password.Should().Be("SecretPassword123");
         retrieved.EnableSsl.Should().BeTrue();
         retrieved.IsEnabled.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task SendBillInvoiceEmailAsync_WithVietQrEnabled_ShouldIncludeDynamicBankInfoAndQuickLink()
+    {
+        // Sắp đặt
+        await SeedSampleBillAsync();
+        var fakePdfBytes = Encoding.UTF8.GetBytes("%PDF-1.4 Mock PDF Content");
+
+        var bankSettings = new BankSettingsDto
+        {
+            IsEnabled = true,
+            BankBin = "970422",
+            BankName = "Ngân hàng TMCP Quân Đội",
+            BankShortName = "MBBank",
+            AccountNumber = "0987654321",
+            AccountHolder = "KTX DANG KHOA",
+            TransferPrefix = "KTX"
+        };
+
+        var mockBankSettingsService = new Mock<IBankSettingsService>();
+        mockBankSettingsService.Setup(s => s.GetBankSettingsAsync())
+            .ReturnsAsync(bankSettings);
+
+        var vietQrService = new VietQrService();
+
+        var service = new EmailService(
+            _context,
+            _tempSettingsPath,
+            mockBankSettingsService.Object,
+            vietQrService);
+
+        // Thực hiện
+        var result = await service.SendBillInvoiceEmailAsync(1, "student@example.com", "Nguyễn Văn A", fakePdfBytes);
+
+        // Kiểm tra
+        result.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        service.LastGeneratedHtmlBody.Should().NotBeNull();
+        service.LastGeneratedHtmlBody.Should().Contain("Ngân hàng TMCP Quân Đội (MBBank)");
+        service.LastGeneratedHtmlBody.Should().Contain("0987654321");
+        service.LastGeneratedHtmlBody.Should().Contain("KTX DANG KHOA");
+        service.LastGeneratedHtmlBody.Should().Contain("img.vietqr.io");
+        service.LastGeneratedHtmlBody.Should().Contain("KTX HD-202410-A101 NGUYEN VAN A");
+    }
+
+    [Fact]
+    public async Task SendBillInvoiceEmailAsync_WithVietQrDisabled_ShouldGenerateStandardHtml()
+    {
+        // Sắp đặt
+        await SeedSampleBillAsync();
+        var fakePdfBytes = Encoding.UTF8.GetBytes("%PDF-1.4 Mock PDF Content");
+
+        var bankSettings = new BankSettingsDto
+        {
+            IsEnabled = false,
+            BankBin = "970436",
+            BankName = "Ngân hàng TMCP Ngoại thương Việt Nam",
+            BankShortName = "Vietcombank",
+            AccountNumber = "0123456789",
+            AccountHolder = "BAN QUAN LY KTX"
+        };
+
+        var mockBankSettingsService = new Mock<IBankSettingsService>();
+        mockBankSettingsService.Setup(s => s.GetBankSettingsAsync())
+            .ReturnsAsync(bankSettings);
+
+        var vietQrService = new VietQrService();
+
+        var service = new EmailService(
+            _context,
+            _tempSettingsPath,
+            mockBankSettingsService.Object,
+            vietQrService);
+
+        // Thực hiện
+        var result = await service.SendBillInvoiceEmailAsync(1, "student@example.com", "Nguyễn Văn A", fakePdfBytes);
+
+        // Kiểm tra
+        result.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        service.LastGeneratedHtmlBody.Should().NotBeNull();
+        service.LastGeneratedHtmlBody.Should().NotContain("img.vietqr.io");
+        service.LastGeneratedHtmlBody.Should().Contain("THÔNG TIN CHUYỂN KHOẢN THANH TOÁN");
+        service.LastGeneratedHtmlBody.Should().Contain("Vietcombank");
+        service.LastGeneratedHtmlBody.Should().Contain("0123456789");
     }
 }

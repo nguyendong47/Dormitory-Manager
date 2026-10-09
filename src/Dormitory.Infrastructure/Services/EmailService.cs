@@ -23,22 +23,37 @@ public class EmailService : IEmailService
     private readonly IDormitoryDbContext _context;
     private readonly IConfiguration? _configuration;
     private readonly string? _customSettingsPath;
+    private readonly IBankSettingsService? _bankSettingsService;
+    private readonly IVietQrService? _vietQrService;
+
+    /// <summary>
+    /// Nội dung HTML của hóa đơn được sinh gần nhất (phục vụ kiểm thử và kiểm tra kết quả)
+    /// </summary>
+    public string? LastGeneratedHtmlBody { get; private set; }
 
     public EmailService(
         IDormitoryDbContext context,
         IConfiguration? configuration = null,
-        string? customSettingsPath = null)
+        string? customSettingsPath = null,
+        IBankSettingsService? bankSettingsService = null,
+        IVietQrService? vietQrService = null)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _configuration = configuration;
         _customSettingsPath = customSettingsPath;
+        _bankSettingsService = bankSettingsService;
+        _vietQrService = vietQrService;
     }
 
     /// <summary>
     /// Constructor hỗ trợ chỉ định tệp cấu hình tùy chỉnh (dùng cho kiểm thử đơn vị độc lập)
     /// </summary>
-    public EmailService(IDormitoryDbContext context, string customSettingsPath)
-        : this(context, null, customSettingsPath)
+    public EmailService(
+        IDormitoryDbContext context,
+        string customSettingsPath,
+        IBankSettingsService? bankSettingsService = null,
+        IVietQrService? vietQrService = null)
+        : this(context, null, customSettingsPath, bankSettingsService, vietQrService)
     {
     }
 
@@ -190,8 +205,20 @@ public class EmailService : IEmailService
             return SendEmailResult.Fail($"Không tìm thấy hóa đơn có ID = {billId}.");
         }
 
-        // 3. Tải cấu hình SMTP
+        // 3. Tải cấu hình SMTP và cấu hình tài khoản ngân hàng VietQR
         var settings = await GetEmailSettingsAsync();
+        var bankSettings = _bankSettingsService != null
+            ? await _bankSettingsService.GetBankSettingsAsync()
+            : new BankSettingsDto();
+
+        VietQrPayloadDto? vietQrPayload = null;
+        if (bankSettings.IsEnabled && _vietQrService != null)
+        {
+            vietQrPayload = _vietQrService.GeneratePayloadForBill(bill, recipientName, bankSettings);
+        }
+
+        var htmlBody = GenerateBillInvoiceHtml(bill, recipientName, bankSettings, vietQrPayload);
+        LastGeneratedHtmlBody = htmlBody;
 
         // 4. Safe Mode / Mock Mode: Giả lập gửi thành công khi chưa bật SMTP thật hoặc email kiểm thử
         if (!settings.IsEnabled ||
@@ -214,7 +241,7 @@ public class EmailService : IEmailService
 
             var bodyBuilder = new BodyBuilder
             {
-                HtmlBody = GenerateBillInvoiceHtml(bill, recipientName)
+                HtmlBody = htmlBody
             };
 
             // Đính kèm tệp PDF phiếu thu
@@ -248,14 +275,64 @@ public class EmailService : IEmailService
     }
 
     /// <summary>
-    /// Sinh nội dung HTML thông báo hóa đơn trang nhã, đầy đủ thông tin chi tiết
+    /// Sinh nội dung HTML thông báo hóa đơn trang nhã, đầy đủ thông tin chi tiết và mã thanh toán VietQR
     /// </summary>
-    private static string GenerateBillInvoiceHtml(Bill bill, string recipientName)
+    public static string GenerateBillInvoiceHtml(
+        Bill bill,
+        string recipientName,
+        BankSettingsDto? bankSettings = null,
+        VietQrPayloadDto? payload = null)
     {
+        bankSettings ??= new BankSettingsDto();
+
         var roomNumber = bill.Room?.RoomNumber ?? bill.RoomId.ToString();
         var building = bill.Room?.Building ?? "KTX";
         var statusText = bill.Status == BillStatus.Paid ? "ĐÃ THANH TOÁN" : "CHƯA THANH TOÁN (CÒN NỢ)";
         var statusColor = bill.Status == BillStatus.Paid ? "#107C41" : "#D83B01";
+
+        string bankPaymentSectionHtml;
+
+        if (bankSettings.IsEnabled && payload != null)
+        {
+            bankPaymentSectionHtml = $@"
+            <div class=""bank-info"">
+                <h3>💳 THÔNG TIN CHUYỂN KHOẢN THANH TOÁN (VIETQR NAPAS 24/7):</h3>
+                <table style=""width: 100%; border-collapse: collapse; margin-top: 8px;"">
+                    <tr>
+                        <td style=""width: 155px; vertical-align: top; text-align: center; padding-right: 15px;"">
+                            <img src=""{payload.QuickLinkUrl}"" alt=""Mã QR thanh toán VietQR"" style=""width: 145px; height: 145px; border: 1px solid #c7e0f4; border-radius: 6px; padding: 4px; background: #ffffff; display: block; margin: 0 auto;"" />
+                            <div style=""font-size: 11px; color: #605e5c; margin-top: 6px;"">Quét mã để thanh toán</div>
+                        </td>
+                        <td style=""vertical-align: top;"">
+                            <ul style=""margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.8;"">
+                                <li><strong>Ngân hàng thụ hưởng:</strong> {bankSettings.BankName} ({bankSettings.BankShortName})</li>
+                                <li><strong>Số tài khoản:</strong> <span style=""font-weight: bold; color: #242424;"">{bankSettings.AccountNumber}</span></li>
+                                <li><strong>Chủ tài khoản:</strong> <span style=""font-weight: bold; color: #242424;"">{bankSettings.AccountHolder}</span></li>
+                                <li><strong>Số tiền:</strong> <span style=""font-weight: bold; color: #D83B01;"">{bill.TotalAmount:N0} VNĐ</span></li>
+                                <li><strong>Nội dung CK (Bắt buộc):</strong> <span style=""color: #0078D4; font-weight: bold; background: #e0eeff; padding: 2px 6px; border-radius: 4px;"">{payload.TransferContent}</span></li>
+                            </ul>
+                            <div style=""font-size: 12px; color: #605e5c; margin-top: 8px; font-style: italic;"">
+                                💡 Quét mã qua bất kỳ ứng dụng ngân hàng hoặc ví điện tử để tự động điền đúng số tiền và nội dung.
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>";
+        }
+        else
+        {
+            var transferContentFallback = $"{bill.BillCode} {roomNumber}".Trim();
+            bankPaymentSectionHtml = $@"
+            <div class=""bank-info"">
+                <h3>💳 THÔNG TIN CHUYỂN KHOẢN THANH TOÁN:</h3>
+                <ul>
+                    <li><strong>Ngân hàng thụ hưởng:</strong> {bankSettings.BankName} ({bankSettings.BankShortName})</li>
+                    <li><strong>Số tài khoản:</strong> {bankSettings.AccountNumber}</li>
+                    <li><strong>Tên chủ tài khoản:</strong> {bankSettings.AccountHolder}</li>
+                    <li><strong>Nội dung chuyển khoản (Bắt buộc):</strong> <span style=""color: #0078D4; font-weight: bold;"">{transferContentFallback}</span></li>
+                </ul>
+            </div>";
+        }
 
         return $@"<!DOCTYPE html>
 <html lang=""vi"">
@@ -348,15 +425,7 @@ public class EmailService : IEmailService
                 </tbody>
             </table>
 
-            <div class=""bank-info"">
-                <h3>💳 THÔNG TIN CHUYỂN KHOẢN THANH TOÁN:</h3>
-                <ul>
-                    <li><strong>Ngân hàng thụ hưởng:</strong> Ngân hàng TMCP Đầu tư và Phát triển Việt Nam (BIDV)</li>
-                    <li><strong>Số tài khoản:</strong> 1234567890</li>
-                    <li><strong>Tên chủ tài khoản:</strong> BAN QUAN LY KY TUC XA</li>
-                    <li><strong>Nội dung chuyển khoản (Bắt buộc):</strong> <span style=""color: #0078D4; font-weight: bold;"">{bill.BillCode} {roomNumber}</span></li>
-                </ul>
-            </div>
+            {bankPaymentSectionHtml}
 
             <p style=""font-size: 13px; color: #605e5c; margin-top: 16px;"">
                 📎 <em>Lưu ý: Tệp PDF phiếu thu chi tiết đã được đính kèm vào email này (<strong>PhieuThu_{bill.BillCode}.pdf</strong>). Quý sinh viên vui lòng thanh toán đúng hạn trước ngày {bill.DueDate:dd/MM/yyyy} để tránh phát sinh phạt nộp muộn.</em>

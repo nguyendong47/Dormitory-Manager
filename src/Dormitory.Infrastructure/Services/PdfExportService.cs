@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Dormitory.Application.DTOs;
 using Dormitory.Application.Interfaces;
 using Dormitory.Core.Entities;
 using Dormitory.Core.Enums;
@@ -19,10 +20,17 @@ namespace Dormitory.Infrastructure.Services;
 public class PdfExportService : IPdfExportService
 {
     private readonly IDormitoryDbContext _context;
+    private readonly IBankSettingsService? _bankSettingsService;
+    private readonly IVietQrService? _vietQrService;
 
-    public PdfExportService(IDormitoryDbContext context)
+    public PdfExportService(
+        IDormitoryDbContext context,
+        IBankSettingsService? bankSettingsService = null,
+        IVietQrService? vietQrService = null)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _bankSettingsService = bankSettingsService;
+        _vietQrService = vietQrService;
         // Thiết lập giấy phép cộng đồng (Community License) cho QuestPDF
         QuestPDF.Settings.License = LicenseType.Community;
     }
@@ -55,7 +63,25 @@ public class PdfExportService : IPdfExportService
             .ThenByDescending(c => c.StartDate)
             .FirstOrDefaultAsync();
 
-        // 3. Khởi tạo và thiết kế tài liệu QuestPDF
+        // 3. Xử lý thông tin VietQR nếu được kích hoạt
+        var bankSettings = _bankSettingsService != null
+            ? await _bankSettingsService.GetBankSettingsAsync()
+            : new BankSettingsDto();
+
+        byte[]? qrPngBytes = null;
+        VietQrPayloadDto? qrPayload = null;
+
+        if (bankSettings.IsEnabled && _vietQrService != null)
+        {
+            var studentName = contract?.Student?.FullName ?? string.Empty;
+            qrPayload = _vietQrService.GeneratePayloadForBill(bill, studentName, bankSettings);
+            if (!string.IsNullOrEmpty(qrPayload?.EmvCoPayload))
+            {
+                qrPngBytes = _vietQrService.GenerateQrCodePng(qrPayload.EmvCoPayload, 8);
+            }
+        }
+
+        // 4. Khởi tạo và thiết kế tài liệu QuestPDF
         var document = Document.Create(container =>
         {
             container.Page(page =>
@@ -67,15 +93,15 @@ public class PdfExportService : IPdfExportService
                 // Header trang
                 page.Header().Element(header => ComposeHeader(header, bill));
 
-                // Thân trang: thông tin sinh viên & phòng, bảng chi phí
-                page.Content().Element(content => ComposeContent(content, bill, contract));
+                // Thân trang: thông tin sinh viên & phòng, bảng chi phí, khối VietQR (nếu có)
+                page.Content().Element(content => ComposeContent(content, bill, contract, qrPngBytes, qrPayload, bankSettings));
 
                 // Footer trang: chữ ký 2 bên và ghi chú chân trang
                 page.Footer().Element(footer => ComposeFooter(footer));
             });
         });
 
-        // 4. Sinh file PDF ra mảng byte
+        // 5. Sinh file PDF ra mảng byte
         return document.GeneratePdf();
     }
 
@@ -134,9 +160,15 @@ public class PdfExportService : IPdfExportService
     }
 
     /// <summary>
-    /// Thiết kế thân phiếu: khối thông tin sinh viên/phòng và bảng chi tiết các khoản thu
+    /// Thiết kế thân phiếu: khối thông tin sinh viên/phòng, bảng chi tiết các khoản thu và khối thanh toán VietQR
     /// </summary>
-    private static void ComposeContent(IContainer container, Bill bill, Contract? contract)
+    private static void ComposeContent(
+        IContainer container,
+        Bill bill,
+        Contract? contract,
+        byte[]? qrPngBytes = null,
+        VietQrPayloadDto? qrPayload = null,
+        BankSettingsDto? bankSettings = null)
     {
         container.Column(col =>
         {
@@ -172,7 +204,7 @@ public class PdfExportService : IPdfExportService
                 });
             });
 
-            col.Item().PaddingTop(12);
+            col.Item().PaddingTop(10);
 
             // Bảng danh mục các khoản thu chi tiết
             col.Item().Table(table =>
@@ -236,14 +268,14 @@ public class PdfExportService : IPdfExportService
 
                 static IContainer RowStyle(IContainer cell) =>
                     cell.BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
-                        .PaddingVertical(6).PaddingHorizontal(5)
+                        .PaddingVertical(5).PaddingHorizontal(5)
                         .DefaultTextStyle(x => x.FontSize(9));
             });
 
             // Tổng cộng thanh toán
-            col.Item().PaddingTop(6).AlignRight().Row(row =>
+            col.Item().PaddingTop(5).AlignRight().Row(row =>
             {
-                row.ConstantItem(260).Background("#F0F6FC").Border(1).BorderColor("#0078D4").Padding(8).Column(totCol =>
+                row.ConstantItem(260).Background("#F0F6FC").Border(1).BorderColor("#0078D4").Padding(6).Column(totCol =>
                 {
                     totCol.Item().Row(r =>
                     {
@@ -262,8 +294,60 @@ public class PdfExportService : IPdfExportService
             // Ghi chú nếu có
             if (!string.IsNullOrWhiteSpace(bill.Note))
             {
-                col.Item().PaddingTop(6).Text($"* Ghi chú: {bill.Note}")
+                col.Item().PaddingTop(4).Text($"* Ghi chú: {bill.Note}")
                     .FontSize(8.5f).Italic().FontColor(Colors.Grey.Darken1);
+            }
+
+            // Khối hiển thị mã VietQR (nếu được kích hoạt và có dữ liệu)
+            if (bankSettings != null && bankSettings.IsEnabled && qrPngBytes != null && qrPngBytes.Length > 0 && qrPayload != null)
+            {
+                col.Item().PaddingTop(8).Border(1).BorderColor("#0078D4").Background("#F4F8FC").Padding(8).Row(qrRow =>
+                {
+                    // Bên trái: Ảnh mã QR (sử dụng container.Width(95).Height(95).Image(qrBytes))
+                    qrRow.ConstantItem(95).Width(95).Height(95).Image(qrPngBytes);
+
+                    qrRow.ConstantItem(12);
+
+                    // Bên phải: Chi tiết tài khoản động
+                    qrRow.RelativeItem().DefaultTextStyle(x => x.FontSize(8.5f)).Column(qrInfo =>
+                    {
+                        qrInfo.Item().Text("THANH TOÁN NHANH QUA MÃ VIETQR (NAPAS 24/7)")
+                            .FontSize(9.5f).Bold().FontColor("#0078D4");
+
+                        qrInfo.Item().PaddingTop(3).Text(t =>
+                        {
+                            t.Span("Ngân hàng: ").SemiBold();
+                            t.Span($"{bankSettings.BankName} ({bankSettings.BankShortName})");
+                        });
+
+                        qrInfo.Item().Text(t =>
+                        {
+                            t.Span("Số tài khoản: ").SemiBold();
+                            t.Span(bankSettings.AccountNumber).Bold().FontColor("#242424");
+                        });
+
+                        qrInfo.Item().Text(t =>
+                        {
+                            t.Span("Chủ tài khoản: ").SemiBold();
+                            t.Span(bankSettings.AccountHolder).Bold().FontColor("#242424");
+                        });
+
+                        qrInfo.Item().Text(t =>
+                        {
+                            t.Span("Nội dung CK: ").SemiBold();
+                            t.Span(qrPayload.TransferContent).Bold().FontColor("#0078D4");
+                        });
+
+                        qrInfo.Item().Text(t =>
+                        {
+                            t.Span("Số tiền: ").SemiBold();
+                            t.Span($"{bill.TotalAmount:N0} VNĐ").Bold().FontColor("#D83B01");
+                        });
+
+                        qrInfo.Item().PaddingTop(2).Text("Quét mã qua ứng dụng ngân hàng bất kỳ để thanh toán 24/7 tức thì.")
+                            .FontSize(8).Italic().FontColor(Colors.Grey.Darken1);
+                    });
+                });
             }
         });
     }
@@ -275,14 +359,14 @@ public class PdfExportService : IPdfExportService
     {
         container.Column(col =>
         {
-            col.Item().PaddingTop(15).Row(row =>
+            col.Item().PaddingTop(10).Row(row =>
             {
                 // Cột ký: Người nộp tiền
                 row.RelativeItem().AlignCenter().Column(sigCol =>
                 {
                     sigCol.Item().Text("Người nộp tiền").Bold().FontSize(9.5f);
                     sigCol.Item().Text("(Ký và ghi rõ họ tên)").FontSize(8).Italic().FontColor(Colors.Grey.Darken1);
-                    sigCol.Item().PaddingTop(50).Text("........................................").FontColor(Colors.Grey.Lighten1);
+                    sigCol.Item().PaddingTop(35).Text("........................................").FontColor(Colors.Grey.Lighten1);
                 });
 
                 // Cột ký: Đại diện BQL KTX / Thủ quỹ
@@ -292,12 +376,12 @@ public class PdfExportService : IPdfExportService
                     sigCol.Item().Text($"Ngày {now.Day:D2} tháng {now.Month:D2} năm {now.Year}").FontSize(8.5f).Italic();
                     sigCol.Item().Text("Đại diện BQL KTX / Thủ quỹ").Bold().FontSize(9.5f);
                     sigCol.Item().Text("(Ký, ghi rõ họ tên & đóng dấu)").FontSize(8).Italic().FontColor(Colors.Grey.Darken1);
-                    sigCol.Item().PaddingTop(42).Text("........................................").FontColor(Colors.Grey.Lighten1);
+                    sigCol.Item().PaddingTop(27).Text("........................................").FontColor(Colors.Grey.Lighten1);
                 });
             });
 
             // Ghi chú pháp lý phiếu thu
-            col.Item().PaddingTop(16).AlignCenter().Text(
+            col.Item().PaddingTop(10).AlignCenter().Text(
                 "Phiếu thu này được phát hành bởi Hệ thống Quản trị Ký túc xá Sinh viên. Vui lòng giữ phiếu để đối soát khi cần thiết.")
                 .FontSize(7.5f).FontColor(Colors.Grey.Darken1);
         });
