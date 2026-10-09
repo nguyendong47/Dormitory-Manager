@@ -24,7 +24,8 @@ fi
 
 RID="${1:-win-x64}"
 DIST_DIR="$REPO_ROOT/dist/windows-x64"
-ZIP_FILE="$DIST_DIR/DormitoryManager-v2.0.0-Windows-x64.zip"
+VERSION="${VERSION:-2.4.0}"
+ZIP_FILE="$DIST_DIR/DormitoryManager-v${VERSION}-Windows-x64.zip"
 
 echo "======================================================================"
 echo "🚀 [Windows Packaging] Bắt đầu đóng gói Dormitory Manager"
@@ -67,7 +68,7 @@ if command -v zip &> /dev/null; then
     rm -f "$ZIP_FILE"
     (
         cd "$DIST_DIR"
-        zip -q -9 "DormitoryManager-v2.0.0-Windows-x64.zip" Dormitory.Desktop.exe appsettings.json
+        zip -q -9 "DormitoryManager-v${VERSION}-Windows-x64.zip" Dormitory.Desktop.exe appsettings.json
     )
     echo "🎉 Đã tạo thành công tệp ZIP: $ZIP_FILE"
 else

@@ -25,4 +25,4 @@
 - [x] **Task 3: Tích hợp VietQR vào Phiếu thu PDF QuestPDF & Email thông báo MailKit**
 - [x] **Task 4: Giao diện Desktop Cài đặt Ngân hàng & Cửa sổ quét mã VietQR tại quầy**
 - [x] **Task 5: Kiểm thử tự động E2E Headless & Unit Tests mở rộng**
-- [ ] **Task 6: Tài liệu, CI/CD, GitNexus Sync & Phát hành v2.4.0**
+- [x] **Task 6: Tài liệu, CI/CD, GitNexus Sync & Phát hành v2.4.0**

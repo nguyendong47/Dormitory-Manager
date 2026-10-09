@@ -24,7 +24,8 @@ fi
 
 RID="${1:-linux-x64}"
 DIST_DIR="$REPO_ROOT/dist/linux-x64"
-TAR_FILE="$DIST_DIR/DormitoryManager-v2.0.0-Linux-x64.tar.gz"
+VERSION="${VERSION:-2.4.0}"
+TAR_FILE="$DIST_DIR/DormitoryManager-v${VERSION}-Linux-x64.tar.gz"
 
 echo "======================================================================"
 echo "🚀 [Linux Packaging] Bắt đầu đóng gói Dormitory Manager"
@@ -69,10 +70,10 @@ if command -v tar &> /dev/null; then
     (
         cd "$DIST_DIR"
         # Nén file thực thi, appsettings.json và các thư viện .so native
-        tar -czf "DormitoryManager-v2.0.0-Linux-x64.tar.gz" \
+        tar -czf "DormitoryManager-v${VERSION}-Linux-x64.tar.gz" \
             Dormitory.Desktop \
             appsettings.json \
-            *.so 2>/dev/null || tar -czf "DormitoryManager-v2.0.0-Linux-x64.tar.gz" Dormitory.Desktop appsettings.json
+            *.so 2>/dev/null || tar -czf "DormitoryManager-v${VERSION}-Linux-x64.tar.gz" Dormitory.Desktop appsettings.json
     )
     echo "🎉 Đã tạo thành công tệp TAR.GZ: $TAR_FILE"
 else

@@ -1,8 +1,8 @@
 # 🏢 Hệ Thống Quản Lý Ký Túc Xá (Dormitory Management System)
 
 [![CI/CD Pipeline](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml)
-![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)
-![Tests](https://img.shields.io/badge/tests-177%2F177%20passed-success.svg)
+![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)
+![Tests](https://img.shields.io/badge/tests-294%2F294%20passed-success.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 > Ứng dụng Desktop hiện đại quản lý toàn diện Ký túc xá sinh viên, xây dựng trên nền tảng **.NET 8 LTS**, **Avalonia UI 11** và **Entity Framework Core 8** theo chuẩn kiến trúc **Clean Architecture** và mô hình **MVVM**.
@@ -110,15 +110,22 @@
     - Quản lý lịch sử báo cáo toàn diện: Thẻ KPI thống kê, bộ lọc phân hệ/định dạng, mở tệp trực tiếp, tải về máy và xóa an toàn.
 
 16. **🧪 Khung Kiểm Thử Tự Động Toàn Diện (Unit Tests & Avalonia Headless UI E2E)**:
-    - 171 bài kiểm thử đơn vị & tích hợp kiểm soát chặt chẽ toàn bộ logic nghiệp vụ, tính toán tiền điện nước, trích xuất báo cáo và bảo mật.
-    - 6 kịch bản kiểm thử giao diện tự động không cần màn hình (`Avalonia.Headless.XUnit`) chạy mượt mà trên môi trường CI/CD.
+    - 283 bài kiểm thử đơn vị & tích hợp kiểm soát chặt chẽ toàn bộ logic nghiệp vụ, tính toán tiền điện nước, sinh mã VietQR EMVCo, trích xuất báo cáo và bảo mật.
+    - 11 kịch bản kiểm thử giao diện tự động không cần màn hình (`Avalonia.Headless.XUnit`) chạy mượt mà trên môi trường CI/CD.
+
+17. **💳 Tích Hợp Thanh Toán VietQR Động (NAPAS 247 & EMVCo)**:
+    - **Sinh mã EMVCo TLV & Checksum CRC-16 100% Offline**: Thuật toán sinh chuỗi payload EMVCo (Tag 00/01/38/53/54/58/62/63) và tính mã kiểm tra CRC-16/CCITT-FALSE (đa thức `0x1021`, khởi tạo `0xFFFF`) hoàn toàn cục bộ trên máy trạm, không phụ thuộc kết nối mạng hay dịch vụ bên ngoài.
+    - **Sinh ảnh mã QR đa phương thức**: Tự động sinh ảnh chuẩn PNG offline độ nét cao bằng thư viện QRCoder (`PngByteQRCode`) và URL QuickLink online qua cổng VietQR API (`img.vietqr.io`).
+    - **Tích hợp sâu vào Phiếu thu PDF & Email tự động**: Nhúng trực tiếp khối mã VietQR động cùng hướng dẫn thanh toán vào Phiếu thu tiền phòng PDF (`QuestPDF`) và Email thông báo hóa đơn (`MailKit`) gửi trực tiếp cho sinh viên.
+    - **Cửa sổ quét mã VietQR tức thì tại quầy lễ tân**: Hộp thoại Avalonia UI hiện đại hiển thị mã QR cỡ lớn, đầy đủ thông tin thanh toán, nút sao chép nhanh số tài khoản/nội dung chuyển khoản, lưu ảnh PNG và nút **"Xác nhận đã thu tiền"** chuyển trạng thái hóa đơn sang `Paid` ngay tại chỗ.
+    - **Quản lý cấu hình ngân hàng thụ hưởng linh hoạt**: Cung cấp danh mục tích hợp sẵn hơn 40 ngân hàng thương mại Việt Nam (Napas BINs) trong tab Cài đặt hệ thống, cho phép tùy biến số tài khoản, tên chủ thẻ, tiền tố nội dung và xem trước mã QR thử nghiệm.
 
 ---
 
-## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature Matrix - Hoàn Thành 100% Cả 7 Giai Đoạn - v2.3.0)
+## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature Matrix - Hoàn Thành 100% Cả 8 Giai Đoạn - v2.4.0)
 
 | Phân hệ / Hạng mục | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel / PDF | Phân Quyền | Trạng Thái |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Xác thực & Phiên (Auth)** | ✅ | — | — | — | — | — | Admin / Manager | **Hoàn thành (Phase 1)** |
 | **Bảng Điều Khiển (Dashboard)** | ✅ | — | — | — | ✅ (Cảnh báo Live & Lọc) | ✅ (`.xlsx` Đa Sheet) | Tất cả | **Hoàn thành (Phase 2 - LiveCharts2 & Analytics)** |
 | **Phòng Ở (Rooms)** | ✅ | ✅ (`RoomDialog`) | ✅ (`RoomDialog`) | ✅ (Xác nhận an toàn) | ✅ | ✅ (`.xlsx`) | Tất cả | **Hoàn thành (Phase 1)** |
@@ -137,7 +144,9 @@
 | **Gửi Email Hóa Đơn Tự Động (MailKit)** | ✅ | ✅ (Gửi thư kèm PDF) | — | — | — | ✅ (Đính kèm PDF) | Admin / Manager | **Hoàn thành (Phase 6 - Email Invoicing)** |
 | **Báo Cáo & Phân Tích Tổng Hợp** | ✅ | ✅ (Khởi tạo 4 loại BC) | — | ✅ (Xóa lịch sử an toàn) | ✅ (Phân hệ, Định dạng) | ✅ (Excel ClosedXML & PDF QuestPDF) | Tất cả | **Hoàn thành (Phase 7 - Reporting & Analytics)** |
 | **Quản Lý Lịch Sử Báo Cáo** | ✅ | — | — | ✅ (Xóa tệp & bản ghi) | ✅ (Tìm kiếm, Lọc) | ✅ (Mở tệp & Tải về) | Tất cả | **Hoàn thành (Phase 7 - Report History)** |
-| **Kiểm Thử E2E Headless (Avalonia)** | ✅ | ✅ (Auth & Nav E2E) | ✅ (Equipments E2E) | ✅ (Bill PDF E2E) | ✅ (Reports E2E) | — | Tự động hóa CI/CD | **Hoàn thành (Phase 7 - 6/6 Headless E2E)** |
+| **Thanh Toán VietQR Động (NAPAS 247)** | ✅ | ✅ (Sinh mã offline) | ✅ (Đổi mẫu & cấu hình) | — | ✅ (Quét mã theo HĐ) | ✅ (Nhúng PDF & Email) | Tất cả | **Hoàn thành (Phase 8 - VietQR Payment)** |
+| **Cấu Hình Ngân Hàng Thụ Hưởng** | ✅ (40+ Napas BINs) | — | ✅ (Lưu JSON) | — | — | ✅ (Xem trước QR) | **Chỉ Admin** | **Hoàn thành (Phase 8 - Bank Settings)** |
+| **Kiểm Thử E2E Headless (Avalonia)** | ✅ | ✅ (Auth & Nav E2E) | ✅ (Equipments E2E) | ✅ (Bill PDF & VietQR E2E) | ✅ (Reports E2E) | — | Tự động hóa CI/CD | **Hoàn thành (Phase 8 - 11/11 Headless E2E)** |
 
 ---
 
@@ -218,17 +227,17 @@ Dormitory-Manager/
 │
 ├── src/
 │   ├── Dormitory.Core/               # Domain: Thực thể và Enums (Room, Equipment, Student, Contract, Bill, Employee, Violation, ReportHistory, User)
-│   ├── Dormitory.Application/        # Application: DTOs, Services, Interfaces, Business Logic (IReportService, IViolationService, IEmailService,...)
-│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, QuestPDF, ClosedXML, MailKit, Migrations, BCrypt, DatabaseService, ReportService
-│   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs, appsettings.json
+│   ├── Dormitory.Application/        # Application: DTOs, Services, Interfaces, Business Logic (IVietQrService, IBankSettingsService, IReportService,...)
+│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, VietQrService (EMVCo & QRCoder), BankSettingsService, QuestPDF, ClosedXML, MailKit
+│   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs, VietQrDialogWindow, appsettings.json
 │       ├── Assets/                   # Nhận diện thương hiệu (AppIcon.ico, AppIcon.png) & Fonts
 │       ├── Converters/               # Value Converters (ReportFormatConverter, ReportTypeConverter,...)
-│       ├── ViewModels/               # ReportListViewModel, ReportGenerateDialogViewModel, ViolationListViewModel,...
-│       └── Views/                    # ReportListView, ReportGenerateDialogWindow, ViolationListView,...
+│       ├── ViewModels/               # VietQrDialogViewModel, BillListViewModel, SystemSettingsViewModel, ReportListViewModel,...
+│       └── Views/                    # VietQrDialogWindow, BillListView, SystemSettingsView, ReportListView,...
 │
 ├── tests/
-│   ├── Dormitory.UnitTests/          # Kiểm thử đơn vị & tích hợp xUnit & FluentAssertions (171/171 Passed - 100%)
-│   └── Dormitory.E2ETests/           # Kiểm thử giao diện tự động Avalonia Headless UI (6/6 Journeys Passed - 100%)
+│   ├── Dormitory.UnitTests/          # Kiểm thử đơn vị & tích hợp xUnit & FluentAssertions (283/283 Passed - 100%)
+│   └── Dormitory.E2ETests/           # Kiểm thử giao diện tự động Avalonia Headless UI (11/11 Journeys Passed - 100%)
 │
 ├── Dormitory.sln                     # .NET 8 Solution
 └── README.md
@@ -242,10 +251,10 @@ Dormitory-Manager/
 
 Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản cài đặt hoặc gói chạy độc lập (Self-Contained - không yêu cầu cài đặt trước .NET Runtime) tại trang [**GitHub Releases**](https://github.com/nguyendong47/Dormitory-Manager/releases):
 
-- **macOS (Apple Silicon M1/M2/M3/M4)**: Tải tệp `DormitoryManager-v2.3.0-macOS-arm64.dmg` -> Nhấp đúp và kéo thả `DormitoryManager.app` vào thư mục `Applications`.
-- **macOS (Intel x64)**: Tải tệp `DormitoryManager-v2.3.0-macOS-x64.dmg` -> Cài đặt tương tự như trên.
-- **Windows (10/11 64-bit)**: Tải tệp `DormitoryManager-v2.3.0-Windows-x64.zip` -> Giải nén và nhấp đúp vào `Dormitory.Desktop.exe` để chạy ngay.
-- **Linux (Ubuntu, Debian, Fedora x64)**: Tải tệp `DormitoryManager-v2.3.0-Linux-x64.tar.gz` -> Giải nén và thực thi `./Dormitory.Desktop`.
+- **macOS (Apple Silicon M1/M2/M3/M4)**: Tải tệp `DormitoryManager-v2.4.0-macOS-arm64.dmg` -> Nhấp đúp và kéo thả `DormitoryManager.app` vào thư mục `Applications`.
+- **macOS (Intel x64)**: Tải tệp `DormitoryManager-v2.4.0-macOS-x64.dmg` -> Cài đặt tương tự như trên.
+- **Windows (10/11 64-bit)**: Tải tệp `DormitoryManager-v2.4.0-Windows-x64.zip` -> Giải nén và nhấp đúp vào `Dormitory.Desktop.exe` để chạy ngay.
+- **Linux (Ubuntu, Debian, Fedora x64)**: Tải tệp `DormitoryManager-v2.4.0-Linux-x64.tar.gz` -> Giải nén và thực thi `./Dormitory.Desktop`.
 
 ### Yêu Cầu Môi Trường (Dành Cho Lập Trình Viên)
 - **.NET 8 SDK** (hoặc mới hơn) cài đặt trên máy phát triển.
@@ -291,12 +300,12 @@ Thành phẩm sau khi đóng gói sẽ nằm tại thư mục `dist/`.
 
 ## 🧪 Chạy Kiểm Thử Tự Động (Unit Tests & Headless UI E2E)
 
-Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, dịch vụ xuất phiếu thu PDF QuestPDF, quản lý tài sản phòng ở, quản lý kỷ luật vi phạm, gửi thư email SMTP hóa đơn, trung tâm báo cáo & phân tích tổng hợp, cấu hình động `appsettings.json`, dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`), và 6 hành trình người dùng E2E chạy hoàn toàn tự động trên nền tảng Avalonia Headless:
+Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, thuật toán sinh chuỗi EMVCo TLV & checksum CRC-16 VietQR offline, tạo ảnh QR PNG với QRCoder, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, dịch vụ xuất phiếu thu PDF QuestPDF kèm khối mã VietQR, quản lý tài sản phòng ở, quản lý kỷ luật vi phạm, gửi thư email SMTP hóa đơn kèm QR, trung tâm báo cáo & phân tích tổng hợp, cấu hình tài khoản ngân hàng thụ hưởng Napas BIN, cấu hình động `appsettings.json`, dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`), và 11 hành trình người dùng E2E chạy hoàn toàn tự động trên nền tảng Avalonia Headless:
 
 ```bash
 dotnet test Dormitory.sln
 ```
 
-Kết quả: **177/177 Tests Passed** (100% Pass: 171 Unit Tests + 6 Avalonia Headless UI E2E Journeys).
+Kết quả: **294/294 Tests Passed** (100% Pass: 283 Unit Tests + 11 Avalonia Headless UI E2E Journeys).
 
 

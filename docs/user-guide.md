@@ -59,11 +59,11 @@ Thanh menu bên trái giúp chuyển đổi linh hoạt giữa các phân hệ:
 - 🛋️ **Quản lý tài sản**: Quản lý trang thiết bị & tài sản phòng ở, kiểm kê, theo dõi tình trạng hư hỏng và báo sự cố.
 - 🎓 **Sinh viên**: Quản lý hồ sơ cá nhân sinh viên và xuất danh bạ Excel.
 - 📝 **Hợp đồng**: Lập mới, gia hạn, thanh lý hợp đồng và bộ lọc trạng thái.
-- 💵 **Hóa đơn**: Lập phiếu thu điện nước, xác nhận thu tiền, lọc trạng thái, xuất Excel, gửi email và in PDF (QuestPDF).
+- 💵 **Hóa đơn**: Lập phiếu thu điện nước, quét mã thanh toán VietQR động (NAPAS 247), xác nhận thu tiền, lọc trạng thái, xuất Excel, gửi email và in PDF (QuestPDF).
 - 👥 **Nhân viên**: Quản lý đội ngũ nhân sự vận hành KTX (**Chỉ dành cho Quản trị viên**).
 - ⚖️ **Kỷ luật & Vi phạm**: Quản lý biên bản vi phạm nội quy KTX, xử lý kỷ luật, trừ điểm rèn luyện và phạt tiền.
 - 📊 **Báo cáo & Thống kê**: Trung tâm tổng hợp và phân tích báo cáo chuyên sâu (Vi phạm, Tài chính, Lấp đầy, Thiết bị), xuất bản PDF/Excel và quản lý kho lưu trữ tệp báo cáo.
-- ⚙️ **Cài đặt**: Quản trị CSDL (sao lưu, phục hồi, kiểm tra toàn vẹn), cấu hình máy chủ gửi thư SMTP, chuỗi kết nối và thông tin hệ thống (**Chỉ dành cho Quản trị viên**).
+- ⚙️ **Cài đặt**: Quản trị CSDL (sao lưu, phục hồi, kiểm tra toàn vẹn), cấu hình tài khoản ngân hàng thụ hưởng VietQR (40+ ngân hàng Napas BIN), cấu hình máy chủ gửi thư SMTP, chuỗi kết nối và thông tin hệ thống (**Chỉ dành cho Quản trị viên**).
 
 > 🔒 **Cơ chế phân quyền**: Với tài khoản vai trò `Manager`, hai phân hệ **Nhân viên** và **Cài đặt** sẽ tự động được ẩn hoàn toàn khỏi thanh điều hướng để đảm bảo tính an toàn hạ tầng và bảo mật thông tin nội bộ.
 
@@ -211,10 +211,15 @@ Tính toán chi phí dịch vụ hàng tháng một cách minh bạch, tự đ�
    - Nhập chỉ số điện cũ/mới và chỉ số nước cũ/mới: Tiền điện nước và **Tổng tiền phải thu** được tính toán và hiển thị ngay lập tức (real-time).
    - Tùy chỉnh phụ phí Internet, Vệ sinh và Ngày hạn nộp.
    - Bấm **"Lưu hóa đơn"** để phát hành.
-3. **Thu tiền hóa đơn (`Thu tiền (Đã thanh toán)`)**:
-   - Khi phòng nộp tiền: Chọn hóa đơn và bấm **"Thu tiền (Đã thanh toán)"**.
+3. **Quét mã thanh toán VietQR động tại quầy (`💳 Quét VietQR`)**:
+   - Khi sinh viên nộp tiền tại quầy tiếp đón: Chọn hóa đơn và bấm nút **"💳 Quét VietQR"** trên thanh công cụ (hoặc biểu tượng QR trên dòng hóa đơn).
+   - Cửa sổ thanh toán `VietQrDialogWindow` hiển thị mã QR động chuẩn NAPAS 247 được sinh tức thì (chứa số tiền nợ chính xác và nội dung chuyển khoản tự động).
+   - Sinh viên dùng ứng dụng ngân hàng hoặc ví điện tử bất kỳ quét mã để thanh toán.
+   - Nhân viên có thể bấm **"📋 Sao chép STK"**, **"📋 Sao chép nội dung"**, **"💾 Lưu ảnh QR"** hoặc bấm **"✅ Xác nhận đã thu tiền"** để tự động chuyển hóa đơn sang `Đã thanh toán (Paid)` ngay tại chỗ.
+4. **Thu tiền hóa đơn thủ công (`Thu tiền (Đã thanh toán)`)**:
+   - Khi phòng nộp tiền mặt trực tiếp: Chọn hóa đơn và bấm **"Thu tiền (Đã thanh toán)"**.
    - Hóa đơn chuyển trạng thái sang `Paid`, số tiền thu được tự động hạch toán vào Doanh thu tháng trên Dashboard.
-4. **Xuất sổ hóa đơn ra Excel (`📊 Xuất Excel`)**:
+5. **Xuất sổ hóa đơn ra Excel (`📊 Xuất Excel`)**:
    - Bấm nút **"📊 Xuất Excel"** trên thanh công cụ.
    - Lưu tệp `DanhSachHoaDon_yyyyMMdd_HHmmss.xlsx` với đầy đủ chi tiết: Mã HĐ, Phòng, Tháng/Năm, Tiền phòng, Chỉ số & Tiền điện, Chỉ số & Tiền nước, Phụ phí và Tổng tiền.
 
@@ -489,6 +494,78 @@ Hệ thống hỗ trợ xuất dữ liệu ra hai định dạng chuẩn mực p
 
 ---
 
+### 3.12. Hướng Dẫn Cấu Hình Ngân Hàng & Thanh Toán VietQR Động (NAPAS 247 & EMVCo)
+
+Phân hệ **Thanh toán VietQR động** số hóa toàn diện quy trình thu tiền phòng và dịch vụ tại ký túc xá, hỗ trợ sinh viên quét mã thanh toán không chạm tiện lợi qua mọi ứng dụng ngân hàng di động (Mobile Banking) hoặc ví điện tử (MoMo, ZaloPay, Viettel Money), đồng thời giúp thủ quỹ lễ tân đối soát tức thì và xác nhận thu tiền nhanh chóng:
+
+#### 1. Nguyên Tắc Hoạt Động & Chuẩn Kỹ Thuật:
+- **Chuẩn thanh toán quốc gia**: Tuân thủ tiêu chuẩn VietQR của NAPAS và đặc tả kỹ thuật thanh toán mã phản hồi nhanh quốc tế **EMVCo QR Code Specification**.
+- **Sinh chuỗi Tag-Length-Value (TLV) & Checksum CRC-16 100% Offline**: Ứng dụng tự động tổng hợp các trường dữ liệu tiêu chuẩn (Tag 00 Payload Format, Tag 01 Point of Initiation Method = 12 Dynamic QR, Tag 38 Merchant Account Information chứa Napas GUID `A000000727` & Service Code `QRIBFTTA`, Tag 53 Tiền tệ VNĐ `704`, Tag 54 Số tiền hóa đơn, Tag 58 Quốc gia `VN`, Tag 62 Nội dung chuyển khoản chuẩn hóa, Tag 63 Checksum CRC-16/CCITT-FALSE). Toàn bộ quá trình sinh chuỗi và tính mã kiểm tra CRC-16 (đa thức `0x1021`, khởi tạo `0xFFFF`) diễn ra hoàn toàn offline trên máy tính, đảm bảo an toàn tuyệt đối và hoạt động ngay cả khi mất kết nối mạng Internet.
+- **Sinh ảnh mã QR đa phương thức**: Hỗ trợ sinh ảnh Bitmap/PNG cục bộ độ nét cao với thư viện `QRCoder` (`PngByteQRCode`) và URL QuickLink online qua máy chủ VietQR API (`img.vietqr.io`).
+
+---
+
+#### 2. Quy Trình 3 Bước Vận Hành Thực Tế:
+
+##### Bước 1: Thiết Lập Tài Khoản Ngân Hàng Thụ Hưởng Trong Tab "Cài Đặt Hệ Thống"
+*(Thao tác dành cho Quản trị viên `Admin` trước khi bắt đầu thu phí)*:
+1. Đăng nhập hệ thống với tài khoản Quản trị viên (`admin`).
+2. Nhấp chọn phân hệ **"⚙️ Cài đặt"** trên thanh menu điều hướng bên trái.
+3. Chuyển sang thẻ **"Tài Khoản Ngân Hàng (VietQR)"**.
+4. Thiết lập các thông số tài khoản thụ hưởng của Ký túc xá:
+   - **Ngân hàng thụ hưởng**: Chọn ngân hàng từ danh mục thả xuống (ComboBox) tích hợp sẵn hơn 40 ngân hàng thương mại Việt Nam (Vietcombank, MBBank, BIDV, Techcombank, VietinBank, ACB, TPBank, VPBank, Agribank, HDBank,...). Hệ thống tự động điền mã định danh ngân hàng (Napas BIN 6 chữ số) tương ứng.
+   - **Số tài khoản ngân hàng**: Nhập số tài khoản thanh toán chính thức của KTX.
+   - **Tên chủ tài khoản**: Nhập tên đơn vị hoặc người thụ hưởng (viết hoa không dấu hoặc có dấu chuẩn mực, ví dụ: `BAN QUAN LY KTX TRUONG DAI HOC`).
+   - **Mẫu hiển thị mã QR (Template)**: Chọn một trong các mẫu giao diện mã QR:
+     * `compact` (Khuyến nghị): Mẫu thẻ rút gọn hiện đại bao gồm mã QR, logo ngân hàng và thông tin cơ bản.
+     * `compact2`: Mẫu thẻ rút gọn nền sáng tối giản.
+     * `qr_only`: Chỉ hiển thị khung mã QR.
+     * `print`: Mẫu tối ưu độ tương phản phục vụ in ấn biên lai giấy.
+   - **Tiền tố nội dung chuyển khoản**: Nhập tiền tố nhận diện giao dịch (mặc định: `KTX`). Khi tạo giao dịch cho từng hóa đơn, nội dung chuyển khoản tự động có định dạng: `[TiềnTố] [MãHóaĐơn] [TênSinhViên]` (ví dụ: `KTX HD20261001 NGUYEN VAN A`).
+   - **Kích hoạt tính năng VietQR (`IsEnabled`)**: Tích chọn để bật tính năng sinh mã QR trong toàn hệ thống.
+5. **Kiểm tra thử nghiệm mã QR**:
+   - Nhấn nút **"🔍 Kiểm tra & Xem trước mã QR"**.
+   - Hệ thống tự động tạo mã QR mẫu với số tiền thử nghiệm 100.000 đ và hiển thị hình ảnh xem trước ngay trên màn hình. Quản trị viên có thể dùng ứng dụng ngân hàng trên điện thoại quét thử để kiểm chứng độ chính xác của số tài khoản và tên chủ thụ hưởng.
+6. **Lưu cấu hình**:
+   - Nhấn nút **"💾 Lưu cấu hình ngân hàng"**.
+   - Cấu hình được lưu bền vững vào tệp cấu hình JSON `banksettings.json` và đồng bộ tức thì vào bộ nhớ ứng dụng.
+
+##### Bước 2: Quét Mã VietQR Tại Quầy Lễ Tân Trong Màn Hình "Hóa Đơn Tiền Phòng"
+*(Thao tác tiếp đón sinh viên đóng tiền tại văn phòng KTX)*:
+1. Mở phân hệ **"💵 Hóa đơn"** trên thanh điều hướng.
+2. Tìm kiếm và chọn hóa đơn cần thu tiền (trạng thái *Chưa thanh toán*).
+3. Nhấn nút **"💳 Quét VietQR"** trên thanh công cụ phía trên (hoặc nhấp vào nút biểu tượng QR trên dòng hóa đơn trong bảng).
+4. Cửa sổ **"Thanh toán hóa đơn qua VietQR"** (`VietQrDialogWindow`) xuất hiện trang trọng:
+   - **Ảnh mã QR trung tâm**: Mã VietQR động được kết xuất tức thì với kích thước lớn, độ phân giải cao và sắc nét.
+   - **Bảng thông tin thanh toán chi tiết**:
+     * Ngân hàng thụ hưởng & Số tài khoản KTX.
+     * Tên chủ tài khoản.
+     * **Số tiền thanh toán**: Chính xác 100% theo tổng tiền hóa đơn (định dạng tiền tệ VNĐ in đậm nổi bật).
+     * **Nội dung chuyển khoản**: Điền sẵn mã hóa đơn và tên sinh viên, giúp kế toán đối soát giao dịch ngân hàng một cách tự động.
+5. **Tiện ích thao tác nhanh tại quầy**:
+   - **Quét mã tức thì**: Sinh viên mở ứng dụng ngân hàng bất kỳ trên điện thoại di động và hướng camera quét mã QR trên màn hình lễ tân. Mọi thông tin (STK, người nhận, số tiền, nội dung CK) sẽ tự động được điền chuẩn xác trên ứng dụng ngân hàng của sinh viên, triệt tiêu hoàn toàn nguy cơ chuyển nhầm tài khoản hoặc sai lệch số tiền.
+   - **📋 Sao chép số tài khoản**: Nhấn nút để sao chép nhanh STK vào bộ nhớ đệm máy tính.
+   - **📋 Sao chép nội dung**: Nhấn nút để sao chép nhanh cú pháp chuyển khoản vào bộ nhớ tạm.
+   - **💾 Lưu ảnh QR (PNG)**: Lưu tệp ảnh PNG của mã QR ra máy tính để gửi cho sinh viên qua Zalo, Messenger hoặc in thẻ để bàn.
+6. **Xác nhận thanh toán tại chỗ**:
+   - Sau khi sinh viên hoàn tất chuyển khoản và thủ quỹ xác nhận tiền đã vào tài khoản KTX, nhấn nút **"✅ Xác nhận đã thu tiền"**.
+   - Hộp thoại xác nhận an toàn hiển thị để chống nhấn nhầm: *"Bạn có chắc chắn muốn xác nhận thu tiền cho hóa đơn [Mã HD]?"*.
+   - Nhấn **Đồng ý**: Trạng thái hóa đơn lập tức chuyển thành `Đã thanh toán (Paid)`, số tiền tự động hạch toán vào doanh thu tháng của KTX, và cửa sổ quét mã tự động đóng lại.
+
+##### Bước 3: Xuất Phiếu Thu PDF Có Mã QR & Gửi Email Tự Động Kèm Mã QR Cho Sinh Viên
+*(Thao tác gửi chứng từ và thông báo từ xa)*:
+1. **Xuất phiếu thu PDF có mã QR (`QuestPDF`)**:
+   - Khi chọn lệnh **"📄 In phiếu thu PDF"** từ danh sách hóa đơn, hệ thống tự động sinh khối thanh toán VietQR động đặt tại vị trí trang trọng trên phiếu thu A4.
+   - Phiếu thu PDF chứa mã QR sắc nét cùng khung thông tin tài khoản và hướng dẫn thanh toán chi tiết. Sinh viên hoặc phụ huynh khi nhận bản in giấy hoặc tệp PDF điện tử có thể mở ứng dụng ngân hàng quét mã trực tiếp để đóng tiền mà không cần đến văn phòng KTX.
+2. **Gửi email hóa đơn tự động kèm mã QR (`MailKit / SMTP`)**:
+   - Chọn hóa đơn và nhấn nút **"📧 Gửi email hóa đơn"**.
+   - Hệ thống tự động tạo thư điện tử HTML gửi tới địa chỉ email của sinh viên:
+     * Nội dung email hiển thị khối mã VietQR trực quan độ nét cao kèm thông tin tài khoản và số tiền cần đóng.
+     * Đính kèm tệp PDF phiếu thu tiền phòng đầy đủ chi tiết kỹ thuật.
+     * Giúp sinh viên ở xa hoặc phụ huynh dễ dàng thanh toán tiền phòng đúng hạn, giảm tải áp lực xếp hàng tại quầy tiếp đón đầu mỗi học kỳ.
+
+---
+
 ## 4. Các Lưu Ý Về An Toàn Dữ Liệu & Ràng Buộc Hệ Thống
 
 1. **Bảo mật và phân quyền**:
@@ -508,29 +585,30 @@ Hệ thống hỗ trợ xuất dữ liệu ra hai định dạng chuẩn mực p
 
 ## 5. Khung Kiểm Thử Tự Động & Đảm Bảo Chất Lượng (Headless UI E2E Testing & Unit Tests)
 
-Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **177/177 Tests Passing (100%)** qua cấu trúc kiểm thử 2 tầng chuyên sâu:
+Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **294/294 Tests Passing (100%)** qua cấu trúc kiểm thử 2 tầng chuyên sâu:
 
-### 5.1. Bộ Kiểm Thử Đơn Vị & Tích Hợp (171 Unit & Integration Tests)
+### 5.1. Bộ Kiểm Thử Đơn Vị & Tích Hợp (283 Unit & Integration Tests)
 - Được tổ chức tại dự án `tests/Dormitory.UnitTests/` sử dụng **xUnit**, **Moq**, **FluentAssertions** và **Microsoft.EntityFrameworkCore.InMemory**.
 - Kiểm tra toàn diện mọi tầng nghiệp vụ:
+  - **Dịch vụ thanh toán VietQR & Cấu hình ngân hàng (`VietQrServiceTests`, `BankSettingsServiceTests`, `VietQrBankDirectoryTests`, `VietQrDialogViewModelTests`)**: Kiểm tra chính xác thuật toán sinh chuỗi TLV EMVCo, tính toán checksum CRC-16/CCITT-FALSE, sinh mảng byte ảnh PNG offline với QRCoder, URL QuickLink, quản lý cấu hình ngân hàng thụ hưởng JSON, tra cứu 40+ mã Napas BIN, và toàn bộ hành vi ViewModel hộp thoại quét mã tại quầy.
   - **Dịch vụ báo cáo & phân tích (`ReportServiceTests`, `ReportDtoTests`, `ReportHistoryTests`)**: Kiểm tra trích xuất số liệu 4 loại báo cáo, tính toán KPI, xuất Excel ClosedXML đa sheet, xuất PDF QuestPDF chuẩn A4 và quản lý vòng đời tệp báo cáo.
   - **ViewModels báo cáo (`ReportListViewModelTests`, `ReportGenerateDialogViewModelTests`)**: Kiểm thử logic bộ lọc, phân trang, lệnh mở/tải/xóa báo cáo và xác thực tham số form tạo báo cáo.
-  - **Dịch vụ vi phạm & email (`ViolationServiceTests`, `EmailServiceTests`)**: Kiểm tra lập biên bản, phân loại kỷ luật, giải quyết vi phạm và gửi email hóa đơn SMTP kèm tệp PDF đính kèm.
+  - **Dịch vụ vi phạm & email (`ViolationServiceTests`, `EmailServiceTests`)**: Kiểm tra lập biên bản, phân loại kỷ luật, giải quyết vi phạm và gửi email hóa đơn SMTP kèm khối mã VietQR và tệp PDF đính kèm.
   - **Dịch vụ thiết bị (`EquipmentServiceTests`)**: Xác thực vòng đời thêm, sửa, xóa, tìm kiếm, kiểm tra số lượng tồn và bắt ngoại lệ khi phòng không tồn tại.
-  - **Dịch vụ xuất PDF hóa đơn (`PdfExportServiceTests`)**: Kiểm tra sinh dữ liệu byte PDF đầy đủ từ hóa đơn và hợp đồng.
+  - **Dịch vụ xuất PDF hóa đơn (`PdfExportServiceTests`)**: Kiểm tra sinh dữ liệu byte PDF đầy đủ từ hóa đơn và hợp đồng kèm khối mã thanh toán VietQR động.
   - **Dịch vụ hóa đơn & tính toán (`BillCalculationTests`)**: Tính toán chính xác điện, nước lũy tiến, phụ phí vệ sinh/internet và hạn nộp tiền.
   - **Dịch vụ phòng & hợp đồng (`RoomServiceTests`, `ContractServiceTests`)**: Ràng buộc sĩ số, phân bổ phòng theo giới tính, gia hạn và thanh lý hợp đồng.
   - **Dịch vụ CSDL & an toàn hệ thống (`DatabaseServiceTests`)**: Sao lưu SQLite Online Backup, khôi phục CSDL an toàn, kiểm tra tính toàn vẹn `PRAGMA integrity_check`.
   - **Bảo mật & mã hóa (`PasswordHasherTests`)**: Xác thực thuật toán băm mật khẩu an toàn BCrypt.
 
-### 5.2. Bộ Kiểm Thử Giao Diện Headless E2E Tự Động (6 Avalonia Headless UI Journeys)
+### 5.2. Bộ Kiểm Thử Giao Diện Headless E2E Tự Động (11 Avalonia Headless UI Journeys)
 - Được tổ chức tại dự án `tests/Dormitory.E2ETests/` sử dụng công nghệ **`Avalonia.Headless.XUnit`**.
 - Khung kiểm thử giao diện headless cho phép khởi chạy và tương tác toàn diện với ứng dụng Avalonia UI mà không cần màn hình hiển thị thật (Display Server) hay card đồ họa GPU, bảo đảm chạy ổn định 100% trên cả máy phát triển và môi trường CI/CD GitHub Actions Ubuntu.
-- **6 Hành trình người dùng trọng yếu (Critical User Journeys)**:
+- **11 Hành trình người dùng trọng yếu (Critical User Journeys)**:
   1. **Hành trình 1 - Xác thực & Điều hướng toàn hệ thống (`AuthAndNavigationE2ETests`)**:
      - Khởi chạy màn hình đăng nhập `LoginView`.
      - Nhập thông tin tài khoản Quản trị viên `admin` / `Admin@123456`.
-     - Xác thực thành công và điều hướng tuần tự qua tất cả 10 phân hệ: *Dashboard, Phòng ở, Thiết bị, Sinh viên, Hợp đồng, Hóa đơn, Nhân viên, Kỷ luật & Vi phạm, Báo cáo & Thống kê, Cài đặt hệ thống*.
+     - Xác thực thành công và điều hướng tuần tự qua tất cả các phân hệ: *Dashboard, Phòng ở, Thiết bị, Sinh viên, Hợp đồng, Hóa đơn, Nhân viên, Kỷ luật & Vi phạm, Báo cáo & Thống kê, Cài đặt hệ thống*.
      - Kiểm tra dữ liệu nạp đầy đủ trên từng View và không xuất hiện ngoại lệ UI.
   2. **Hành trình 2 - Vòng đời quản lý thiết bị phòng (`EquipmentManagementE2ETests`)**:
      - Điều hướng tới phân hệ Quản lý tài sản `EquipmentListView`.
@@ -553,17 +631,36 @@ Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **177/177 Tes
      - Mở hộp thoại `ReportGenerateDialogWindow`.
      - Chọn loại báo cáo, định dạng và khoảng thời gian.
      - Xác nhận sinh báo cáo -> Kiểm tra gọi service thành công, sinh tệp và nạp lại danh sách.
+  7. **Hành trình 7 - Quản lý cấu hình ngân hàng & Thử nghiệm QR (`VietQrPaymentE2ETests - Should_Manage_Bank_Settings_And_Test_Qr_Generation_In_SystemSettings`)**:
+     - Nạp cấu hình tài khoản ngân hàng trong `SystemSettingsViewModel`.
+     - Thay đổi ngân hàng thụ hưởng (chuyển sang BIDV, đổi số tài khoản), lưu cấu hình thành công.
+     - Kích hoạt lệnh thử nghiệm sinh mã QR và xác minh hình ảnh `PreviewQrBitmap` hiển thị chuẩn xác.
+  8. **Hành trình 8 - Cửa sổ quét mã VietQR tại quầy & Xác nhận thu tiền (`VietQrPaymentE2ETests - Should_Initialize_VietQr_Dialog_And_Confirm_Payment_Successfully`)**:
+     - Khởi tạo `VietQrDialogViewModel` với hóa đơn chưa thanh toán.
+     - Xác minh Payload EMVCo, số tiền hóa đơn, nội dung chuyển khoản và ảnh QR Bitmap.
+     - Kiểm tra lệnh sao chép STK và lưu ảnh QR PNG ra tệp qua `IFileService`.
+     - Kích hoạt lệnh `ConfirmPaymentCommand`: Xác nhận thu tiền thành công, đóng hộp thoại và kiểm tra trạng thái hóa đơn trong CSDL chuyển thành `Paid`.
+  9. **Hành trình 9 - Xử lý an toàn với hóa đơn đã thanh toán (`VietQrPaymentE2ETests - Should_Handle_Already_Paid_Bill_In_VietQr_Dialog`)**:
+     - Mở hộp thoại VietQR với hóa đơn đã ở trạng thái `Paid`.
+     - Xác minh cờ `IsPaid = true`, `CanConfirmPayment = false` và không cho phép xác nhận thu tiền trùng lặp.
+  10. **Hành trình 10 - Xử lý an toàn khi tắt tính năng VietQR (`VietQrPaymentE2ETests - Should_Handle_Disabled_VietQr_Settings_Gracefully`)**:
+      - Đặt cấu hình `IsEnabled = false`.
+      - Xác minh `PdfExportService` và `EmailService` vẫn xuất bản phiếu thu PDF và gửi thư bình thường mà không sinh khối ảnh VietQR (hiển thị thông tin chuyển khoản dạng văn bản).
+      - Xác minh `VietQrDialogViewModel` hiển thị thông báo tính năng đang tắt một cách an toàn.
+  11. **Hành trình 11 - Kích hoạt lệnh mở hộp thoại VietQR từ danh sách hóa đơn (`VietQrPaymentE2ETests - Should_Trigger_OpenVietQrDialogCommand_From_BillListViewModel`)**:
+      - Chọn hóa đơn trên màn hình danh sách `BillListView`.
+      - Kích hoạt `OpenVietQrDialogCommand` và kiểm tra cửa sổ `VietQrDialogWindow` được mở lên chuẩn xác thông qua `IDialogService`.
 
 ### 5.3. Lệnh Chạy Toàn Bộ Kiểm Thử
-Để thực thi toàn bộ 177 bài kiểm thử của hệ thống:
+Để thực thi toàn bộ 294 bài kiểm thử của hệ thống:
 ```bash
 dotnet test Dormitory.sln -c Release --verbosity normal
 ```
 Kết quả:
 ```
-Passed!  - Failed: 0, Passed: 171, Skipped: 0, Total: 171 (Dormitory.UnitTests.dll)
-Passed!  - Failed: 0, Passed:   6, Skipped: 0, Total:   6 (Dormitory.E2ETests.dll)
-Test Run Successful. Total tests: 177. Passed: 177. (100% Pass)
+Passed!  - Failed: 0, Passed: 283, Skipped: 0, Total: 283 (Dormitory.UnitTests.dll)
+Passed!  - Failed: 0, Passed:  11, Skipped: 0, Total:  11 (Dormitory.E2ETests.dll)
+Test Run Successful. Total tests: 294. Passed: 294. (100% Pass)
 ```
 
 

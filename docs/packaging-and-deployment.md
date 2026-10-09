@@ -1,6 +1,6 @@
 # Hướng Dẫn Đóng Gói Và Triển Khai Đa Nền Tảng (Cross-Platform Packaging & Deployment)
 
-Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị viên Ký túc xá và Lập trình viên để đóng gói, phân phối và triển khai ứng dụng **Dormitory Manager v2.3.0** trên ba nền tảng hệ điều hành: **macOS**, **Windows** và **Linux**.
+Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị viên Ký túc xá và Lập trình viên để đóng gói, phân phối và triển khai ứng dụng **Dormitory Manager v2.4.0** trên ba nền tảng hệ điều hành: **macOS**, **Windows** và **Linux**.
 
 ---
 
@@ -11,8 +11,9 @@ Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị v
 - **Avalonia UI 11.2.5**: Khung giao diện đa nền tảng kết xuất đồ họa trực tiếp qua SkiaSharp.
 - **SQLite & EF Core 8**: Cơ sở dữ liệu nhúng cục bộ độc lập, lưu trữ dữ liệu tại file `dormitory.db`.
 - **ClosedXML 0.104.2**: Thư viện kết xuất báo cáo bảng tính Excel đa tầng (`.xlsx`) nhiều worksheets, hỗ trợ định dạng số liệu kế toán VNĐ, tỷ lệ phần trăm (%) và tự động căn chỉnh độ rộng cột.
-- **QuestPDF 2024.12.3**: Thư viện kết xuất tài liệu PDF phiếu thu và báo cáo hành chính chuẩn in ấn A4 (sử dụng giấy phép cộng đồng `CommunityLicense`), hỗ trợ font Unicode tiếng Việt, tự động dàn trang tối ưu không phụ thuộc vào công cụ ngoài.
-- **MailKit 4.8.0 & MimeKit**: Thư viện gửi email thông báo hóa đơn tự động kèm tệp PDF đính kèm qua máy chủ SMTP với mã hóa SSL/TLS.
+- **QuestPDF 2024.12.3**: Thư viện kết xuất tài liệu PDF phiếu thu và báo cáo hành chính chuẩn in ấn A4 (sử dụng giấy phép cộng đồng `CommunityLicense`), hỗ trợ font Unicode tiếng Việt, tích hợp khối thanh toán VietQR động, tự động dàn trang tối ưu.
+- **QRCoder 1.6.0**: Động cơ sinh ảnh mã QR offline chuẩn PNG (`PngByteQRCode`) phục vụ hiển thị trên giao diện lễ tân và nhúng tài liệu phiếu thu PDF.
+- **MailKit 4.8.0 & MimeKit**: Thư viện gửi email thông báo hóa đơn tự động kèm khối thông tin VietQR và tệp PDF đính kèm qua máy chủ SMTP với mã hóa SSL/TLS.
 - **Avalonia.Headless.XUnit 11.2.5**: Khung kiểm thử giao diện người dùng tự động (Headless UI E2E) chạy độc lập không cần Display Server hay GPU, tích hợp trơn tru trên môi trường CI/CD.
 
 ---
@@ -47,19 +48,19 @@ Dormitory-Manager/
 │   ├── macos-arm64/                              # macOS Apple Silicon (M1/M2/M3/M4)
 │   │   ├── publish/                              # Tệp nhị phân thô
 │   │   ├── DormitoryManager.app/                 # macOS App Bundle chuẩn
-│   │   └── DormitoryManager-v2.3.0-macOS-arm64.dmg # Tệp ảnh đĩa cài đặt DMG
+│   │   └── DormitoryManager-v2.4.0-macOS-arm64.dmg # Tệp ảnh đĩa cài đặt DMG
 │   ├── macos-x64/                                # macOS Intel x86_64
 │   │   ├── DormitoryManager.app/
-│   │   └── DormitoryManager-v2.3.0-macOS-x64.dmg
+│   │   └── DormitoryManager-v2.4.0-macOS-x64.dmg
 │   ├── windows-x64/                              # Windows 64-bit (x64)
 │   │   ├── Dormitory.Desktop.exe                 # Tệp chạy đơn (Single-File Executable)
 │   │   ├── appsettings.json                      # Cấu hình hệ thống
-│   │   └── DormitoryManager-v2.3.0-Windows-x64.zip # Tệp nén ZIP phân phối
+│   │   └── DormitoryManager-v2.4.0-Windows-x64.zip # Tệp nén ZIP phân phối
 │   └── linux-x64/                                # Linux 64-bit (x64)
 │       ├── Dormitory.Desktop                     # Tệp chạy nhị phân Linux
 │       ├── appsettings.json                      # Cấu hình hệ thống
 │       ├── *.so                                  # Native libraries (libSkiaSharp, libe_sqlite3)
-│       └── DormitoryManager-v2.3.0-Linux-x64.tar.gz # Tệp nén lưu trữ TAR.GZ
+│       └── DormitoryManager-v2.4.0-Linux-x64.tar.gz # Tệp nén lưu trữ TAR.GZ
 ```
 
 ---
@@ -236,23 +237,23 @@ on:
 1. **`test-and-verify`** *(Continuous Integration - chạy trên Ubuntu)*:
    - Checkout mã nguồn và cài đặt .NET 8 SDK.
    - Biên dịch toàn bộ Solution ở chế độ Release: `dotnet build Dormitory.sln -c Release`.
-   - Chạy 100% bộ kiểm thử tự động: `dotnet test Dormitory.sln -c Release` (**177/177 tests pass 100%**: 171 Unit Tests + 6 Avalonia Headless UI E2E Journeys).
+   - Chạy 100% bộ kiểm thử tự động: `dotnet test Dormitory.sln -c Release` (**294/294 tests pass 100%**: 283 Unit Tests + 11 Avalonia Headless UI E2E Journeys).
    - Đóng vai trò là Quality Gate chặn lỗi trước khi bất kỳ tác vụ đóng gói nào được kích hoạt.
 
 2. **`package-macos`** *(Continuous Deployment - chạy trên macos-14 Apple Silicon)*:
    - Cấp quyền thực thi và gọi `scripts/package/build-macos.sh arm64`.
-   - Tạo macOS App Bundle `DormitoryManager.app` và đóng gói thành tệp `DormitoryManager-v2.3.0-macOS-arm64.dmg`.
+   - Tạo macOS App Bundle `DormitoryManager.app` và đóng gói thành tệp `DormitoryManager-v2.4.0-macOS-arm64.dmg`.
    - Tải lên GitHub Artifacts (`dormitory-manager-macos-arm64`).
 
 3. **`package-windows`** *(Continuous Deployment - chạy trên Ubuntu)*:
    - Cài đặt tiện ích `zip` và thực thi `scripts/package/build-windows.sh win-x64`.
    - Biên dịch ứng dụng Single-File Executable `Dormitory.Desktop.exe` nhúng sẵn `AppIcon.ico`.
-   - Đóng gói cùng `appsettings.json` thành tệp `DormitoryManager-v2.3.0-Windows-x64.zip`.
+   - Đóng gói cùng `appsettings.json` thành tệp `DormitoryManager-v2.4.0-Windows-x64.zip`.
    - Tải lên GitHub Artifacts (`dormitory-manager-windows-x64`).
 
 4. **`package-linux`** *(Continuous Deployment - chạy trên Ubuntu)*:
    - Thực thi `scripts/package/build-linux.sh linux-x64` tạo nhị phân self-contained kèm thư viện native `libSkiaSharp.so`, `libe_sqlite3.so`.
-   - Nén thành tệp lưu trữ `DormitoryManager-v2.3.0-Linux-x64.tar.gz`.
+   - Nén thành tệp lưu trữ `DormitoryManager-v2.4.0-Linux-x64.tar.gz`.
    - Tải lên GitHub Artifacts (`dormitory-manager-linux-x64`).
 
 5. **`create-release`** *(Automated GitHub Release - kích hoạt khi đẩy Git Tag `v*`)*:
@@ -268,14 +269,42 @@ on:
 Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản cài đặt chính thức tại:
 👉 [**GitHub Releases: nguyendong47/Dormitory-Manager/releases**](https://github.com/nguyendong47/Dormitory-Manager/releases)
 
-- **macOS (M1/M2/M3/M4 Apple Silicon)**: Tải `DormitoryManager-v2.3.0-macOS-arm64.dmg` (~85MB) -> Mở tệp DMG và kéo ứng dụng vào thư mục `Applications`.
-- **macOS (Intel Core x86_64)**: Tải `DormitoryManager-v2.3.0-macOS-x64.dmg` (~88MB) -> Thao tác tương tự.
-- **Windows (10/11 64-bit)**: Tải `DormitoryManager-v2.3.0-Windows-x64.zip` (~95MB) -> Giải nén ra thư mục bất kỳ và nhấp đúp vào `Dormitory.Desktop.exe` để sử dụng ngay (Zero Setup).
-- **Linux (Ubuntu/Debian/Fedora x64)**: Tải `DormitoryManager-v2.3.0-Linux-x64.tar.gz` (~98MB) -> Giải nén và chạy `./Dormitory.Desktop`.
+- **macOS (M1/M2/M3/M4 Apple Silicon)**: Tải `DormitoryManager-v2.4.0-macOS-arm64.dmg` (~85MB) -> Mở tệp DMG và kéo ứng dụng vào thư mục `Applications`.
+- **macOS (Intel Core x86_64)**: Tải `DormitoryManager-v2.4.0-macOS-x64.dmg` (~88MB) -> Thao tác tương tự.
+- **Windows (10/11 64-bit)**: Tải `DormitoryManager-v2.4.0-Windows-x64.zip` (~95MB) -> Giải nén ra thư mục bất kỳ và nhấp đúp vào `Dormitory.Desktop.exe` để sử dụng ngay (Zero Setup).
+- **Linux (Ubuntu/Debian/Fedora x64)**: Tải `DormitoryManager-v2.4.0-Linux-x64.tar.gz` (~98MB) -> Giải nén và chạy `./Dormitory.Desktop`.
 
 ---
 
-## 9. Ghi Chú Phát Hành Phiên Bản v2.3.0 (Release Notes)
+## 9. Ghi Chú Phát Hành Phiên Bản v2.4.0 (Release Notes - Giai Đoạn 8)
+
+### 🚀 Tính Năng Mới Nổi Bật:
+1. **Tích Hợp Thanh Toán VietQR Động Chuẩn NAPAS 247 & EMVCo**:
+   - **Sinh chuỗi TLV & Checksum CRC-16/CCITT-FALSE 100% Offline**:
+     * Xây dựng chuỗi dữ liệu mã QR chuẩn EMVCo bao gồm Tag 00, Tag 01 (Dynamic QR = 12), Tag 38 (Napas GUID `A000000727`, Bank BIN, STK, Service Code `QRIBFTTA`), Tag 53 (704 VNĐ), Tag 54 (Số tiền nợ), Tag 58 (VN), Tag 62 (Nội dung chuyển khoản chuẩn hóa) và Tag 63 (Mã kiểm tra CRC-16).
+     * Thuật toán tính checksum CRC-16/CCITT-FALSE (đa thức `0x1021`, giá trị khởi tạo `0xFFFF`) xử lý trực tiếp trên máy trạm với độ trễ < 1ms, không yêu cầu kết nối mạng hay dịch vụ bên ngoài.
+   - **Sinh ảnh mã QR đa phương thức**:
+     * Động cơ sinh ảnh offline bằng thư viện `QRCoder` (`PngByteQRCode`), tạo mảng byte tệp PNG độ phân giải cao phục vụ hiển thị UI và nhúng tài liệu.
+     * Hỗ trợ URL QuickLink trực tuyến qua cổng API `img.vietqr.io` với các giao diện mẫu (`compact`, `compact2`, `qr_only`, `print`).
+2. **Cửa Sổ Quét Mã VietQR Tức Thì Tại Quầy Lễ Tân (`VietQrDialogWindow`)**:
+   - Giao diện Avalonia UI hiện đại hiển thị mã QR cỡ lớn, đầy đủ thông tin số tiền, tên chủ tài khoản, ngân hàng thụ hưởng và nội dung chuyển khoản.
+   - Hỗ trợ các tiện ích nhanh: **Sao chép số tài khoản**, **Sao chép nội dung chuyển khoản**, **Lưu ảnh mã QR PNG ra máy tính**.
+   - Nút **"✅ Xác nhận đã thu tiền"**: Chuyển trạng thái hóa đơn sang `Đã thanh toán (Paid)`, tự động hạch toán doanh thu và đóng cửa sổ tức thì có hộp thoại xác nhận an toàn.
+3. **Quản Lý Cấu Hình Ngân Hàng Thụ Hưởng Linh Hoạt Trong Cài Đặt Hệ Thống**:
+   - Tích hợp danh mục tĩnh 40+ ngân hàng thương mại Việt Nam chuẩn Napas BIN (`VietQrBankDirectory`).
+   - Cung cấp giao diện quản trị trong tab **"Cài đặt"**: Chọn ngân hàng, số tài khoản, tên chủ tài khoản, mẫu hiển thị QR, tiền tố nội dung CK và công tắc bật/tắt toàn hệ thống (`IsEnabled`).
+   - Chức năng **"Kiểm tra & Xem trước mã QR"**: Sinh ảnh QR thử nghiệm 100.000 đ để kiểm chứng trước khi vận hành thực tế.
+   - Lưu trữ bền vững dữ liệu cấu hình vào tệp JSON `banksettings.json`.
+4. **Tích Hợp Sâu Vào Phiếu Thu PDF QuestPDF & Email Thông Báo MailKit**:
+   - **Phiếu thu PDF QuestPDF**: Tự động kết xuất khối thanh toán VietQR (mã QR PNG sắc nét + thông tin chuyển khoản) tại góc phiếu thu in ấn A4.
+   - **Email thông báo MailKit**: Tự động chèn khối thông tin VietQR trực quan trong email HTML và đính kèm tệp PDF phiếu thu chứa mã QR.
+5. **Nâng Cấp Bộ Kiểm Thử Tự Động Đạt 294 Tests (100% Pass)**:
+   - 283 Unit & Integration Tests bao phủ 100% thuật toán VietQR EMVCo, checksum CRC-16, QRCoder, cấu hình ngân hàng JSON và các phân hệ nghiệp vụ.
+   - 11 Avalonia Headless UI E2E Journeys kiểm thử toàn diện hành trình người dùng không cần màn hình hiển thị.
+
+---
+
+## 10. Ghi Chú Phát Hành Phiên Bản v2.3.0 (Release Notes - Giai Đoạn 7)
 
 ### 🚀 Tính Năng Mới Nổi Bật:
 1. **Phân Hệ Báo Cáo & Phân Tích Tổng Hợp KTX (Reporting & Analytics)**:
