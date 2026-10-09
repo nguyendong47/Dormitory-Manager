@@ -83,6 +83,14 @@ public partial class VietQrDialogViewModel : ViewModelBase
         {
             StatusMessage = "Đang tải cấu hình ngân hàng và sinh mã QR...";
             var bankSettings = await _bankSettingsService.GetBankSettingsAsync();
+            if (!bankSettings.IsEnabled)
+            {
+                Payload = null;
+                QrBitmap = null;
+                StatusMessage = "Tính năng thanh toán VietQR hiện đang tắt trong Cấu hình hệ thống.";
+                return;
+            }
+
             Payload = _vietQrService.GeneratePayloadForBill(Bill, StudentName, bankSettings);
 
             if (Payload != null && !string.IsNullOrWhiteSpace(Payload.EmvCoPayload))

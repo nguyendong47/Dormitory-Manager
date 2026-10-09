@@ -1,11 +1,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using Dormitory.Application.DTOs;
 using Dormitory.Application.Interfaces;
 using Dormitory.Core.Enums;
 using Dormitory.Desktop.ViewModels;
 using Dormitory.Desktop.Views;
+using Dormitory.Infrastructure.Services;
 using FluentAssertions;
 using Xunit;
 
@@ -117,6 +120,169 @@ public class VietQrPaymentE2ETests : IDisposable
         await settingsVm.TestGenerateQrCommand.ExecuteAsync(null);
         settingsVm.PreviewQrBitmap.Should().NotBeNull("Ảnh xem trước mã QR phải được sinh");
         settingsVm.BankStatusMessage.Should().Contain("100.000 đ");
+    }
+
+    [AvaloniaFact]
+    public async Task Should_Handle_Already_Paid_Bill_In_VietQr_Dialog()
+    {
+        // 1. Lấy danh sách hóa đơn và đảm bảo có hóa đơn trạng thái Paid
+        var billListVm = _fixture.CreateBillListViewModel();
+        await billListVm.LoadBillsCommand.ExecuteAsync(null);
+
+        var billService = _fixture.GetService<IBillService>();
+        var paidBill = billListVm.Bills.FirstOrDefault(b => b.Status == BillStatus.Paid);
+        if (paidBill == null)
+        {
+            var unpaidBill = billListVm.Bills.First(b => b.Status == BillStatus.Unpaid);
+            await billService.MarkAsPaidAsync(unpaidBill.Id);
+            await billListVm.LoadBillsCommand.ExecuteAsync(null);
+            paidBill = billListVm.Bills.First(b => b.Id == unpaidBill.Id);
+        }
+
+        paidBill.Should().NotBeNull();
+        paidBill!.Status.Should().Be(BillStatus.Paid);
+
+        // 2. Khởi tạo VietQrDialogViewModel với hóa đơn đã thanh toán
+        var bankSettingsService = _fixture.GetService<IBankSettingsService>();
+        var vietQrService = _fixture.GetService<IVietQrService>();
+
+        var qrDialogVm = new VietQrDialogViewModel(
+            paidBill,
+            "Nguyen Van Test",
+            bankSettingsService,
+            vietQrService,
+            billService,
+            _fixture.FileService,
+            _fixture.DialogService);
+
+        await qrDialogVm.InitializeAsync();
+
+        // 3. Xác minh IsPaid == true, CanConfirmPayment == false
+        qrDialogVm.IsPaid.Should().BeTrue("Hóa đơn đã thanh toán thì IsPaid phải là true");
+        qrDialogVm.CanConfirmPayment.Should().BeFalse("Hóa đơn đã thanh toán thì CanConfirmPayment phải là false");
+        qrDialogVm.StatusMessage.Should().Contain("đã được thanh toán", "Thông báo trạng thái phải nêu rõ hóa đơn đã được thanh toán");
+
+        // 4. Cố tình gọi ConfirmPaymentCommand và xác minh không thay đổi trạng thái
+        bool dialogClosed = false;
+        qrDialogVm.CloseAction = res => dialogClosed = true;
+
+        await qrDialogVm.ConfirmPaymentCommand.ExecuteAsync(null);
+
+        dialogClosed.Should().BeFalse("Không đóng hộp thoại khi gọi lệnh với hóa đơn đã thanh toán");
+        qrDialogVm.IsPaid.Should().BeTrue("Trạng thái IsPaid vẫn phải là true");
+        qrDialogVm.CanConfirmPayment.Should().BeFalse();
+
+        // Xác minh trạng thái trong CSDL không bị thay đổi
+        var billInDb = await billService.GetBillByIdAsync(paidBill.Id);
+        billInDb.Should().NotBeNull();
+        billInDb!.Status.Should().Be(BillStatus.Paid);
+    }
+
+    [AvaloniaFact]
+    public async Task Should_Handle_Disabled_VietQr_Settings_Gracefully()
+    {
+        var bankSettingsService = _fixture.GetService<IBankSettingsService>();
+        var pdfExportService = _fixture.GetService<IPdfExportService>();
+        var emailService = _fixture.GetService<IEmailService>();
+        var billService = _fixture.GetService<IBillService>();
+        var vietQrService = _fixture.GetService<IVietQrService>();
+
+        var originalSettings = await bankSettingsService.GetBankSettingsAsync();
+        var disabledSettings = new BankSettingsDto
+        {
+            BankBin = originalSettings.BankBin,
+            BankName = originalSettings.BankName,
+            BankShortName = originalSettings.BankShortName,
+            AccountNumber = originalSettings.AccountNumber,
+            AccountHolder = originalSettings.AccountHolder,
+            QrTemplate = originalSettings.QrTemplate,
+            TransferPrefix = originalSettings.TransferPrefix,
+            IsEnabled = false
+        };
+
+        try
+        {
+            // 1. Đổi cấu hình BankSettings.IsEnabled = false và lưu lại
+            await bankSettingsService.SaveBankSettingsAsync(disabledSettings);
+            var reloaded = await bankSettingsService.GetBankSettingsAsync();
+            reloaded.IsEnabled.Should().BeFalse("Cấu hình VietQR phải được lưu thành công với IsEnabled = false");
+
+            var allBills = await billService.GetAllBillsAsync();
+            var testBill = allBills.First();
+
+            // 2. Kiểm tra PdfExportService xử lý gracefully không sinh mã VietQR
+            var pdfBytes = await pdfExportService.GenerateBillReceiptPdfAsync(testBill.Id);
+            pdfBytes.Should().NotBeNullOrEmpty("PDF vẫn phải được tạo bình thường khi tắt tính năng VietQR");
+            pdfBytes.Length.Should().BeGreaterThan(1000);
+
+            // 3. Kiểm tra EmailService xử lý gracefully không sinh ảnh mã VietQR
+            var emailResult = await emailService.SendBillInvoiceEmailAsync(testBill.Id, "student.test@example.com", "Nguyen Van Test", pdfBytes);
+            emailResult.Success.Should().BeTrue("Gửi email vẫn phải thành công trong chế độ giả lập");
+            var emailConcrete = emailService as EmailService;
+            var emailHtml = emailConcrete?.LastGeneratedHtmlBody;
+            emailHtml.Should().NotBeNullOrWhiteSpace();
+            emailHtml.Should().NotContain("img.vietqr.io", "Email không được nhúng liên kết ảnh VietQR khi IsEnabled = false");
+            emailHtml.Should().Contain("THÔNG TIN CHUYỂN KHOẢN THANH TOÁN:", "Email phải hiển thị thông tin chuyển khoản bằng văn bản");
+
+            // 4. Kiểm tra VietQrDialogViewModel xử lý hoặc có thông báo tương ứng
+            var qrDialogVm = new VietQrDialogViewModel(
+                testBill,
+                "Nguyen Van Test",
+                bankSettingsService,
+                vietQrService,
+                billService,
+                _fixture.FileService,
+                _fixture.DialogService);
+
+            await qrDialogVm.InitializeAsync();
+            qrDialogVm.Payload.Should().BeNull("Khi IsEnabled = false, Payload VietQR không được tạo");
+            qrDialogVm.QrBitmap.Should().BeNull("Khi IsEnabled = false, ảnh Bitmap QR không được tạo");
+            qrDialogVm.StatusMessage.Should().Contain("tắt", "Thông báo phải nêu rõ tính năng VietQR đang tắt");
+        }
+        finally
+        {
+            // 5. Khôi phục IsEnabled = true sau test
+            await bankSettingsService.SaveBankSettingsAsync(originalSettings);
+        }
+    }
+
+    [AvaloniaFact]
+    public async Task Should_Trigger_OpenVietQrDialogCommand_From_BillListViewModel()
+    {
+        // 1. Lấy BillListViewModel, chọn hóa đơn chưa thanh toán
+        var billListVm = _fixture.CreateBillListViewModel();
+        await billListVm.LoadBillsCommand.ExecuteAsync(null);
+
+        billListVm.Bills.Should().NotBeEmpty();
+        var unpaidBill = billListVm.Bills.First(b => b.Status == BillStatus.Unpaid);
+        billListVm.SelectedBill = unpaidBill;
+
+        // 2. Bắt lời gọi mở hộp thoại thông qua FakeDialogService
+        Window? openedDialog = null;
+        _fixture.DialogService.OnShowDialogAsync = dialog =>
+        {
+            openedDialog = dialog;
+            return Task.FromResult<object?>(true);
+        };
+
+        try
+        {
+            // 3. Chạy OpenVietQrDialogCommand
+            await billListVm.OpenVietQrDialogCommand.ExecuteAsync(unpaidBill);
+
+            // 4. Xác minh dialog được mở thông qua FakeDialogService
+            openedDialog.Should().NotBeNull("Hộp thoại VietQrDialogWindow phải được mở qua IDialogService");
+            openedDialog.Should().BeOfType<VietQrDialogWindow>();
+
+            var vm = openedDialog!.DataContext as VietQrDialogViewModel;
+            vm.Should().NotBeNull("DataContext của cửa sổ phải là VietQrDialogViewModel");
+            vm!.Bill.Id.Should().Be(unpaidBill.Id, "Mã ID hóa đơn trong dialog phải khớp với hóa đơn được chọn");
+            vm.IsPaid.Should().BeFalse();
+        }
+        finally
+        {
+            _fixture.DialogService.OnShowDialogAsync = null;
+        }
     }
 
     public void Dispose()

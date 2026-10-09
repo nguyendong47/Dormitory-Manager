@@ -465,4 +465,196 @@ public class VietQrServiceTests
     }
 
     #endregion
+
+    #region 8. Mở rộng kiểm thử: Xử lý tên tiếng Việt có dấu phức tạp
+
+    [Theory]
+    [InlineData("Nguyễn Đỗ Đức Đạt", "NGUYEN DO DUC DAT")]
+    [InlineData("Trịnh Đình Trọng", "TRINH DINH TRONG")]
+    [InlineData("Vũ Thị Mỹ Lệ", "VU THI MY LE")]
+    [InlineData("Đặng Phước Hữu Thắng", "DANG PHUOC HUU THANG")]
+    [InlineData("Dương Triệu Vũ", "DUONG TRIEU VU")]
+    [InlineData("Bùi Thị Bích Hường", "BUI THI BICH HUONG")]
+    [InlineData("Hoàng Xuân Bách", "HOANG XUAN BACH")]
+    public void BuildEmvCoPayload_WithComplexVietnameseDiacritics_ConvertsToNormalizedAscii(string studentName, string expectedNormalized)
+    {
+        // Arrange
+        var bankBin = "970436";
+        var accountNumber = "0123456789";
+        var transferContent = $"KTX HD001 {studentName}";
+
+        // Act
+        var payload = _service.BuildEmvCoPayload(bankBin, accountNumber, 500000m, transferContent);
+
+        // Assert
+        payload.Should().Contain(expectedNormalized, "Nội dung chuyển khoản phải chuẩn hóa bỏ dấu hoàn toàn");
+        payload.Should().NotContain("Đ");
+        payload.Should().NotContain("đ");
+        payload.Should().NotContain("ê");
+        payload.Should().NotContain("ư");
+        payload.Should().NotContain("ơ");
+        _service.ValidateEmvCoPayload(payload).Should().BeTrue("Payload sau khi loại bỏ dấu tiếng Việt phải hợp lệ chuẩn EMVCo");
+    }
+
+    [Fact]
+    public void GeneratePayloadForBill_WithComplexDiacriticsInStudentName_ProducesValidEmvCo()
+    {
+        // Arrange
+        var bill = new Bill { Id = 10, BillCode = "HD-10", RoomFee = 900000m };
+        var bankSettings = new BankSettingsDto { BankBin = "970422", AccountNumber = "123456789" };
+        var complexName = "Nguyễn Đỗ Đình Quyền";
+
+        // Act
+        var dto = _service.GeneratePayloadForBill(bill, complexName, bankSettings);
+
+        // Assert
+        dto.TransferContent.Should().Be("KTX HD-10 NGUYEN DO DINH QUYEN");
+        _service.ValidateEmvCoPayload(dto.EmvCoPayload).Should().BeTrue();
+    }
+
+    #endregion
+
+    #region 9. Mở rộng kiểm thử: Số tiền lớn và số tiền có phần lẻ
+
+    [Fact]
+    public void BuildEmvCoPayload_WithLargeAmount_GeneratesCorrectTag54()
+    {
+        // Arrange: 100 triệu đồng (100.000.000 đ)
+        var amount = 100000000m;
+        var bankBin = "970436";
+        var accountNumber = "0123456789";
+
+        // Act
+        var payload = _service.BuildEmvCoPayload(bankBin, accountNumber, amount, "KTX TIEN PHONG");
+
+        // Assert: Tag 54 với độ dài 9 ký tự ("5409100000000")
+        payload.Should().Contain("5409100000000");
+        _service.ValidateEmvCoPayload(payload).Should().BeTrue("Payload với số tiền 100.000.000 đ phải hợp lệ");
+    }
+
+    [Theory]
+    [InlineData(1234567.89, "54071234568")] // Làm tròn lên 1.234.568
+    [InlineData(500000.40, "5406500000")]   // Làm tròn xuống 500.000
+    [InlineData(999999.50, "54071000000")]  // 999.999,5 làm tròn AwayFromZero thành 1.000.000
+    public void BuildEmvCoPayload_WithFractionalAmount_RoundsToNearestInteger(decimal fractionalAmount, string expectedTag54)
+    {
+        // Arrange
+        var bankBin = "970436";
+        var accountNumber = "0123456789";
+
+        // Act
+        var payload = _service.BuildEmvCoPayload(bankBin, accountNumber, fractionalAmount, "KTX TIEN PHONG");
+
+        // Assert
+        payload.Should().Contain(expectedTag54);
+        _service.ValidateEmvCoPayload(payload).Should().BeTrue();
+    }
+
+    #endregion
+
+    #region 10. Mở rộng kiểm thử: Mã hóa đơn và nội dung có ký tự đặc biệt
+
+    [Fact]
+    public void BuildEmvCoPayload_WithSpecialCharactersInTransferContent_SanitizesAndKeepsTlvValid()
+    {
+        // Arrange: Chứa ký tự đặc biệt như @, #, !, $, %, /, _, dấu cách liên tiếp
+        var transferContent = "KTX HD#2024/10@01_A-B  $500!  ";
+
+        // Act
+        var payload = _service.BuildEmvCoPayload("970436", "0123456789", 1500000m, transferContent);
+
+        // Assert: Ký tự đặc biệt bị loại bỏ hoặc thay bằng khoảng trắng chuẩn hóa, dấu gạch nối '-' được giữ lại
+        payload.Should().Contain("KTX HD 2024 10 01 A-B 500");
+        payload.Should().NotContain("@");
+        payload.Should().NotContain("#");
+        payload.Should().NotContain("$");
+        payload.Should().NotContain("!");
+        payload.Should().NotContain("/");
+        _service.ValidateEmvCoPayload(payload).Should().BeTrue("Payload với ký tự đặc biệt đã làm sạch phải hợp lệ");
+    }
+
+    [Fact]
+    public void GeneratePayloadForBill_WithSpecialCharactersInBillCode_ProducesValidPayload()
+    {
+        // Arrange
+        var bill = new Bill { Id = 88, BillCode = "HD/2026-10#A@01", RoomFee = 1000000m };
+        var settings = new BankSettingsDto { BankBin = "970436", AccountNumber = "123456" };
+
+        // Act
+        var payload = _service.GeneratePayloadForBill(bill, "Le Van C", settings);
+
+        // Assert
+        payload.Should().NotBeNull();
+        _service.ValidateEmvCoPayload(payload.EmvCoPayload).Should().BeTrue();
+    }
+
+    #endregion
+
+    #region 11. Mở rộng kiểm thử: Tính nhất quán chuỗi CRC16 và định dạng TLV Tag 38, Tag 54, Tag 62
+
+    [Fact]
+    public void BuildEmvCoPayload_TlvTag38Structure_IsComposedCorrectly()
+    {
+        // Arrange
+        var bankBin = "970436"; // 6 ký tự
+        var accountNumber = "0123456789"; // 10 ký tự
+        // Sub 00 của Tag 38: Napas Guid "A000000727" (10 chars) -> "0010A000000727" (14 chars)
+        // Sub 01 của Tag 38: Beneficiary Org (Sub 00: "0006970436", Sub 01: "01100123456789") -> Tổng 10 + 14 = 24 chars -> "0124000697043601100123456789" (28 chars)
+        // Sub 02 của Tag 38: Service Code "QRIBFTTA" (8 chars) -> "0208QRIBFTTA" (12 chars)
+        // Tổng giá trị Tag 38 = 14 + 28 + 12 = 54 chars -> Tag 38 = "3854..."
+
+        // Act
+        var payload = _service.BuildEmvCoPayload(bankBin, accountNumber, 200000m, "KTX");
+
+        // Assert
+        payload.Should().Contain("38540010A00000072701240006970436011001234567890208QRIBFTTA");
+        _service.ValidateEmvCoPayload(payload).Should().BeTrue();
+    }
+
+    [Fact]
+    public void BuildEmvCoPayload_TlvTag54AndTag62_OmittedWhenZeroOrEmpty()
+    {
+        // 1. Amount = 0 và Content = "" -> Cả Tag 54 và Tag 62 đều bị bỏ qua
+        var payloadWithout54And62 = _service.BuildEmvCoPayload("970436", "123456", 0m, "");
+        payloadWithout54And62.Should().NotContain("54");
+        payloadWithout54And62.Should().NotContain("62");
+        _service.ValidateEmvCoPayload(payloadWithout54And62).Should().BeTrue();
+
+        // 2. Amount > 0 và Content = "" -> Có Tag 54, không có Tag 62
+        var payloadWith54Only = _service.BuildEmvCoPayload("970436", "123456", 50000m, "");
+        payloadWith54Only.Should().Contain("540550000");
+        payloadWith54Only.Should().NotContain("62");
+        _service.ValidateEmvCoPayload(payloadWith54Only).Should().BeTrue();
+
+        // 3. Amount = 0 và Content != "" -> Không có Tag 54, có Tag 62
+        var payloadWith62Only = _service.BuildEmvCoPayload("970436", "123456", 0m, "KTX TIEN PHONG");
+        payloadWith62Only.Should().NotContain("54");
+        payloadWith62Only.Should().Contain("62180814KTX TIEN PHONG");
+        _service.ValidateEmvCoPayload(payloadWith62Only).Should().BeTrue();
+    }
+
+    [Fact]
+    public void CalculateCrc16_DeterminismAndConsistency_AlwaysReturnsSameChecksum()
+    {
+        // Arrange
+        var testData = "00020101021238540010A00000072701240006970436011001234567890208QRIBFTTA53037045802VN6304";
+
+        // Act: Chạy 100 lần liên tiếp
+        var initialCrc = _service.CalculateCrc16(testData);
+
+        for (int i = 0; i < 100; i++)
+        {
+            var nextCrc = _service.CalculateCrc16(testData);
+            nextCrc.Should().Be(initialCrc, "Kết quả thuật toán CRC-16 phải có tính xác định tuyệt đối (deterministic)");
+        }
+
+        // Assert: CRC16 ở cuối chuỗi EMVCo phải khớp với hàm CalculateCrc16
+        var payload = _service.BuildEmvCoPayload("970436", "0123456789", 100000m, "KTX");
+        var dataPart = payload.Substring(0, payload.Length - 4);
+        var crcPart = payload.Substring(payload.Length - 4);
+
+        _service.CalculateCrc16(dataPart).Should().Be(crcPart);
+    }
+
+    #endregion
 }

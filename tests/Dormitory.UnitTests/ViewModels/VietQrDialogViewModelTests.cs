@@ -266,4 +266,24 @@ public class VietQrDialogViewModelTests
         // Assert
         closeResult.Should().BeFalse();
     }
+
+    [Fact]
+    public async Task InitializeAsync_WhenBankSettingsDisabled_ClearsPayloadAndSetsStatusMessage()
+    {
+        // Arrange
+        var bill = new BillDto { Id = 1, BillCode = "HD001", Status = BillStatus.Unpaid };
+        var bankSettings = new BankSettingsDto { IsEnabled = false };
+
+        _mockBankSettingsService.Setup(s => s.GetBankSettingsAsync()).ReturnsAsync(bankSettings);
+
+        var vm = CreateViewModel(bill);
+
+        // Act
+        await vm.InitializeAsync();
+
+        // Assert
+        vm.Payload.Should().BeNull();
+        vm.QrBitmap.Should().BeNull();
+        vm.StatusMessage.Should().Contain("tắt");
+    }
 }

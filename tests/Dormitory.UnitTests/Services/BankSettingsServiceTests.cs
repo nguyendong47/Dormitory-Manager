@@ -288,4 +288,101 @@ public class BankSettingsServiceTests : IDisposable
         // Assert
         bank.Should().BeNull();
     }
+
+    #region Mở rộng kiểm thử: Xử lý tệp JSON hỏng và nạp cấu hình đa dạng
+
+    [Theory]
+    [InlineData("{ corrupted-json-without-closing-brace: [1, 2, ")]
+    [InlineData("MALFORMED JSON CONTENT !@#$%^&*()")]
+    [InlineData("{\"BankBin\": 970436, \"Broken\": ")]
+    public async Task GetBankSettingsAsync_WhenFileIsCorruptedJson_SafelyFallsBackToDefaultSettings(string corruptedContent)
+    {
+        // Arrange: Ghi nội dung JSON bị hỏng vào file cấu hình tạm
+        await File.WriteAllTextAsync(_tempFilePath, corruptedContent);
+
+        // Khởi tạo instance mới trỏ tới file hỏng
+        var serviceWithCorruptedFile = new BankSettingsService(_tempFilePath);
+
+        // Act
+        var settings = await serviceWithCorruptedFile.GetBankSettingsAsync();
+
+        // Assert: Không được phát sinh ngoại lệ và fallback về cấu hình mặc định an toàn
+        settings.Should().NotBeNull();
+        settings.BankBin.Should().Be("970436");
+        settings.BankShortName.Should().Be("Vietcombank");
+        settings.AccountNumber.Should().Be("0123456789");
+        settings.AccountHolder.Should().Be("BAN QUAN LY KTX");
+        settings.QrTemplate.Should().Be("compact");
+        settings.TransferPrefix.Should().Be("KTX");
+        settings.IsEnabled.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("   \r\n\t   ")]
+    public async Task GetBankSettingsAsync_WhenFileIsEmptyOrWhitespace_SafelyFallsBackToDefaultSettings(string emptyContent)
+    {
+        // Arrange
+        await File.WriteAllTextAsync(_tempFilePath, emptyContent);
+
+        var serviceWithEmptyFile = new BankSettingsService(_tempFilePath);
+
+        // Act
+        var settings = await serviceWithEmptyFile.GetBankSettingsAsync();
+
+        // Assert
+        settings.Should().NotBeNull();
+        settings.BankBin.Should().Be("970436");
+        settings.BankShortName.Should().Be("Vietcombank");
+        settings.IsEnabled.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("compact2", "970418", "BIDV", "1234567890", "BAN QUAN LY KTX KHU B", "KTX_B", true)]
+    [InlineData("qr_only", "970422", "MBBank", "0987654321", "KTX DAI HOC QUOC GIA", "KTX_DHQG", false)]
+    [InlineData("print", "970405", "Agribank", "2200101234567", "PHONG TAI VU KTX", "DORM_FEE", true)]
+    [InlineData("compact", "970415", "VietinBank", "101009876543", "TRUONG DAI HOC KTX", "KTX_2026", true)]
+    public async Task SaveBankSettingsAsync_WithVariousTemplatesAndRichFields_PreservesAndReloadsAccurately(
+        string template,
+        string bankBin,
+        string expectedShortName,
+        string accountNumber,
+        string accountHolder,
+        string prefix,
+        bool isEnabled)
+    {
+        // Arrange
+        var customSettings = new BankSettingsDto
+        {
+            BankBin = bankBin,
+            BankShortName = expectedShortName,
+            BankName = VietQrBankDirectory.FindByBin(bankBin)?.Name ?? string.Empty,
+            AccountNumber = accountNumber,
+            AccountHolder = accountHolder,
+            QrTemplate = template,
+            TransferPrefix = prefix,
+            IsEnabled = isEnabled
+        };
+
+        // Act: Lưu qua service hiện tại
+        var saveResult = await _service.SaveBankSettingsAsync(customSettings);
+        saveResult.Should().BeTrue();
+
+        // Nạp lại qua một instance mới độc lập hoàn toàn (không dùng in-memory cache của service cũ)
+        var freshService = new BankSettingsService(_tempFilePath);
+        var loaded = await freshService.GetBankSettingsAsync();
+
+        // Assert: Xác minh tất cả các trường thông tin phong phú
+        loaded.Should().NotBeNull();
+        loaded.BankBin.Should().Be(bankBin);
+        loaded.BankShortName.Should().Be(expectedShortName);
+        loaded.AccountNumber.Should().Be(accountNumber);
+        loaded.AccountHolder.Should().Be(accountHolder);
+        loaded.QrTemplate.Should().Be(template);
+        loaded.TransferPrefix.Should().Be(prefix);
+        loaded.IsEnabled.Should().Be(isEnabled);
+    }
+
+    #endregion
 }
