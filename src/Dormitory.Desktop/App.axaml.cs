@@ -62,6 +62,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IDatabaseService, DatabaseService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IBankSettingsService, BankSettingsService>();
+        services.AddScoped<IVietQrService, VietQrService>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IFileService, FileService>();
         services.AddSingleton<IUserSession, UserSession>();

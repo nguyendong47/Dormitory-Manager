@@ -49,7 +49,7 @@ public class EquipmentManagementE2ETests : IDisposable
         await vm.LoadEquipmentsCommand.ExecuteAsync(null);
 
         vm.Equipments.Should().NotBeEmpty();
-        vm.Equipments.Should().OnlyContain(e => e.Status == EquipmentStatus.Good, 
+        vm.Equipments.Should().OnlyContain(e => e.Status == EquipmentStatus.Good,
             "Bộ lọc chỉ được trả về các thiết bị có trạng thái Hoạt động tốt");
         vm.Equipments.Sum(e => e.Quantity).Should().Be(vm.GoodCount,
             "Số lượng hiển thị phải khớp với chỉ số thống kê GoodCount trên KPI");
