@@ -64,6 +64,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IBankSettingsService, BankSettingsService>();
         services.AddScoped<IVietQrService, VietQrService>();
         services.AddScoped<IPaymentReconciliationService, PaymentReconciliationService>();
+        services.AddSingleton<IWebhookListenerService, WebhookListenerService>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IFileService, FileService>();
         services.AddSingleton<IUserSession, UserSession>();
@@ -102,6 +103,24 @@ public partial class App : Avalonia.Application
         {
             Console.WriteLine($"[Lỗi khởi tạo DB Seed]: {ex.Message}");
         }
+
+        // Tự động khởi động máy chủ nhúng Webhook nếu được cấu hình bật
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var webhookService = Services.GetRequiredService<IWebhookListenerService>();
+                var settings = await webhookService.GetSettingsAsync();
+                if (settings.IsEnabled)
+                {
+                    await webhookService.StartAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Lỗi khởi động Webhook Listener]: {ex.Message}");
+            }
+        });
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
