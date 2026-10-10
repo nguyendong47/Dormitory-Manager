@@ -31,17 +31,26 @@ public class PaymentReconciliationService : IPaymentReconciliationService
             return null;
         }
 
-        var escapedPrefix = Regex.Escape(prefix.Trim());
+        var escapedPrefix = Regex.Escape(string.IsNullOrWhiteSpace(prefix) ? "KTX" : prefix.Trim());
         // Biểu thức chính quy: Nhận diện tiền tố KTX (đứng đầu chuỗi hoặc sau khoảng trắng/kí tự phân cách),
         // theo sau bởi các ký tự phân cách tùy chọn (khoảng trắng, dấu gạch nối, hai chấm, gạch dưới),
         // rồi bóc tách mã hóa đơn gồm các ký tự chữ, số và dấu gạch nối/dưới.
         var pattern = $@"(?:^|\b|\s){escapedPrefix}[-_:\s]*([A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*)";
-        var match = Regex.Match(description, pattern, RegexOptions.IgnoreCase);
 
-        if (match.Success && match.Groups.Count > 1)
+        try
         {
-            var code = match.Groups[1].Value.Trim();
-            return string.IsNullOrEmpty(code) ? null : code;
+            var match = Regex.Match(description, pattern, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
+
+            if (match.Success && match.Groups.Count > 1)
+            {
+                var code = match.Groups[1].Value.Trim();
+                return string.IsNullOrEmpty(code) ? null : code;
+            }
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            // Tránh ReDoS (Regular Expression Denial of Service) khi nội dung chuỗi đầu vào quá dài hoặc phức tạp
+            return null;
         }
 
         return null;

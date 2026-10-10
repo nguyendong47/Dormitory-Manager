@@ -92,6 +92,20 @@ public class PaymentReconciliationServiceTests : IDisposable
         result.Should().Be("BILL-00123");
     }
 
+    [Fact]
+    public void ExtractBillCode_WithLongOrComplexPayload_ShouldSafelyHandleWithoutHanging()
+    {
+        // Arrange: Chuỗi dài với nhiều ký tự lặp lại kiểm tra an toàn ReDoS
+        var maliciousString = "KTX " + new string('-', 1000) + " HD001 " + new string('A', 2000);
+
+        // Act
+        var result = _service.ExtractBillCode(maliciousString);
+
+        // Assert
+        // Không bị treo hoặc ném ngoại lệ
+        result.Should().Be("HD001");
+    }
+
     #endregion
 
     #region 2. Unit Tests cho ProcessTransactionAsync
