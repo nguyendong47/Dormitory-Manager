@@ -330,20 +330,32 @@ public class WebhookListenerService : IWebhookListenerService, IDisposable
         var cleanSignature = signature.Trim();
         var cleanSecret = secretKey.Trim();
 
-        // So khớp trực tiếp dạng static token
-        if (cleanSignature.Equals(cleanSecret, StringComparison.OrdinalIgnoreCase))
+        var sigUtf8 = Encoding.UTF8.GetBytes(cleanSignature);
+        var secUtf8 = Encoding.UTF8.GetBytes(cleanSecret);
+
+        // 1. So khớp trực tiếp dạng static token chống Timing Attack
+        if (CryptographicOperations.FixedTimeEquals(sigUtf8, secUtf8))
         {
             return true;
         }
 
-        // So khớp chữ ký HMAC-SHA256
+        // 2. So khớp chữ ký HMAC-SHA256 an toàn chống Timing Attack
         try
         {
-            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(cleanSecret));
-            var hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
-            var hexHash = Convert.ToHexString(hashBytes).ToLowerInvariant();
+            using var hmac = new HMACSHA256(secUtf8);
+            var expectedBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
 
-            return cleanSignature.ToLowerInvariant().Equals(hexHash, StringComparison.OrdinalIgnoreCase);
+            byte[] providedBytes;
+            try
+            {
+                providedBytes = Convert.FromHexString(cleanSignature);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return CryptographicOperations.FixedTimeEquals(expectedBytes, providedBytes);
         }
         catch
         {
