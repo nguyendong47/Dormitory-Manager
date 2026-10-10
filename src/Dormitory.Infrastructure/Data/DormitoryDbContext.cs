@@ -68,6 +68,16 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
     /// </summary>
     public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
 
+    /// <summary>
+    /// Bảng quản lý thông tin khách đến thăm KTX
+    /// </summary>
+    public DbSet<VisitorLog> VisitorLogs => Set<VisitorLog>();
+
+    /// <summary>
+    /// Bảng ghi nhận kết quả điểm danh chuyên cần sinh viên ban đêm
+    /// </summary>
+    public DbSet<AttendanceRecord> AttendanceRecords => Set<AttendanceRecord>();
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -252,6 +262,50 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
                 .WithMany(b => b.PaymentTransactions)
                 .HasForeignKey(e => e.BillId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Cấu hình bảng VisitorLog
+        modelBuilder.Entity<VisitorLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.VisitorName).IsRequired().HasMaxLength(150);
+            entity.Property(e => e.IdentificationNumber).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.PhoneNumber).HasMaxLength(20);
+            entity.Property(e => e.Note).HasMaxLength(500);
+
+            entity.HasOne(e => e.Student)
+                .WithMany(s => s.VisitorLogs)
+                .HasForeignKey(e => e.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Room)
+                .WithMany(r => r.VisitorLogs)
+                .HasForeignKey(e => e.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.CheckInTime);
+            entity.HasIndex(e => e.Status);
+        });
+
+        // Cấu hình bảng AttendanceRecord
+        modelBuilder.Entity<AttendanceRecord>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Reason).HasMaxLength(500);
+            entity.Property(e => e.RecordedBy).HasMaxLength(100);
+
+            entity.HasOne(e => e.Student)
+                .WithMany(s => s.AttendanceRecords)
+                .HasForeignKey(e => e.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Room)
+                .WithMany(r => r.AttendanceRecords)
+                .HasForeignKey(e => e.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => new { e.StudentId, e.AttendanceDate }).IsUnique();
+            entity.HasIndex(e => e.AttendanceDate);
         });
     }
 }

@@ -74,13 +74,13 @@ classDiagram
 - Test: `tests/Dormitory.UnitTests/Entities/VisitorAndAttendanceEntityTests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 1.1:** Tạo enum `VisitorStatus` (`InDormitory` = Đang trong KTX, `CheckedOut` = Đã rời KTX, `Overstayed` = Quá giờ quy định).
-- [ ] **Step 1.2:** Tạo enum `AttendanceStatus` (`Present` = Có mặt, `AbsentWithoutPermission` = Vắng không phép, `AbsentWithPermission` = Vắng có phép, `Late` = Về muộn sau giờ giới nghiêm).
-- [ ] **Step 1.3:** Tạo entity `VisitorLog` (Id, VisitorName, IdentificationNumber, PhoneNumber, StudentId, RoomId, CheckInTime, CheckOutTime, Status, Note, quan hệ Student & Room).
-- [ ] **Step 1.4:** Tạo entity `AttendanceRecord` (Id, AttendanceDate, StudentId, RoomId, Status, Reason, RecordedBy, CreatedAt, quan hệ Student & Room).
-- [ ] **Step 1.5:** Khai báo DTOs `VisitorLogDto`, `CreateVisitorLogDto`, `VisitorFilterDto`, `AttendanceRecordDto`, `BatchRoomAttendanceDto`, `AttendanceStatsDto`.
-- [ ] **Step 1.6:** Cập nhật `IDormitoryDbContext` và `DormitoryDbContext` (Fluent API quan hệ, chỉ mục Foreign Key và Unique constraint cho cặp StudentId + AttendanceDate).
-- [ ] **Step 1.7:** Viết unit tests kiểm thử entity và DTO mapping. Chạy `dotnet test`. Commit: `feat(core): implement VisitorLog and AttendanceRecord entities with EF Core SQLite config`.
+- [x] **Step 1.1:** Tạo enum `VisitorStatus` (`InDormitory` = Đang trong KTX, `CheckedOut` = Đã rời KTX, `Overstayed` = Quá giờ quy định).
+- [x] **Step 1.2:** Tạo enum `AttendanceStatus` (`Present` = Có mặt, `AbsentWithoutPermission` = Vắng không phép, `AbsentWithPermission` = Vắng có phép, `Late` = Về muộn sau giờ giới nghiêm).
+- [x] **Step 1.3:** Tạo entity `VisitorLog` (Id, VisitorName, IdentificationNumber, PhoneNumber, StudentId, RoomId, CheckInTime, CheckOutTime, Status, Note, quan hệ Student & Room).
+- [x] **Step 1.4:** Tạo entity `AttendanceRecord` (Id, AttendanceDate, StudentId, RoomId, Status, Reason, RecordedBy, CreatedAt, quan hệ Student & Room).
+- [x] **Step 1.5:** Khai báo DTOs `VisitorLogDto`, `CreateVisitorLogDto`, `VisitorFilterDto`, `AttendanceRecordDto`, `BatchRoomAttendanceDto`, `AttendanceStatsDto`.
+- [x] **Step 1.6:** Cập nhật `IDormitoryDbContext` và `DormitoryDbContext` (Fluent API quan hệ, chỉ mục Foreign Key và Unique constraint cho cặp StudentId + AttendanceDate).
+- [x] **Step 1.7:** Viết unit tests kiểm thử entity và DTO mapping. Chạy `dotnet test`. Commit: `feat(core): implement VisitorLog and AttendanceRecord entities with EF Core SQLite config`.
 
 ---
 

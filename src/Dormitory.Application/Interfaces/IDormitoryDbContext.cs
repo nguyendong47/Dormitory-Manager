@@ -18,6 +18,8 @@ public interface IDormitoryDbContext
     DbSet<Violation> Violations { get; }
     DbSet<ReportHistory> ReportHistories { get; }
     DbSet<PaymentTransaction> PaymentTransactions { get; }
+    DbSet<VisitorLog> VisitorLogs { get; }
+    DbSet<AttendanceRecord> AttendanceRecords { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

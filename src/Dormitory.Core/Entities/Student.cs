@@ -91,4 +91,14 @@ public class Student
     /// Lịch sử các hợp đồng thuê phòng của sinh viên
     /// </summary>
     public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+
+    /// <summary>
+    /// Danh sách các lượt khách đến thăm sinh viên này
+    /// </summary>
+    public ICollection<VisitorLog> VisitorLogs { get; set; } = new List<VisitorLog>();
+
+    /// <summary>
+    /// Lịch sử điểm danh chuyên cần của sinh viên
+    /// </summary>
+    public ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
 }

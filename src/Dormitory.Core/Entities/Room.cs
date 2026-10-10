@@ -81,4 +81,14 @@ public class Room
     /// Danh sách trang thiết bị, tài sản thuộc phòng này
     /// </summary>
     public ICollection<Equipment> Equipments { get; set; } = new List<Equipment>();
+
+    /// <summary>
+    /// Danh sách các lượt khách đến thăm tại phòng này
+    /// </summary>
+    public ICollection<VisitorLog> VisitorLogs { get; set; } = new List<VisitorLog>();
+
+    /// <summary>
+    /// Danh sách các bản ghi điểm danh sinh viên tại phòng này
+    /// </summary>
+    public ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
 }
