@@ -38,7 +38,7 @@
 
 - [x] **Task 1: Thiết kế Thực thể `PaymentTransaction`, Cấu hình EF Core SQLite & DTOs**
 - [x] **Task 2: Thuật toán Bóc tách Cú pháp Chuyển khoản & Đối soát Hóa đơn (`IPaymentReconciliationService`) (TDD)**
-- [ ] **Task 3: Dịch vụ Nhúng Lắng nghe Webhook Biến Động Số Dư & Bảo mật Chữ Ký (`IWebhookListenerService`)**
+- [x] **Task 3: Dịch vụ Nhúng Lắng nghe Webhook Biến Động Số Dư & Bảo mật Chữ Ký (`IWebhookListenerService`)**
 - [ ] **Task 4: Cơ Chế Bắn Sự Kiện Thời Gian Thực & Tự Động Cập Nhật Danh Sách Hóa Đơn (`BillListViewModel`)**
 - [ ] **Task 5: Giao Diện Quản Lý Lịch Sử Giao Dịch Đối Soát & Cấu Hình Webhook Trong Cài Đặt Hệ Thống**
 - [ ] **Task 6: Kiểm Thử Tự Động E2E Headless & Mở Rộng Unit Tests**
@@ -124,15 +124,15 @@
 - Test: `tests/Dormitory.UnitTests/Services/WebhookListenerServiceTests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 3.1:** Tạo `WebhookSettingsDto` (thuộc tính: `IsEnabled`, `Port` = 5005, `Path` = `"/api/webhook/payment"`, `SecretKey`, `Provider` = `"PayOS"` / `"Casso"` / `"Generic"`).
-- [ ] **Step 3.2:** Khai báo `IWebhookListenerService` (`StartAsync()`, `StopAsync()`, `IsRunning`, `GetSettingsAsync()`, `SaveSettingsAsync()`, `TestWebhookAsync()`).
-- [ ] **Step 3.3:** Viết unit tests kiểm tra: Khởi động listener, dừng listener, xử lý chuỗi JSON webhook PayOS / Casso / Generic, xác thực chữ ký HMAC SHA256 an toàn, từ chối request sai secret key.
-- [ ] **Step 3.4:** Triển khai `WebhookListenerService` bằng `HttpListener` chuẩn .NET (nhẹ, không chiếm dụng tài nguyên):
+- [x] **Step 3.1:** Tạo `WebhookSettingsDto` (thuộc tính: `IsEnabled`, `Port` = 5005, `Path` = `"/api/webhook/payment"`, `SecretKey`, `Provider` = `"PayOS"` / `"Casso"` / `"Generic"`).
+- [x] **Step 3.2:** Khai báo `IWebhookListenerService` (`StartAsync()`, `StopAsync()`, `IsRunning`, `GetSettingsAsync()`, `SaveSettingsAsync()`, `TestWebhookAsync()`).
+- [x] **Step 3.3:** Viết unit tests kiểm tra: Khởi động listener, dừng listener, xử lý chuỗi JSON webhook PayOS / Casso / Generic, xác thực chữ ký HMAC SHA256 an toàn, từ chối request sai secret key.
+- [x] **Step 3.4:** Triển khai `WebhookListenerService` bằng `HttpListener` chuẩn .NET (nhẹ, không chiếm dụng tài nguyên):
   - Hỗ trợ endpoint POST `/api/webhook/payment`.
   - Trả về HTTP 200 OK ngay lập tức cho ngân hàng để tránh timeout.
   - Phân tích JSON và gọi `IPaymentReconciliationService.ProcessTransactionAsync`.
-- [ ] **Step 3.5:** Đăng ký DI trong `App.axaml.cs` và `TestFixture.cs`. Tự động khởi động listener khi ứng dụng mở (nếu cấu hình `IsEnabled == true`).
-- [ ] **Step 3.6:** Chạy `dotnet test`. Commit thay đổi: `feat(payment): implement embedded WebhookListenerService with HMAC security`.
+- [x] **Step 3.5:** Đăng ký DI trong `App.axaml.cs` và `TestFixture.cs`. Tự động khởi động listener khi ứng dụng mở (nếu cấu hình `IsEnabled == true`).
+- [x] **Step 3.6:** Chạy `dotnet test`. Commit thay đổi: `feat(payment): implement embedded WebhookListenerService with HMAC security`.
 
 ---
 
