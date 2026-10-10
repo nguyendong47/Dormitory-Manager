@@ -25,6 +25,7 @@ public partial class SystemSettingsViewModel : ViewModelBase
     private readonly IEmailService _emailService;
     private readonly IBankSettingsService _bankSettingsService;
     private readonly IVietQrService _vietQrService;
+    private readonly IWebhookListenerService? _webhookListenerService;
 
     [ObservableProperty]
     private DatabaseInfoDto _databaseInfo = new();
@@ -34,6 +35,30 @@ public partial class SystemSettingsViewModel : ViewModelBase
 
     [ObservableProperty]
     private BankSettingsDto _bankSettings = new();
+
+    [ObservableProperty]
+    private WebhookSettingsDto _webhookSettings = new();
+
+    [ObservableProperty]
+    private bool _isWebhookRunning;
+
+    [ObservableProperty]
+    private int _webhookPort;
+
+    [ObservableProperty]
+    private string _webhookStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _isWebhookTesting;
+
+    public ObservableCollection<string> AvailableWebhookProviders { get; } = new()
+    {
+        "PayOS",
+        "Casso",
+        "Generic"
+    };
+
+    public string SampleWebhookUrl => $"http://localhost:{(WebhookSettings != null && WebhookSettings.Port > 0 ? WebhookSettings.Port : 5005)}/api/webhook/payment";
 
     public ObservableCollection<BankInfoDto> AvailableBanks { get; } = new(VietQrBankDirectory.GetAllBanks());
 
@@ -75,7 +100,8 @@ public partial class SystemSettingsViewModel : ViewModelBase
         IUserSession userSession,
         IEmailService emailService,
         IBankSettingsService bankSettingsService,
-        IVietQrService vietQrService)
+        IVietQrService vietQrService,
+        IWebhookListenerService? webhookListenerService = null)
     {
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
@@ -84,11 +110,18 @@ public partial class SystemSettingsViewModel : ViewModelBase
         _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
         _bankSettingsService = bankSettingsService ?? throw new ArgumentNullException(nameof(bankSettingsService));
         _vietQrService = vietQrService ?? throw new ArgumentNullException(nameof(vietQrService));
+        _webhookListenerService = webhookListenerService;
 
         _userSession.SessionChanged += () => OnPropertyChanged(nameof(IsAdmin));
 
         _ = LoadEmailSettingsAsync();
         _ = LoadBankSettingsAsync();
+        _ = LoadWebhookSettingsAsync();
+    }
+
+    partial void OnWebhookSettingsChanged(WebhookSettingsDto value)
+    {
+        OnPropertyChanged(nameof(SampleWebhookUrl));
     }
 
     /// <summary>
@@ -401,6 +434,129 @@ public partial class SystemSettingsViewModel : ViewModelBase
         {
             BankStatusMessage = $"Lỗi tạo mã QR: {ex.Message}";
             await _dialogService.ShowMessageAsync("Lỗi", $"Không thể tạo mã QR thử nghiệm: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Tải cấu hình Webhook và kiểm tra trạng thái máy chủ Webhook hiện tại
+    /// </summary>
+    [RelayCommand]
+    public async Task LoadWebhookSettingsAsync()
+    {
+        if (_webhookListenerService == null) return;
+
+        try
+        {
+            WebhookSettings = await _webhookListenerService.GetSettingsAsync();
+            IsWebhookRunning = _webhookListenerService.IsRunning;
+            WebhookPort = _webhookListenerService.ActivePort;
+            WebhookStatusMessage = IsWebhookRunning
+                ? $"Máy chủ Webhook đang hoạt động tại cổng {WebhookPort}."
+                : "Máy chủ Webhook đang tạm dừng.";
+        }
+        catch (Exception ex)
+        {
+            WebhookStatusMessage = $"Lỗi khi tải cấu hình Webhook: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Lưu cấu hình Webhook và áp dụng khởi động / dừng dịch vụ
+    /// </summary>
+    [RelayCommand]
+    public async Task SaveWebhookSettingsAsync()
+    {
+        if (_webhookListenerService == null)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", "Dịch vụ Webhook chưa được đăng ký trong hệ thống.");
+            return;
+        }
+
+        try
+        {
+            IsLoading = true;
+            WebhookStatusMessage = "Đang lưu cấu hình Webhook...";
+
+            var success = await _webhookListenerService.SaveSettingsAsync(WebhookSettings);
+            if (success)
+            {
+                if (WebhookSettings.IsEnabled)
+                {
+                    await _webhookListenerService.StartAsync();
+                }
+                else
+                {
+                    await _webhookListenerService.StopAsync();
+                }
+
+                IsWebhookRunning = _webhookListenerService.IsRunning;
+                WebhookPort = _webhookListenerService.ActivePort;
+                WebhookStatusMessage = IsWebhookRunning
+                    ? $"Đã lưu cấu hình và khởi động máy chủ Webhook tại cổng {WebhookPort}."
+                    : "Đã lưu cấu hình (máy chủ Webhook đã dừng).";
+                await _dialogService.ShowMessageAsync("Thành công", "Đã lưu cấu hình Webhook tự động gạch nợ thành công!");
+            }
+            else
+            {
+                WebhookStatusMessage = "Lỗi khi lưu tệp cấu hình Webhook.";
+                await _dialogService.ShowMessageAsync("Lỗi", "Không thể lưu tệp cấu hình Webhook.");
+            }
+        }
+        catch (Exception ex)
+        {
+            WebhookStatusMessage = $"Lỗi: {ex.Message}";
+            await _dialogService.ShowMessageAsync("Lỗi", $"Lỗi khi lưu cấu hình Webhook: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Gửi một giao dịch mẫu kiểm thử tới Webhook nội bộ
+    /// </summary>
+    [RelayCommand]
+    public async Task TestWebhookAsync()
+    {
+        if (_webhookListenerService == null)
+        {
+            await _dialogService.ShowMessageAsync("Lỗi", "Dịch vụ Webhook chưa sẵn sàng.");
+            return;
+        }
+
+        try
+        {
+            IsWebhookTesting = true;
+            WebhookStatusMessage = "Đang kiểm thử Webhook gạch nợ tự động...";
+
+            var testPayload = new WebhookPayloadDto
+            {
+                TransactionId = $"TEST_{DateTime.UtcNow.Ticks}",
+                Amount = 100000m,
+                Description = $"{WebhookSettings.TransferPrefix} TEST001",
+                TransactionDate = DateTime.UtcNow,
+                BankBin = "970422",
+                AccountNumber = "123456789",
+                Gateway = WebhookSettings.Provider,
+                RawData = "{\"test\": true}"
+            };
+
+            var result = await _webhookListenerService.TestWebhookAsync(testPayload);
+            var statusStr = result.IsSuccess ? "Thành công" : "Chưa khớp";
+            WebhookStatusMessage = $"Kiểm thử hoàn tất: {statusStr} - {result.Message}";
+            await _dialogService.ShowMessageAsync(
+                "Kết quả kiểm thử Webhook",
+                $"Trạng thái: {statusStr}\nMã giao dịch: {result.TransactionId}\nSố tiền: {result.Amount:N0} đ\nThông điệp: {result.Message}");
+        }
+        catch (Exception ex)
+        {
+            WebhookStatusMessage = $"Lỗi kiểm thử Webhook: {ex.Message}";
+            await _dialogService.ShowMessageAsync("Lỗi", $"Gặp lỗi khi kiểm thử Webhook: {ex.Message}");
+        }
+        finally
+        {
+            IsWebhookTesting = false;
         }
     }
 }

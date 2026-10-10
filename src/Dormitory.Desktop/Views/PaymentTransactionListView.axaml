@@ -1,0 +1,184 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             xmlns:dto="using:Dormitory.Application.DTOs"
+             x:Class="Dormitory.Desktop.Views.PaymentTransactionListView"
+             x:DataType="vm:PaymentTransactionListViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="24">
+        <!-- Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Quản Lý Giao Dịch Đối Soát Ngân Hàng" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Lịch sử biến động số dư tiếp nhận qua Webhook và đối soát tự động / thủ công" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Button Content="🔗 Gán hóa đơn thủ công" 
+                        Command="{Binding AssignBillCommand}"
+                        IsEnabled="{Binding CanAssignBill}"
+                        Background="#0078D4" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="14,8"/>
+                <Button Content="🔄 Làm mới" 
+                        Command="{Binding LoadTransactionsCommand}"
+                        CornerRadius="6"
+                        Padding="14,8"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- KPI Cards -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*" Margin="0,0,0,16">
+            <!-- KPI 1: Tổng tiền thu tự động -->
+            <Border Grid.Column="0" Margin="0,0,8,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#DFF6DD" CornerRadius="8" Width="44" Height="44" Margin="0,0,14,0" VerticalAlignment="Center">
+                        <TextBlock Text="💰" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Tổng tiền thu tự động" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding TotalReceivedAmount, StringFormat='{}{0:N0} đ'}" FontSize="20" FontWeight="Bold" Foreground="#107C41"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- KPI 2: Giao dịch thành công -->
+            <Border Grid.Column="1" Margin="8,0,8,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#E1DFDD" CornerRadius="8" Width="44" Height="44" Margin="0,0,14,0" VerticalAlignment="Center">
+                        <TextBlock Text="✅" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Giao dịch thành công" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding SuccessCount, StringFormat='{}{0:N0}'}" FontSize="20" FontWeight="Bold" Foreground="#0078D4"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- KPI 3: Giao dịch chưa khớp -->
+            <Border Grid.Column="2" Margin="8,0,0,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#FFF4CE" CornerRadius="8" Width="44" Height="44" Margin="0,0,14,0" VerticalAlignment="Center">
+                        <TextBlock Text="⚠️" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Giao dịch chưa khớp" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding UnmatchedCount, StringFormat='{}{0:N0}'}" FontSize="20" FontWeight="Bold" Foreground="#D83B01"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Filter Toolbar -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,0,12" VerticalAlignment="Center">
+            <TextBox Grid.Column="0"
+                     Text="{Binding SearchKeyword}"
+                     Watermark="🔍 Tìm kiếm theo mã GD, nội dung chuyển khoản, số tài khoản, mã HĐ..."
+                     Margin="0,0,10,0"/>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,0,10,0">
+                <TextBlock Text="Trạng thái:" VerticalAlignment="Center" FontWeight="Medium" FontSize="13"/>
+                <ComboBox ItemsSource="{Binding StatusFilterOptions}"
+                          SelectedItem="{Binding SelectedStatusFilter}"
+                          Width="180"
+                          VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Button Grid.Column="2"
+                    Content="🔍 Lọc dữ liệu"
+                    Command="{Binding LoadTransactionsCommand}"
+                    Margin="0,0,10,0"
+                    CornerRadius="6"
+                    Padding="14,7"/>
+
+            <TextBlock Grid.Column="3"
+                       Text="{Binding StatusMessage}"
+                       Foreground="{DynamicResource SystemBaseMediumColor}"
+                       VerticalAlignment="Center"
+                       FontSize="12"/>
+        </Grid>
+
+        <!-- DataGrid Giao dịch -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource SystemAltHighColor}"
+                CornerRadius="8"
+                Padding="8"
+                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                BorderThickness="1">
+            <DataGrid ItemsSource="{Binding Transactions}"
+                      SelectedItem="{Binding SelectedTransaction}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      GridLinesVisibility="Horizontal"
+                      CanUserResizeColumns="True"
+                      BorderThickness="0">
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="🔗 Gán hóa đơn thủ công" 
+                                  Command="{Binding AssignBillCommand}" 
+                                  IsEnabled="{Binding CanAssignBill}"/>
+                        <MenuItem Header="🔄 Làm mới danh sách" 
+                                  Command="{Binding LoadTransactionsCommand}"/>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Thời gian" 
+                                        Binding="{Binding TransactionDate, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" 
+                                        Width="135"/>
+                    <DataGridTextColumn Header="Mã giao dịch" 
+                                        Binding="{Binding TransactionId}" 
+                                        Width="160"/>
+                    <DataGridTextColumn Header="STK nhận" 
+                                        Binding="{Binding AccountNumber}" 
+                                        Width="120"/>
+                    <DataGridTextColumn Header="Số tiền" 
+                                        Binding="{Binding Amount, StringFormat='{}{0:N0} đ'}" 
+                                        Width="125"/>
+                    <DataGridTextColumn Header="Mã HĐ" 
+                                        Binding="{Binding BillCode}" 
+                                        Width="110"/>
+                    <DataGridTemplateColumn Header="Trạng thái" Width="135">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="dto:PaymentTransactionDto">
+                                <Border Background="{Binding StatusBadgeBackground}"
+                                        CornerRadius="10"
+                                        Padding="8,3"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding StatusText}" 
+                                               Foreground="{Binding StatusBadgeColor}" 
+                                               FontWeight="Bold" 
+                                               FontSize="11"/>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Nội dung chuyển khoản" 
+                                        Binding="{Binding Description}" 
+                                        Width="260"/>
+                    <DataGridTextColumn Header="Ghi chú đối soát" 
+                                        Binding="{Binding Note}" 
+                                        Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

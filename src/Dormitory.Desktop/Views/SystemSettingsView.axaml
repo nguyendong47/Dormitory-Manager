@@ -364,6 +364,91 @@
                     </Border>
                 </StackPanel>
             </Border>
+
+            <!-- Card 6: Cấu Hình Webhook Tự Động Gạch Nợ (Open Banking) -->
+            <Border Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="🌐" FontSize="18" VerticalAlignment="Center"/>
+                        <TextBlock Text="Cấu Hình Webhook Tự Động Gạch Nợ (Open Banking)" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Cấu hình cổng mạng và thông số xác thực để tiếp nhận Webhook biến động số dư từ ngân hàng (PayOS, Casso, Open Banking) và tự động đối soát gạch nợ hóa đơn tiền phòng."
+                               Foreground="{DynamicResource SystemBaseMediumColor}"
+                               TextWrapping="Wrap"
+                               FontSize="13"/>
+
+                    <!-- Khối thông báo trạng thái Webhook -->
+                    <Border Background="#EBF3FC" BorderBrush="#0078D4" BorderThickness="1" CornerRadius="6" Padding="12,8"
+                            IsVisible="{Binding WebhookStatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{Binding WebhookStatusMessage}" Foreground="#0078D4" FontSize="13" FontWeight="Medium"/>
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+                        <!-- Cột 1 & 2, Hàng 0: CheckBox bật Webhook -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="24" Margin="0,0,0,12">
+                            <CheckBox Content="Kích hoạt máy chủ lắng nghe Webhook tự động (Mở cổng kết nối)"
+                                      IsChecked="{Binding WebhookSettings.IsEnabled}"/>
+                        </StackPanel>
+
+                        <!-- Cột 1, Hàng 1: Cổng mạng Port -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,12" Spacing="6">
+                            <TextBlock Text="Cổng mạng lắng nghe (Port):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding WebhookSettings.Port}" Watermark="Mặc định: 5005"/>
+                        </StackPanel>
+
+                        <!-- Cột 2, Hàng 1: Nhà cung cấp Webhook -->
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,0,0,12" Spacing="6">
+                            <TextBlock Text="Nhà cung cấp / Cổng Webhook:" FontWeight="Medium" FontSize="13"/>
+                            <ComboBox ItemsSource="{Binding AvailableWebhookProviders}"
+                                      SelectedItem="{Binding WebhookSettings.Provider}"
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
+                        <!-- Cột 1, Hàng 2: Khóa bí mật (Secret Key) -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,12" Spacing="6">
+                            <TextBlock Text="Khóa bí mật xác thực (Secret Key / Token):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding WebhookSettings.SecretKey}" PasswordChar="•" Watermark="Chuỗi bí mật kiểm tra chữ ký HMAC-SHA256"/>
+                        </StackPanel>
+
+                        <!-- Cột 2, Hàng 2: Tiền tố đối soát -->
+                        <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,12" Spacing="6">
+                            <TextBlock Text="Tiền tố nhận diện nội dung CK (Prefix):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding WebhookSettings.TransferPrefix}" Watermark="KTX"/>
+                        </StackPanel>
+
+                        <!-- Cột 1 & 2, Hàng 3: URL Webhook Endpoint mẫu -->
+                        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,6" Spacing="6">
+                            <TextBlock Text="Đường dẫn tiếp nhận Webhook (Endpoint URL):" FontWeight="Medium" FontSize="13"/>
+                            <TextBox Text="{Binding SampleWebhookUrl, Mode=OneWay}" 
+                                     IsReadOnly="True" 
+                                     Background="{DynamicResource SystemChromeLowColor}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0" VerticalAlignment="Center">
+                        <Button Content="🧪  Kiểm thử Webhook mẫu"
+                                Command="{Binding TestWebhookCommand}"
+                                IsEnabled="{Binding !IsWebhookTesting}"
+                                CornerRadius="6"
+                                Padding="16,10"/>
+
+                        <Button Content="💾  Lưu cấu hình Webhook"
+                                Command="{Binding SaveWebhookSettingsCommand}"
+                                Background="#0078D4"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                CornerRadius="6"
+                                Padding="16,10"/>
+
+                        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsWebhookTesting}" Width="100" Height="4" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

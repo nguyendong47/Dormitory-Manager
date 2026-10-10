@@ -1,0 +1,133 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        x:Class="Dormitory.Desktop.Views.AssignBillDialogWindow"
+        x:DataType="vm:AssignBillDialogViewModel"
+        Title="Gán Thủ Công Hóa Đơn Cho Giao Dịch"
+        Width="680"
+        Height="620"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="20" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+            <!-- Header tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,12" Spacing="4">
+                <TextBlock Text="🔗 GÁN HÓA ĐƠN THỦ CÔNG CHO GIAO DỊCH"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="#0078D4"/>
+                <TextBlock Text="Gán một hóa đơn chưa thanh toán cho giao dịch chuyển khoản ngân hàng chưa khớp cú pháp"
+                           Foreground="{DynamicResource SystemBaseMediumColor}"
+                           FontSize="12"/>
+            </StackPanel>
+
+            <!-- Card thông tin giao dịch cần gán -->
+            <Border Grid.Row="1"
+                    Background="{DynamicResource SystemChromeMediumLowColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="14"
+                    Margin="0,0,0,12">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="6" Margin="0,0,0,6">
+                        <TextBlock Text="Mã GD ngân hàng:" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBlock Text="{Binding Transaction.TransactionId}" Foreground="#0078D4" FontWeight="Bold" FontSize="12"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="6" Margin="0,0,0,6">
+                        <TextBlock Text="Số tiền nhận:" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBlock Text="{Binding Transaction.Amount, StringFormat='{}{0:N0} đ'}" Foreground="#107C41" FontWeight="Bold" FontSize="13"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Spacing="6" Margin="0,0,0,6">
+                        <TextBlock Text="STK nhận:" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBlock Text="{Binding Transaction.AccountNumber}" FontSize="12"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="6" Margin="0,0,0,6">
+                        <TextBlock Text="Thời gian:" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBlock Text="{Binding Transaction.TransactionDate, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" FontSize="12"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="Nội dung CK:" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding Transaction.Description}"
+                                   FontWeight="Medium"
+                                   FontSize="12"
+                                   Foreground="#B06000"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Khối danh sách hóa đơn chưa thanh toán -->
+            <Grid Grid.Row="2" RowDefinitions="Auto,*" Margin="0,0,0,12">
+                <TextBlock Grid.Row="0"
+                           Text="Chọn hóa đơn chưa thanh toán cần gạch nợ:"
+                           FontWeight="SemiBold"
+                           FontSize="13"
+                           Margin="0,0,0,6"/>
+
+                <Border Grid.Row="1"
+                        Background="{DynamicResource SystemAltHighColor}"
+                        BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6">
+                    <DataGrid ItemsSource="{Binding UnpaidBills}"
+                              SelectedItem="{Binding SelectedBill}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              GridLinesVisibility="Horizontal"
+                              CanUserResizeColumns="True"
+                              BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã hóa đơn" Binding="{Binding BillCode}" Width="140"/>
+                            <DataGridTextColumn Header="Phòng" Binding="{Binding RoomNumber}" Width="80"/>
+                            <DataGridTextColumn Header="Tháng/Năm" Binding="{Binding Month, StringFormat='Tháng {0}'}" Width="90"/>
+                            <DataGridTextColumn Header="Năm" Binding="{Binding Year}" Width="65"/>
+                            <DataGridTextColumn Header="Tổng tiền (đ)" Binding="{Binding TotalAmount, StringFormat='{}{0:N0} đ'}" Width="130"/>
+                            <DataGridTextColumn Header="Hạn nộp" Binding="{Binding DueDate, StringFormat='{}{0:dd/MM/yyyy}'}" Width="110"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
+
+            <!-- Ô nhập ghi chú đối soát -->
+            <StackPanel Grid.Row="3" Spacing="4" Margin="0,0,0,14">
+                <TextBlock Text="Ghi chú đối soát thủ công:" FontWeight="Medium" FontSize="12"/>
+                <TextBox Text="{Binding Note}"
+                         Watermark="Nhập lý do đối soát thủ công (ví dụ: Sinh viên gõ nhầm mã phòng/HĐ)..."/>
+            </StackPanel>
+
+            <!-- Footer: Nút bấm xác nhận & hủy -->
+            <Grid Grid.Row="4" ColumnDefinitions="*,Auto,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{Binding StatusMessage}"
+                           Foreground="{DynamicResource SystemBaseMediumColor}"
+                           FontSize="12"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"/>
+
+                <Button Grid.Column="1"
+                        Content="Hủy bỏ"
+                        Command="{Binding CancelCommand}"
+                        Margin="0,0,10,0"
+                        CornerRadius="6"
+                        Padding="16,8"/>
+
+                <Button Grid.Column="2"
+                        Content="✓ Xác nhận gán hóa đơn"
+                        Command="{Binding ConfirmAssignCommand}"
+                        IsEnabled="{Binding SelectedBill, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="18,8"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

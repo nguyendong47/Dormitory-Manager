@@ -86,6 +86,7 @@ public partial class App : Avalonia.Application
         services.AddTransient<ReportGenerateDialogViewModel>();
         services.AddTransient<SystemSettingsViewModel>();
         services.AddTransient<VietQrDialogViewModel>();
+        services.AddTransient<PaymentTransactionListViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
         // 4. Cấu hình Views

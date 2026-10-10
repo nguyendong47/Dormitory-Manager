@@ -20,6 +20,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ViolationListViewModel _violationListVm;
     private readonly ReportListViewModel _reportListVm;
     private readonly SystemSettingsViewModel _systemSettingsVm;
+    private readonly PaymentTransactionListViewModel _transactionListVm;
     private readonly IUserSession _userSession;
 
     public LoginViewModel LoginVm { get; }
@@ -53,6 +54,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ViolationListViewModel violationListVm,
         ReportListViewModel reportListVm,
         SystemSettingsViewModel systemSettingsVm,
+        PaymentTransactionListViewModel transactionListVm,
         LoginViewModel loginVm,
         IUserSession userSession)
     {
@@ -66,6 +68,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _violationListVm = violationListVm;
         _reportListVm = reportListVm;
         _systemSettingsVm = systemSettingsVm;
+        _transactionListVm = transactionListVm;
         LoginVm = loginVm;
         _userSession = userSession;
 
@@ -94,6 +97,7 @@ public partial class MainWindowViewModel : ViewModelBase
         NavigateToStudentsCommand = new RelayCommand(NavigateToStudents);
         NavigateToContractsCommand = new RelayCommand(NavigateToContracts);
         NavigateToBillsCommand = new RelayCommand(NavigateToBills);
+        NavigateToTransactionsCommand = new RelayCommand(NavigateToTransactions);
         NavigateToEmployeesCommand = new RelayCommand(NavigateToEmployees);
         NavigateToViolationsCommand = new RelayCommand(NavigateToViolations);
         NavigateToReportsCommand = new RelayCommand(NavigateToReports);
@@ -107,6 +111,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public IRelayCommand NavigateToStudentsCommand { get; }
     public IRelayCommand NavigateToContractsCommand { get; }
     public IRelayCommand NavigateToBillsCommand { get; }
+    public IRelayCommand NavigateToTransactionsCommand { get; }
     public IRelayCommand NavigateToEmployeesCommand { get; }
     public IRelayCommand NavigateToViolationsCommand { get; }
     public IRelayCommand NavigateToReportsCommand { get; }
@@ -203,6 +208,13 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentView = _billListVm;
         ActiveMenu = "Bills";
         _ = _billListVm.LoadBillsAsync();
+    }
+
+    public void NavigateToTransactions()
+    {
+        CurrentView = _transactionListVm;
+        ActiveMenu = "Transactions";
+        _ = _transactionListVm.LoadTransactionsAsync();
     }
 
     public void NavigateToEmployees()

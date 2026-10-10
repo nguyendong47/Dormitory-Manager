@@ -159,6 +159,7 @@ public class TestFixture : IDisposable
         services.AddTransient<ReportGenerateDialogViewModel>();
         services.AddTransient<SystemSettingsViewModel>();
         services.AddTransient<VietQrDialogViewModel>();
+        services.AddTransient<PaymentTransactionListViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
         ServiceProvider = services.BuildServiceProvider();

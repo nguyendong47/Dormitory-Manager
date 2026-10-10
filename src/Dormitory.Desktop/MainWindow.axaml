@@ -31,6 +31,9 @@
         <DataTemplate DataType="{x:Type vm:BillListViewModel}">
             <views:BillListView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:PaymentTransactionListViewModel}">
+            <views:PaymentTransactionListView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:EmployeeListViewModel}">
             <views:EmployeeListView/>
         </DataTemplate>
@@ -91,6 +94,11 @@
 
                         <Button Content="💵  Hóa đơn &amp; Dịch vụ"
                                 Command="{Binding NavigateToBillsCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
+
+                        <Button Content="💳  Giao dịch đối soát"
+                                Command="{Binding NavigateToTransactionsCommand}"
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                                 Padding="12,10" CornerRadius="6"/>
 

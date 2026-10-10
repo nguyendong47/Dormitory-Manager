@@ -178,20 +178,20 @@
 - Test: `tests/Dormitory.UnitTests/ViewModels/PaymentTransactionListViewModelTests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 5.1:** Xây dựng `PaymentTransactionListViewModel`:
+- [x] **Step 5.1:** Xây dựng `PaymentTransactionListViewModel`:
   - Danh sách `ObservableCollection<PaymentTransactionDto> Transactions`.
   - Các bộ lọc: Trạng thái đối soát (`All`, `Success`, `PartiallyPaid`, `Unmatched`, `Duplicate`), Từ ngày - Đến ngày, Tìm kiếm từ khóa.
   - Các thẻ KPI: Tổng số tiền thu tự động, Giao dịch thành công, Giao dịch chưa khớp cần xử lý.
   - Command: `AssignBillCommand` (mở hộp thoại chọn hóa đơn để gán thủ công cho giao dịch `Unmatched`).
   - Command: `RefreshCommand`.
-- [ ] **Step 5.2:** Thiết kế giao diện `PaymentTransactionListView.axaml` với DataGrid hiện đại, các huy hiệu màu trạng thái (Xanh = Thành công, Cam = Chưa khớp, Đỏ = Trùng lặp), các nút bấm thao tác nhanh.
-- [ ] **Step 5.3:** Thêm mục điều hướng **"💳 Giao Dịch Đối Soát"** vào Sidebar trong `MainWindow.axaml` và `MainWindowViewModel.cs`.
-- [ ] **Step 5.4:** Nâng cấp `SystemSettingsViewModel` và `SystemSettingsView.axaml`:
+- [x] **Step 5.2:** Thiết kế giao diện `PaymentTransactionListView.axaml` với DataGrid hiện đại, các huy hiệu màu trạng thái (Xanh = Thành công, Cam = Chưa khớp, Đỏ = Trùng lặp), các nút bấm thao tác nhanh.
+- [x] **Step 5.3:** Thêm mục điều hướng **"💳 Giao Dịch Đối Soát"** vào Sidebar trong `MainWindow.axaml` và `MainWindowViewModel.cs`.
+- [x] **Step 5.4:** Nâng cấp `SystemSettingsViewModel` và `SystemSettingsView.axaml`:
   - Thêm Card: **"🌐 Cấu Hình Webhook Tự Động Gạch Nợ (Open Banking)"**.
   - Checkbox bật/tắt Webhook, ô nhập Port (mặc định 5005), ô nhập Secret Key xác thực, ComboBox chọn cổng (PayOS, Casso, Generic).
   - Nút "💾 Lưu cấu hình Webhook" và nút "🧪 Thử nghiệm gửi Webhook mẫu".
-- [ ] **Step 5.5:** Viết unit test cho ViewModel và kiểm tra biên dịch.
-- [ ] **Step 5.6:** Chạy `dotnet test`. Commit thay đổi: `feat(desktop): add PaymentTransactionListView and Webhook settings UI`.
+- [x] **Step 5.5:** Viết unit test cho ViewModel và kiểm tra biên dịch.
+- [x] **Step 5.6:** Chạy `dotnet test`. Commit thay đổi: `feat(desktop): implement payment transactions management view and webhook settings UI`.
 
 ---
 

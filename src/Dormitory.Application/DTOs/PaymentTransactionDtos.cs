@@ -71,6 +71,45 @@ public class PaymentTransactionDto
     /// Thời điểm lưu bản ghi vào hệ thống KTX
     /// </summary>
     public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// Nhãn hiển thị tiếng Việt của trạng thái đối soát
+    /// </summary>
+    public string StatusText => Status switch
+    {
+        PaymentTransactionStatus.Success => "Thành công",
+        PaymentTransactionStatus.PartiallyPaid => "Thiếu tiền",
+        PaymentTransactionStatus.Unmatched => "Chưa khớp",
+        PaymentTransactionStatus.Duplicate => "Trùng lặp",
+        PaymentTransactionStatus.Failed => "Thất bại",
+        _ => "Không rõ"
+    };
+
+    /// <summary>
+    /// Màu chữ badge trạng thái
+    /// </summary>
+    public string StatusBadgeColor => Status switch
+    {
+        PaymentTransactionStatus.Success => "#107C41",
+        PaymentTransactionStatus.PartiallyPaid => "#D83B01",
+        PaymentTransactionStatus.Unmatched => "#C67D00",
+        PaymentTransactionStatus.Duplicate => "#A80000",
+        PaymentTransactionStatus.Failed => "#797775",
+        _ => "#605E5C"
+    };
+
+    /// <summary>
+    /// Màu nền badge trạng thái
+    /// </summary>
+    public string StatusBadgeBackground => Status switch
+    {
+        PaymentTransactionStatus.Success => "#DFF6DD",
+        PaymentTransactionStatus.PartiallyPaid => "#FDE7E9",
+        PaymentTransactionStatus.Unmatched => "#FFF4CE",
+        PaymentTransactionStatus.Duplicate => "#FDE7E9",
+        PaymentTransactionStatus.Failed => "#F3F2F1",
+        _ => "#F3F2F1"
+    };
 }
 
 /// <summary>
