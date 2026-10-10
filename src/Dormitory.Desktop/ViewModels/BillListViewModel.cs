@@ -15,7 +15,7 @@ namespace Dormitory.Desktop.ViewModels;
 /// <summary>
 /// ViewModel quản lý danh sách hóa đơn điện, nước và dịch vụ phòng
 /// </summary>
-public partial class BillListViewModel : ViewModelBase
+public partial class BillListViewModel : ViewModelBase, IDisposable
 {
     private readonly IBillService _billService;
     private readonly IRoomService _roomService;
@@ -28,6 +28,7 @@ public partial class BillListViewModel : ViewModelBase
     private readonly IStudentService _studentService;
     private readonly IBankSettingsService? _bankSettingsService;
     private readonly IVietQrService? _vietQrService;
+    private readonly IPaymentNotificationService? _paymentNotificationService;
 
     public ObservableCollection<string> StatusFilterOptions { get; } = new()
     {
@@ -62,6 +63,9 @@ public partial class BillListViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isLoading;
 
+    [ObservableProperty]
+    private string? _autoPaymentNotification;
+
     public BillListViewModel(
         IBillService billService,
         IRoomService roomService,
@@ -73,7 +77,8 @@ public partial class BillListViewModel : ViewModelBase
         IContractService contractService,
         IStudentService studentService,
         IBankSettingsService? bankSettingsService = null,
-        IVietQrService? vietQrService = null)
+        IVietQrService? vietQrService = null,
+        IPaymentNotificationService? paymentNotificationService = null)
     {
         _billService = billService;
         _roomService = roomService;
@@ -86,6 +91,12 @@ public partial class BillListViewModel : ViewModelBase
         _studentService = studentService;
         _bankSettingsService = bankSettingsService;
         _vietQrService = vietQrService;
+        _paymentNotificationService = paymentNotificationService;
+
+        if (_paymentNotificationService != null)
+        {
+            _paymentNotificationService.OnPaymentReceived += HandlePaymentReceived;
+        }
     }
 
     /// <summary>
@@ -433,4 +444,27 @@ public partial class BillListViewModel : ViewModelBase
     /// Alias tương thích ngược cho MarkPaidCommand
     /// </summary>
     public IAsyncRelayCommand MarkAsPaidCommand => MarkPaidCommand;
+
+    /// <summary>
+    /// Xử lý sự kiện nhận thông báo thanh toán ngân hàng thành công qua Webhook theo thời gian thực
+    /// </summary>
+    private void HandlePaymentReceived(object? sender, PaymentReceivedEventArgs e)
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+        {
+            AutoPaymentNotification = $"Hóa đơn {e.BillCode} đã được tự động thanh toán {e.Amount:N0} VND qua chuyển khoản ngân hàng!";
+            await LoadBillsAsync();
+        });
+    }
+
+    /// <summary>
+    /// Hủy đăng ký sự kiện thanh toán khi ViewModel giải phóng tránh memory leak
+    /// </summary>
+    public void Dispose()
+    {
+        if (_paymentNotificationService != null)
+        {
+            _paymentNotificationService.OnPaymentReceived -= HandlePaymentReceived;
+        }
+    }
 }

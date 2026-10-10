@@ -31,6 +31,9 @@ packages/
 # GitNexus local index
 .gitnexus/
 
+# Scratch directory
+scratch/
+
 # Legacy project
 legacy/packages/
 legacy/**/bin/

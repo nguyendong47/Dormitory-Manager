@@ -17,10 +17,14 @@ namespace Dormitory.Infrastructure.Services;
 public class PaymentReconciliationService : IPaymentReconciliationService
 {
     private readonly IDormitoryDbContext _context;
+    private readonly IPaymentNotificationService? _notificationService;
 
-    public PaymentReconciliationService(IDormitoryDbContext context)
+    public PaymentReconciliationService(
+        IDormitoryDbContext context,
+        IPaymentNotificationService? notificationService = null)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+        _notificationService = notificationService;
     }
 
     /// <inheritdoc />
@@ -191,6 +195,15 @@ public class PaymentReconciliationService : IPaymentReconciliationService
             _context.PaymentTransactions.Add(successTx);
             await _context.SaveChangesAsync();
 
+            _notificationService?.NotifyPaymentReceived(new PaymentReceivedEventArgs
+            {
+                BillId = bill.Id,
+                BillCode = bill.BillCode,
+                Amount = payload.Amount,
+                TransactionId = payload.TransactionId,
+                ReceivedAt = DateTime.UtcNow
+            });
+
             return new PaymentReconciliationResultDto
             {
                 IsSuccess = true,
@@ -284,6 +297,19 @@ public class PaymentReconciliationService : IPaymentReconciliationService
         }
 
         await _context.SaveChangesAsync();
+
+        if (tx.Amount >= bill.TotalAmount)
+        {
+            _notificationService?.NotifyPaymentReceived(new PaymentReceivedEventArgs
+            {
+                BillId = bill.Id,
+                BillCode = bill.BillCode,
+                Amount = tx.Amount,
+                TransactionId = tx.TransactionId,
+                ReceivedAt = DateTime.UtcNow
+            });
+        }
+
         return true;
     }
 

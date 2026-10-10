@@ -64,6 +64,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IBankSettingsService, BankSettingsService>();
         services.AddScoped<IVietQrService, VietQrService>();
         services.AddScoped<IPaymentReconciliationService, PaymentReconciliationService>();
+        services.AddSingleton<IPaymentNotificationService, PaymentNotificationService>();
         services.AddSingleton<IWebhookListenerService, WebhookListenerService>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IFileService, FileService>();

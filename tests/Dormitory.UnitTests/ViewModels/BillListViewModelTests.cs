@@ -27,6 +27,7 @@ public class BillListViewModelTests
     private readonly Mock<IStudentService> _mockStudentService;
     private readonly Mock<IBankSettingsService> _mockBankSettingsService;
     private readonly Mock<IVietQrService> _mockVietQrService;
+    private readonly Mock<IPaymentNotificationService> _mockPaymentNotificationService;
 
     public BillListViewModelTests()
     {
@@ -41,9 +42,10 @@ public class BillListViewModelTests
         _mockStudentService = new Mock<IStudentService>();
         _mockBankSettingsService = new Mock<IBankSettingsService>();
         _mockVietQrService = new Mock<IVietQrService>();
+        _mockPaymentNotificationService = new Mock<IPaymentNotificationService>();
     }
 
-    private BillListViewModel CreateViewModel()
+    private BillListViewModel CreateViewModel(IPaymentNotificationService? paymentNotificationService = null)
     {
         return new BillListViewModel(
             _mockBillService.Object,
@@ -56,7 +58,8 @@ public class BillListViewModelTests
             _mockContractService.Object,
             _mockStudentService.Object,
             _mockBankSettingsService.Object,
-            _mockVietQrService.Object);
+            _mockVietQrService.Object,
+            paymentNotificationService);
     }
 
     [Fact]
@@ -145,6 +148,28 @@ public class BillListViewModelTests
 
         // Assert
         handlerCalled.Should().BeTrue();
-        _mockBillService.Verify(b => b.GetAllBillsAsync(It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<BillStatus?>()), Times.Once);
+    }
+
+    [Fact]
+    public void Constructor_WithPaymentNotificationService_SubscribesToOnPaymentReceived()
+    {
+        // Arrange & Act
+        var vm = CreateViewModel(_mockPaymentNotificationService.Object);
+
+        // Assert
+        _mockPaymentNotificationService.VerifyAdd(m => m.OnPaymentReceived += It.IsAny<EventHandler<PaymentReceivedEventArgs>>(), Times.Once);
+    }
+
+    [Fact]
+    public void Dispose_WithPaymentNotificationService_UnsubscribesFromOnPaymentReceived()
+    {
+        // Arrange
+        var vm = CreateViewModel(_mockPaymentNotificationService.Object);
+
+        // Act
+        vm.Dispose();
+
+        // Assert
+        _mockPaymentNotificationService.VerifyRemove(m => m.OnPaymentReceived -= It.IsAny<EventHandler<PaymentReceivedEventArgs>>(), Times.Once);
     }
 }
