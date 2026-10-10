@@ -55,7 +55,7 @@ public class PaymentTransactionEntityTests : IDisposable
         transaction.Status.Should().Be(PaymentTransactionStatus.Unmatched);
         transaction.RawPayload.Should().BeEmpty();
         transaction.Note.Should().BeEmpty();
-        transaction.CreatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+        transaction.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         transaction.Bill.Should().BeNull();
     }
 

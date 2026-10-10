@@ -70,7 +70,7 @@ public class PaymentTransaction
     /// <summary>
     /// Thời điểm bản ghi được ghi nhận vào hệ thống quản lý KTX
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Thông tin hóa đơn liên kết tương ứng
