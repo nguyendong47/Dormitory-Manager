@@ -37,7 +37,7 @@
 ## Danh Sách Tasks Triển Khai
 
 - [x] **Task 1: Thiết kế Thực thể `PaymentTransaction`, Cấu hình EF Core SQLite & DTOs**
-- [ ] **Task 2: Thuật toán Bóc tách Cú pháp Chuyển khoản & Đối soát Hóa đơn (`IPaymentReconciliationService`) (TDD)**
+- [x] **Task 2: Thuật toán Bóc tách Cú pháp Chuyển khoản & Đối soát Hóa đơn (`IPaymentReconciliationService`) (TDD)**
 - [ ] **Task 3: Dịch vụ Nhúng Lắng nghe Webhook Biến Động Số Dư & Bảo mật Chữ Ký (`IWebhookListenerService`)**
 - [ ] **Task 4: Cơ Chế Bắn Sự Kiện Thời Gian Thực & Tự Động Cập Nhật Danh Sách Hóa Đơn (`BillListViewModel`)**
 - [ ] **Task 5: Giao Diện Quản Lý Lịch Sử Giao Dịch Đối Soát & Cấu Hình Webhook Trong Cài Đặt Hệ Thống**
@@ -90,24 +90,24 @@
 - Test: `tests/Dormitory.UnitTests/Services/PaymentReconciliationServiceTests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 2.1:** Khai báo interface `IPaymentReconciliationService`:
+- [x] **Step 2.1:** Khai báo interface `IPaymentReconciliationService`:
   - `Task<PaymentReconciliationResultDto> ProcessTransactionAsync(WebhookPayloadDto payload);`
   - `string? ExtractBillCode(string description, string prefix = "KTX");`
   - `Task<bool> ManuallyAssignBillAsync(int transactionId, int billId, string note = "");`
   - `Task<List<PaymentTransactionDto>> GetTransactionsAsync(PaymentTransactionFilterDto filter);`
-- [ ] **Step 2.2:** Viết Unit Tests trước (TDD) trong `PaymentReconciliationServiceTests.cs` cho các trường hợp:
+- [x] **Step 2.2:** Viết Unit Tests trước (TDD) trong `PaymentReconciliationServiceTests.cs` cho các trường hợp:
   - Bóc tách mã hóa đơn từ đa dạng cú pháp: `"KTX HD001 NGUYEN VAN A"`, `"KTX-HD001"`, `"ktxhd001"`, `"Chuyen tien phong KTX HD005"`.
   - Giao dịch đúng số tiền: Hóa đơn được chuyển sang `BillStatus.Paid`, ngày thanh toán được ghi nhận, trạng thái giao dịch `Success`.
   - Giao dịch nộp thiếu tiền: Hóa đơn giữ nguyên `Unpaid`, trạng thái giao dịch `PartiallyPaid`.
   - Giao dịch thừa tiền: Hóa đơn chuyển `Paid`, giao dịch lưu ghi chú thừa tiền.
   - Giao dịch trùng `TransactionId`: Bỏ qua không gạch nợ 2 lần, trạng thái `Duplicate`.
   - Giao dịch không tìm thấy mã hóa đơn: Trạng thái `Unmatched`.
-- [ ] **Step 2.3:** Triển khai `PaymentReconciliationService` trong `src/Dormitory.Infrastructure/Services/`:
+- [x] **Step 2.3:** Triển khai `PaymentReconciliationService` trong `src/Dormitory.Infrastructure/Services/`:
   - Sử dụng Regex bóc tách linh hoạt: `new Regex($@"(?:^|\s|\b){Regex.Escape(prefix)}[-_\s]*([A-Za-z0-9_-]+)", RegexOptions.IgnoreCase)`.
   - Truy vấn CSDL, kiểm tra idempotency của `TransactionId`.
   - Cập nhật `Bill` và lưu `PaymentTransaction`.
-- [ ] **Step 2.4:** Chạy `dotnet test` và đảm bảo toàn bộ tests PASS.
-- [ ] **Step 2.5:** Commit thay đổi: `feat(payment): implement PaymentReconciliationService with smart regex parsing and auto-reconciliation`.
+- [x] **Step 2.4:** Chạy `dotnet test` và đảm bảo toàn bộ tests PASS.
+- [x] **Step 2.5:** Commit thay đổi: `feat(payment): implement PaymentReconciliationService with smart regex parsing and auto-reconciliation`.
 
 ---
 
