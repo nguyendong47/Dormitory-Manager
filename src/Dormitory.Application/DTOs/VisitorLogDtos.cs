@@ -172,3 +172,24 @@ public class VisitorFilterDto
     /// </summary>
     public bool OnlyOverstayed { get; set; }
 }
+
+/// <summary>
+/// DTO tổng hợp số liệu thống kê khách đến thăm KTX trong ngày
+/// </summary>
+public class VisitorSummaryDto
+{
+    /// <summary>
+    /// Tổng số lượt khách đến thăm trong ngày hôm nay
+    /// </summary>
+    public int TotalVisitorsToday { get; set; }
+
+    /// <summary>
+    /// Số lượng khách hiện đang có mặt trong KTX (trạng thái InDormitory)
+    /// </summary>
+    public int ActiveVisitorsCount { get; set; }
+
+    /// <summary>
+    /// Số lượng khách đang lưu trú quá giờ quy định (trạng thái Overstayed)
+    /// </summary>
+    public int OverstayedCount { get; set; }
+}

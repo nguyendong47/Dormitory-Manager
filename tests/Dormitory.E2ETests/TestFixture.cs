@@ -142,6 +142,8 @@ public class TestFixture : IDisposable
         services.AddScoped<IBankSettingsService, BankSettingsService>();
         services.AddScoped<IVietQrService, VietQrService>();
         services.AddScoped<IPaymentReconciliationService, PaymentReconciliationService>();
+        services.AddScoped<IVisitorService, VisitorService>();
+        services.AddScoped<IAttendanceService, AttendanceService>();
         services.AddSingleton<IPaymentNotificationService, PaymentNotificationService>();
         services.AddSingleton<IWebhookListenerService, WebhookListenerService>();
 
@@ -175,6 +177,8 @@ public class TestFixture : IDisposable
     public ViolationListViewModel CreateViolationListViewModel() => GetService<ViolationListViewModel>();
     public ReportListViewModel CreateReportListViewModel() => GetService<ReportListViewModel>();
     public ReportGenerateDialogViewModel CreateReportGenerateDialogViewModel() => GetService<ReportGenerateDialogViewModel>();
+    public IVisitorService VisitorService => GetService<IVisitorService>();
+    public IAttendanceService AttendanceService => GetService<IAttendanceService>();
 
     public void Dispose()
     {

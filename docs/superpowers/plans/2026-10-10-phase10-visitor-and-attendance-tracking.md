@@ -96,13 +96,13 @@ classDiagram
 - Test: `tests/Dormitory.UnitTests/Services/AttendanceServiceTests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 2.1:** Khai báo interface `IVisitorService` (Check-in khách, Check-out khách, Lọc danh sách khách, Danh sách khách quá giờ giới nghiêm).
-- [ ] **Step 2.2:** Khai báo interface `IAttendanceService` (Ghi nhận điểm danh đơn lẻ, Điểm danh nhanh theo phòng, Thống kê tỷ lệ chuyên cần theo khoảng ngày).
-- [ ] **Step 2.3:** Viết Unit Tests TDD cho `VisitorService` (kiểm thử đăng ký khách, check-out, tự động đánh dấu quá giờ sau 22:00).
-- [ ] **Step 2.4:** Viết Unit Tests TDD cho `AttendanceService` (kiểm thử lưu điểm danh theo phòng, không cho phép trùng lặp trong cùng ngày, tính tỷ lệ vắng).
-- [ ] **Step 2.5:** Triển khai `VisitorService` và `AttendanceService` với EF Core.
-- [ ] **Step 2.6:** Đăng ký DI trong `App.axaml.cs` và `TestFixture.cs`.
-- [ ] **Step 2.7:** Chạy `dotnet test`. Commit: `feat(services): implement VisitorService and AttendanceService with business rules`.
+- [x] **Step 2.1:** Khai báo interface `IVisitorService` (Check-in khách, Check-out khách, Lọc danh sách khách, Danh sách khách quá giờ giới nghiêm).
+- [x] **Step 2.2:** Khai báo interface `IAttendanceService` (Ghi nhận điểm danh đơn lẻ, Điểm danh nhanh theo phòng, Thống kê tỷ lệ chuyên cần theo khoảng ngày).
+- [x] **Step 2.3:** Viết Unit Tests TDD cho `VisitorService` (kiểm thử đăng ký khách, check-out, tự động đánh dấu quá giờ sau 22:00).
+- [x] **Step 2.4:** Viết Unit Tests TDD cho `AttendanceService` (kiểm thử lưu điểm danh theo phòng, không cho phép trùng lặp trong cùng ngày, tính tỷ lệ vắng).
+- [x] **Step 2.5:** Triển khai `VisitorService` và `AttendanceService` với EF Core.
+- [x] **Step 2.6:** Đăng ký DI trong `App.axaml.cs` và `TestFixture.cs`.
+- [x] **Step 2.7:** Chạy `dotnet test`. Commit: `feat(services): implement VisitorService and AttendanceService with business rules`.
 
 ---
 
