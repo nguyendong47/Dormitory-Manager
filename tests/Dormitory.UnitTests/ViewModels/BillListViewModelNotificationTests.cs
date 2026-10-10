@@ -9,7 +9,7 @@ using Xunit;
 namespace Dormitory.UnitTests.ViewModels;
 
 /// <summary>
-/// Kiểm thử đơn vị cho việc tích hợp IPaymentNotificationService trong BillListViewModel sử dụng NSubstitute
+/// Kiểm thử đơn vị cho việc tích hợp IPaymentNotificationService trong BillListViewModel
 /// </summary>
 public class BillListViewModelNotificationTests
 {
@@ -24,7 +24,20 @@ public class BillListViewModelNotificationTests
     private readonly IStudentService _studentService;
     private readonly IBankSettingsService _bankSettingsService;
     private readonly IVietQrService _vietQrService;
-    private readonly IPaymentNotificationService _notificationService;
+
+    /// <summary>
+    /// Helper mock triển khai IPaymentNotificationService để kiểm tra việc đăng ký/hủy đăng ký sự kiện OnPaymentReceived
+    /// </summary>
+    private class TestPaymentNotificationService : IPaymentNotificationService
+    {
+        public event EventHandler<PaymentReceivedEventArgs>? OnPaymentReceived;
+        public bool HasSubscribers => OnPaymentReceived != null;
+
+        public void NotifyPaymentReceived(PaymentReceivedEventArgs eventArgs)
+        {
+            OnPaymentReceived?.Invoke(this, eventArgs);
+        }
+    }
 
     public BillListViewModelNotificationTests()
     {
@@ -39,7 +52,6 @@ public class BillListViewModelNotificationTests
         _studentService = Substitute.For<IStudentService>();
         _bankSettingsService = Substitute.For<IBankSettingsService>();
         _vietQrService = Substitute.For<IVietQrService>();
-        _notificationService = Substitute.For<IPaymentNotificationService>();
     }
 
     private BillListViewModel CreateViewModel(IPaymentNotificationService? notificationService = null)
@@ -65,11 +77,14 @@ public class BillListViewModelNotificationTests
     [Fact]
     public void Constructor_WithNotificationService_SubscribesToOnPaymentReceived()
     {
-        // Arrange & Act
-        var vm = CreateViewModel(_notificationService);
+        // Arrange
+        var testNotificationService = new TestPaymentNotificationService();
+
+        // Act
+        var vm = CreateViewModel(testNotificationService);
 
         // Assert
-        _notificationService.Received().OnPaymentReceived += Arg.Any<EventHandler<PaymentReceivedEventArgs>>();
+        testNotificationService.HasSubscribers.Should().BeTrue();
     }
 
     /// <summary>
@@ -79,13 +94,14 @@ public class BillListViewModelNotificationTests
     public void Dispose_WithNotificationService_UnsubscribesFromOnPaymentReceived()
     {
         // Arrange
-        var vm = CreateViewModel(_notificationService);
+        var testNotificationService = new TestPaymentNotificationService();
+        var vm = CreateViewModel(testNotificationService);
 
         // Act
         vm.Dispose();
 
         // Assert
-        _notificationService.Received().OnPaymentReceived -= Arg.Any<EventHandler<PaymentReceivedEventArgs>>();
+        testNotificationService.HasSubscribers.Should().BeFalse();
     }
 
     /// <summary>
