@@ -141,6 +141,7 @@ public class TestFixture : IDisposable
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IBankSettingsService, BankSettingsService>();
         services.AddScoped<IVietQrService, VietQrService>();
+        services.AddScoped<IPaymentReconciliationService, PaymentReconciliationService>();
 
         services.AddTransient<LoginViewModel>();
         services.AddTransient<DashboardViewModel>();
