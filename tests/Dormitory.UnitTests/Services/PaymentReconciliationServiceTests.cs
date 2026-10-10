@@ -11,6 +11,7 @@ using Dormitory.Infrastructure.Services;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Xunit;
 
 namespace Dormitory.UnitTests.Services;
@@ -527,6 +528,97 @@ public class PaymentReconciliationServiceTests : IDisposable
         var resultsDate = await _service.GetTransactionsAsync(filterByDate);
         resultsDate.Should().HaveCount(2);
         resultsDate.Select(t => t.TransactionId).Should().Contain(new[] { "TX_B", "TX_C" });
+    }
+
+    #endregion
+
+    #region 6. Unit Tests cho Tích Hợp IPaymentNotificationService
+
+    [Fact]
+    public async Task ProcessTransactionAsync_WithNotificationService_ShouldTriggerPaymentNotification()
+    {
+        // Arrange
+        var mockNotificationService = Substitute.For<IPaymentNotificationService>();
+        var serviceWithNotification = new PaymentReconciliationService(_context, mockNotificationService);
+
+        var room = new Room { RoomNumber = "P301", Building = "Tòa A", PricePerMonth = 500_000m };
+        _context.Rooms.Add(room);
+        await _context.SaveChangesAsync();
+
+        var bill = new Bill
+        {
+            BillCode = "HD-NOTIF-01",
+            RoomId = room.Id,
+            RoomFee = 500_000m,
+            Status = BillStatus.Unpaid,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Bills.Add(bill);
+        await _context.SaveChangesAsync();
+
+        var payload = new WebhookPayloadDto
+        {
+            Gateway = "PayOS",
+            TransactionId = "TX_NOTIF_01",
+            Amount = 500_000m,
+            Description = "KTX HD-NOTIF-01 thanh toan",
+            TransactionDate = DateTime.UtcNow
+        };
+
+        // Act
+        var result = await serviceWithNotification.ProcessTransactionAsync(payload);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        mockNotificationService.Received(1).NotifyPaymentReceived(Arg.Is<PaymentReceivedEventArgs>(e =>
+            e.BillId == bill.Id &&
+            e.BillCode == bill.BillCode &&
+            e.Amount == 500_000m &&
+            e.TransactionId == "TX_NOTIF_01"));
+    }
+
+    [Fact]
+    public async Task ManuallyAssignBillAsync_WithNotificationService_ShouldTriggerPaymentNotification()
+    {
+        // Arrange
+        var mockNotificationService = Substitute.For<IPaymentNotificationService>();
+        var serviceWithNotification = new PaymentReconciliationService(_context, mockNotificationService);
+
+        var room = new Room { RoomNumber = "P302", Building = "Tòa A", PricePerMonth = 700_000m };
+        _context.Rooms.Add(room);
+        await _context.SaveChangesAsync();
+
+        var bill = new Bill
+        {
+            BillCode = "HD-NOTIF-02",
+            RoomId = room.Id,
+            RoomFee = 700_000m,
+            Status = BillStatus.Unpaid,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Bills.Add(bill);
+
+        var tx = new PaymentTransaction
+        {
+            TransactionId = "TX_NOTIF_02",
+            Amount = 700_000m,
+            Description = "Chuyen tien khong kem ma",
+            Status = PaymentTransactionStatus.Unmatched,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.PaymentTransactions.Add(tx);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var success = await serviceWithNotification.ManuallyAssignBillAsync(tx.Id, bill.Id, "Gán thủ công");
+
+        // Assert
+        success.Should().BeTrue();
+        mockNotificationService.Received(1).NotifyPaymentReceived(Arg.Is<PaymentReceivedEventArgs>(e =>
+            e.BillId == bill.Id &&
+            e.BillCode == bill.BillCode &&
+            e.Amount == 700_000m &&
+            e.TransactionId == "TX_NOTIF_02"));
     }
 
     #endregion
