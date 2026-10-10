@@ -149,15 +149,15 @@
 - Test: `tests/Dormitory.UnitTests/ViewModels/BillListViewModelNotificationTests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 4.1:** Tạo interface `IPaymentNotificationService` với event `event EventHandler<PaymentReceivedEventArgs>? OnPaymentReceived`.
-- [ ] **Step 4.2:** Triển khai `PaymentNotificationService`: Được gọi từ `PaymentReconciliationService` khi gạch nợ thành công để phát event.
-- [ ] **Step 4.3:** Cập nhật `BillListViewModel`:
+- [x] **Step 4.1:** Tạo interface `IPaymentNotificationService` với event `event EventHandler<PaymentReceivedEventArgs>? OnPaymentReceived`.
+- [x] **Step 4.2:** Triển khai `PaymentNotificationService`: Được gọi từ `PaymentReconciliationService` khi gạch nợ thành công để phát event.
+- [x] **Step 4.3:** Cập nhật `BillListViewModel`:
   - Lắng nghe event `OnPaymentReceived`.
   - Khi nhận event, sử dụng `Dispatcher.UIThread.InvokeAsync` để tự động nạp lại danh sách hóa đơn (`LoadBillsAsync()`).
   - Hiển thị thông báo Toast / In-app notification: *"Hóa đơn [Mã HĐ] đã được thanh toán tự động qua chuyển khoản ngân hàng!"*.
-- [ ] **Step 4.4:** Đăng ký Singleton `IPaymentNotificationService` trong `App.axaml.cs` và `TestFixture.cs`.
-- [ ] **Step 4.5:** Viết unit test xác minh: Khi event được kích hoạt, `BillListViewModel` tự động refresh danh sách hóa đơn.
-- [ ] **Step 4.6:** Chạy `dotnet test`. Commit thay đổi: `feat(desktop): integrate real-time payment notification and auto-refresh in BillListViewModel`.
+- [x] **Step 4.4:** Đăng ký Singleton `IPaymentNotificationService` trong `App.axaml.cs` và `TestFixture.cs`.
+- [x] **Step 4.5:** Viết unit test xác minh: Khi event được kích hoạt, `BillListViewModel` tự động refresh danh sách hóa đơn.
+- [x] **Step 4.6:** Chạy `dotnet test`. Commit thay đổi: `feat(desktop): integrate real-time payment notification and auto-refresh in BillListViewModel`.
 
 ---
 
