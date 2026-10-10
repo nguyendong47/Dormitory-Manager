@@ -64,11 +64,11 @@ graph TD
 | Tầng (Project) | Trách nhiệm chính | Thư viện & Công nghệ |
 | :--- | :--- | :--- |
 | **`Dormitory.Core`** | Chứa Entities, Enums, Value Objects và các quy tắc Domain cốt lõi. Hoàn toàn độc lập với các thư viện bên ngoài. | .NET 8 BCL (Không có dependency ngoài) |
-| **`Dormitory.Application`** | Chứa DTOs, Business Interfaces (`IVietQrService`, `IBankSettingsService`, `IBillService`,...), quy tắc nghiệp vụ, danh mục ngân hàng tĩnh (`VietQrBankDirectory`). | `Microsoft.EntityFrameworkCore` (Abstractions) |
-| **`Dormitory.Infrastructure`** | Hiện thực hóa các dịch vụ: EF Core SQLite DbContext, `VietQrService` (EMVCo + CRC-16 + QRCoder), `BankSettingsService`, QuestPDF, ClosedXML, MailKit SMTP, BCrypt, SQLite Online Backup. | `Microsoft.EntityFrameworkCore.Sqlite`, `QRCoder`, `QuestPDF`, `ClosedXML`, `MailKit`, `BCrypt.Net-Next` |
-| **`Dormitory.Desktop`** | Giao diện đồ họa đa nền tảng (macOS, Windows, Linux), điều phối ViewModel, Data Binding, Navigation, Dialogs (`VietQrDialogWindow`, `SystemSettingsView`,...). | `Avalonia 11`, `Avalonia.Themes.Fluent`, `CommunityToolkit.Mvvm`, `LiveChartsCore.SkiaSharpView.Avalonia` |
-| **`Dormitory.UnitTests`** | Kiểm thử đơn vị & tích hợp: logic hóa đơn, thuật toán VietQR EMVCo/CRC-16, xuất PDF/Excel, phân quyền, bảo mật (283 bài test). | `xUnit`, `FluentAssertions`, `Moq`, `EF Core InMemory` |
-| **`Dormitory.E2ETests`** | Kiểm thử hành trình người dùng E2E headless hoàn toàn tự động không cần màn hình hiển thị (11 hành trình). | `Avalonia.Headless.XUnit` |
+| **`Dormitory.Application`** | Chứa DTOs, Business Interfaces (`IPaymentReconciliationService`, `IWebhookListenerService`, `IPaymentNotificationService`, `IVietQrService`, `IBankSettingsService`, `IBillService`,...), quy tắc nghiệp vụ, danh mục ngân hàng tĩnh (`VietQrBankDirectory`). | `Microsoft.EntityFrameworkCore` (Abstractions) |
+| **`Dormitory.Infrastructure`** | Hiện thực hóa các dịch vụ: EF Core SQLite DbContext, `PaymentReconciliationService`, `WebhookListenerService`, `PaymentNotificationService`, `VietQrService` (EMVCo + CRC-16 + QRCoder), `BankSettingsService`, QuestPDF, ClosedXML, MailKit SMTP, BCrypt, SQLite Online Backup. | `Microsoft.EntityFrameworkCore.Sqlite`, `QRCoder`, `QuestPDF`, `ClosedXML`, `MailKit`, `BCrypt.Net-Next` |
+| **`Dormitory.Desktop`** | Giao diện đồ họa đa nền tảng (macOS, Windows, Linux), điều phối ViewModel, Data Binding, Navigation, Dialogs (`PaymentTransactionListView`, `AssignBillDialogWindow`, `VietQrDialogWindow`, `SystemSettingsView`,...). | `Avalonia 11`, `Avalonia.Themes.Fluent`, `CommunityToolkit.Mvvm`, `LiveChartsCore.SkiaSharpView.Avalonia` |
+| **`Dormitory.UnitTests`** | Kiểm thử đơn vị & tích hợp: logic hóa đơn, đối soát Webhook, xác thực HMAC-SHA256, thuật toán VietQR EMVCo/CRC-16, xuất PDF/Excel, phân quyền, bảo mật (361 bài test). | `xUnit`, `FluentAssertions`, `Moq`, `NSubstitute`, `EF Core InMemory` |
+| **`Dormitory.E2ETests`** | Kiểm thử hành trình người dùng E2E headless hoàn toàn tự động không cần màn hình hiển thị (17 hành trình). | `Avalonia.Headless.XUnit` |
 
 ---
 
@@ -249,13 +249,74 @@ Khi người dùng kích hoạt gửi email hóa đơn (`IEmailService.SendBillI
 
 ---
 
-## 6. Chiến Lược Kiểm Thử & Đảm Bảo Độ Tin Cậy (Quality Assurance)
+## 6. Kiến Trúc Phân Hệ Webhook & Tự Động Đối Soát Gạch Nợ Hóa Đơn (Phase 9)
 
-Hệ thống duy trì kiểm thử 2 tầng đạt tỷ lệ **100% Pass (294/294 bài test)**:
-1. **Kiểm thử Đơn vị & Tích hợp (283 Unit Tests)**:
+Phân hệ **Bank Webhook Auto-Reconciliation** được xây dựng nhằm hiện đại hóa khâu thu phí qua ngân hàng, loại bỏ hoàn toàn việc nhân viên phải kiểm tra tài khoản và xác nhận thủ công.
+
+### 6.1. Sơ Đồ Kiến Trúc Luồng Webhook & Đối Soát Thời Gian Thực
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Bank as Cổng Ngân Hàng / PayOS / Casso
+    participant Listener as WebhookListenerService (HttpListener:5005)
+    participant Reconcile as PaymentReconciliationService
+    participant DB as SQLite (DormitoryDbContext)
+    participant Notify as PaymentNotificationService
+    participant UI as Avalonia Desktop (Dispatcher.UIThread)
+    actor Staff as Nhân viên Ban Quản lý KTX
+
+    Bank->>Listener: HTTP POST /api/webhook/payment (JSON + Signature/Token)
+    Note over Listener: 1. Kiểm tra xác thực chữ ký<br/>HMAC-SHA256 (FixedTimeEquals) / Token
+    alt Sai chữ ký hoặc Secret Key không khớp
+        Listener-->>Bank: HTTP 401 Unauthorized
+    else Hợp lệ
+        Listener-->>Bank: HTTP 200 OK (Trả ngay lập tức chống timeout)
+        Listener->>Reconcile: ProcessTransactionAsync(payload) [Task.Run]
+        
+        Note over Reconcile: 2. Kiểm tra Idempotency<br/>TransactionId đã tồn tại chưa?
+        alt Trùng mã giao dịch
+            Reconcile->>DB: Ghi log trạng thái Duplicate
+        else Giao dịch mới
+            Note over Reconcile: 3. Regex bóc tách mã hóa đơn<br/>(Prefix: KTX, Timeout: 500ms chống ReDoS)
+            alt Không tìm thấy mã hóa đơn
+                Reconcile->>DB: Lưu PaymentTransaction (Status: Unmatched)
+            else Tìm thấy BillCode
+                Reconcile->>DB: Truy vấn hóa đơn theo BillCode
+                alt Hóa đơn không tồn tại
+                    Reconcile->>DB: Lưu PaymentTransaction (Status: Unmatched)
+                else Tìm thấy hóa đơn & Đối soát số tiền
+                    alt Nộp đủ tiền (Amount >= TotalAmount)
+                        Reconcile->>DB: UPDATE Bills SET Status = 'Paid'<br/>INSERT PaymentTransactions (Status: Success)
+                        Reconcile->>Notify: NotifyPaymentReceived(billId, billCode, amount, ...)
+                        Notify->>UI: Dispatcher.UIThread.InvokeAsync(() => {...})
+                        UI->>Staff: Cập nhật BillListView & Hiển thị thông báo Toast
+                    else Nộp thiếu tiền (Amount < TotalAmount)
+                        Reconcile->>DB: INSERT PaymentTransactions (Status: PartiallyPaid)<br/>(Hóa đơn giữ nguyên Unpaid)
+                    end
+                end
+            end
+        end
+    end
+```
+
+### 6.2. Cơ Chế Điều Phối Đa Luồng & An Toàn Bộ Nhớ
+- **Background HttpListener**: Nhận và giải mã HTTP request trên ThreadPool background thread, tuyệt đối không gây lag hoặc giật khung hình giao diện người dùng.
+- **Scope Factory cô lập**: Từng request Webhook được thực thi trong một `IServiceScope` độc lập tạo từ `IServiceScopeFactory`, đảm bảo `IDormitoryDbContext` riêng biệt, tránh xung đột truy cập đồng thời vào DbContext của EF Core.
+- **Điều phối UI Thread an toàn**: `PaymentNotificationService` bắn event C# chuẩn `EventHandler<PaymentReceivedEventArgs>`. Tầng ViewModel (`BillListViewModel`) bắt event và đóng gói lời gọi cập nhật danh sách vào `Dispatcher.UIThread.InvokeAsync` để đảm bảo các thay đổi của `ObservableCollection` chỉ diễn ra trên luồng giao diện chính của Avalonia.
+
+---
+
+## 7. Chiến Lược Kiểm Thử & Đảm Bảo Độ Tin Cậy (Quality Assurance)
+
+Hệ thống duy trì kiểm thử 2 tầng đạt tỷ lệ **100% Pass (378/378 bài test)**:
+1. **Kiểm thử Đơn vị & Tích hợp (361 Unit Tests)**:
    - Kiểm thử toàn diện thuật toán sinh chuỗi TLV EMVCo, xác thực định dạng, kiểm tra checksum CRC-16 với vector kiểm thử chuẩn.
    - Kiểm thử engine QRCoder sinh mảng byte PNG hợp lệ (bắt đầu bằng magic bytes `0x89, 0x50, 0x4E, 0x47`).
    - Kiểm thử lưu/đọc cấu hình ngân hàng JSON và tra cứu 40+ mã ngân hàng Napas BIN.
-   - Kiểm thử ViewModels: `VietQrDialogViewModel`, `BillListViewModel`, `SystemSettingsViewModel`.
-2. **Kiểm thử Giao diện Tự động Headless (11 E2E Journeys)**:
-   - 11 kịch bản kiểm thử toàn diện giao diện không cần màn hình (`Avalonia.Headless.XUnit`), bao phủ từ đăng nhập, quản lý tài sản, xuất PDF, lịch sử báo cáo, đến quy trình quét mã VietQR tại quầy lễ tân, thay đổi cấu hình ngân hàng, thử nghiệm sinh mã QR và xử lý an toàn khi tính năng bị tắt.
+   - Kiểm thử bóc tách Regex mã hóa đơn chống ReDoS, kiểm tra idempotency chống trùng giao dịch, đối soát số tiền (đủ/thiếu/thừa).
+   - Kiểm thử máy chủ nhúng Webhook HttpListener, xác thực chữ ký số HMAC-SHA256, so sánh crypto chống timing attack `CryptographicOperations.FixedTimeEquals`.
+   - Kiểm thử cơ chế phát sự kiện thời gian thực `PaymentNotificationService`.
+   - Kiểm thử ViewModels: `PaymentTransactionListViewModel`, `VietQrDialogViewModel`, `BillListViewModel`, `SystemSettingsViewModel`.
+2. **Kiểm thử Giao diện Tự động Headless (17 E2E Journeys)**:
+   - 17 kịch bản kiểm thử toàn diện giao diện không cần màn hình (`Avalonia.Headless.XUnit`), bao phủ từ đăng nhập, quản lý tài sản, xuất PDF, lịch sử báo cáo, quét mã VietQR tại quầy lễ tân, cấu hình ngân hàng, cho đến toàn bộ chuỗi hành trình tự động gạch nợ qua Webhook, tiếp nhận giao dịch chưa khớp, gán hóa đơn thủ công, từ chối Webhook sai chữ ký và phát thông báo thời gian thực.

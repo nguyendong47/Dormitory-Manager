@@ -1,6 +1,6 @@
 # Hướng Dẫn Đóng Gói Và Triển Khai Đa Nền Tảng (Cross-Platform Packaging & Deployment)
 
-Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị viên Ký túc xá và Lập trình viên để đóng gói, phân phối và triển khai ứng dụng **Dormitory Manager v2.4.0** trên ba nền tảng hệ điều hành: **macOS**, **Windows** và **Linux**.
+Tài liệu này cung cấp hướng dẫn toàn diện dành cho Quản trị viên Ký túc xá và Lập trình viên để đóng gói, phân phối và triển khai ứng dụng **Dormitory Manager v2.5.0** trên ba nền tảng hệ điều hành: **macOS**, **Windows** và **Linux**.
 
 ---
 
@@ -48,19 +48,19 @@ Dormitory-Manager/
 │   ├── macos-arm64/                              # macOS Apple Silicon (M1/M2/M3/M4)
 │   │   ├── publish/                              # Tệp nhị phân thô
 │   │   ├── DormitoryManager.app/                 # macOS App Bundle chuẩn
-│   │   └── DormitoryManager-v2.4.0-macOS-arm64.dmg # Tệp ảnh đĩa cài đặt DMG
+│   │   └── DormitoryManager-v2.5.0-macOS-arm64.dmg # Tệp ảnh đĩa cài đặt DMG
 │   ├── macos-x64/                                # macOS Intel x86_64
 │   │   ├── DormitoryManager.app/
-│   │   └── DormitoryManager-v2.4.0-macOS-x64.dmg
+│   │   └── DormitoryManager-v2.5.0-macOS-x64.dmg
 │   ├── windows-x64/                              # Windows 64-bit (x64)
 │   │   ├── Dormitory.Desktop.exe                 # Tệp chạy đơn (Single-File Executable)
 │   │   ├── appsettings.json                      # Cấu hình hệ thống
-│   │   └── DormitoryManager-v2.4.0-Windows-x64.zip # Tệp nén ZIP phân phối
+│   │   └── DormitoryManager-v2.5.0-Windows-x64.zip # Tệp nén ZIP phân phối
 │   └── linux-x64/                                # Linux 64-bit (x64)
 │       ├── Dormitory.Desktop                     # Tệp chạy nhị phân Linux
 │       ├── appsettings.json                      # Cấu hình hệ thống
 │       ├── *.so                                  # Native libraries (libSkiaSharp, libe_sqlite3)
-│       └── DormitoryManager-v2.4.0-Linux-x64.tar.gz # Tệp nén lưu trữ TAR.GZ
+│       └── DormitoryManager-v2.5.0-Linux-x64.tar.gz # Tệp nén lưu trữ TAR.GZ
 ```
 
 ---
@@ -237,23 +237,23 @@ on:
 1. **`test-and-verify`** *(Continuous Integration - chạy trên Ubuntu)*:
    - Checkout mã nguồn và cài đặt .NET 8 SDK.
    - Biên dịch toàn bộ Solution ở chế độ Release: `dotnet build Dormitory.sln -c Release`.
-   - Chạy 100% bộ kiểm thử tự động: `dotnet test Dormitory.sln -c Release` (**294/294 tests pass 100%**: 283 Unit Tests + 11 Avalonia Headless UI E2E Journeys).
+   - Chạy 100% bộ kiểm thử tự động: `dotnet test Dormitory.sln -c Release` (**378/378 tests pass 100%**: 361 Unit Tests + 17 Avalonia Headless UI E2E Journeys).
    - Đóng vai trò là Quality Gate chặn lỗi trước khi bất kỳ tác vụ đóng gói nào được kích hoạt.
 
 2. **`package-macos`** *(Continuous Deployment - chạy trên macos-14 Apple Silicon)*:
    - Cấp quyền thực thi và gọi `scripts/package/build-macos.sh arm64`.
-   - Tạo macOS App Bundle `DormitoryManager.app` và đóng gói thành tệp `DormitoryManager-v2.4.0-macOS-arm64.dmg`.
+   - Tạo macOS App Bundle `DormitoryManager.app` và đóng gói thành tệp `DormitoryManager-v2.5.0-macOS-arm64.dmg`.
    - Tải lên GitHub Artifacts (`dormitory-manager-macos-arm64`).
 
 3. **`package-windows`** *(Continuous Deployment - chạy trên Ubuntu)*:
    - Cài đặt tiện ích `zip` và thực thi `scripts/package/build-windows.sh win-x64`.
    - Biên dịch ứng dụng Single-File Executable `Dormitory.Desktop.exe` nhúng sẵn `AppIcon.ico`.
-   - Đóng gói cùng `appsettings.json` thành tệp `DormitoryManager-v2.4.0-Windows-x64.zip`.
+   - Đóng gói cùng `appsettings.json` thành tệp `DormitoryManager-v2.5.0-Windows-x64.zip`.
    - Tải lên GitHub Artifacts (`dormitory-manager-windows-x64`).
 
 4. **`package-linux`** *(Continuous Deployment - chạy trên Ubuntu)*:
    - Thực thi `scripts/package/build-linux.sh linux-x64` tạo nhị phân self-contained kèm thư viện native `libSkiaSharp.so`, `libe_sqlite3.so`.
-   - Nén thành tệp lưu trữ `DormitoryManager-v2.4.0-Linux-x64.tar.gz`.
+   - Nén thành tệp lưu trữ `DormitoryManager-v2.5.0-Linux-x64.tar.gz`.
    - Tải lên GitHub Artifacts (`dormitory-manager-linux-x64`).
 
 5. **`create-release`** *(Automated GitHub Release - kích hoạt khi đẩy Git Tag `v*`)*:
@@ -269,14 +269,44 @@ on:
 Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản cài đặt chính thức tại:
 👉 [**GitHub Releases: nguyendong47/Dormitory-Manager/releases**](https://github.com/nguyendong47/Dormitory-Manager/releases)
 
-- **macOS (M1/M2/M3/M4 Apple Silicon)**: Tải `DormitoryManager-v2.4.0-macOS-arm64.dmg` (~85MB) -> Mở tệp DMG và kéo ứng dụng vào thư mục `Applications`.
-- **macOS (Intel Core x86_64)**: Tải `DormitoryManager-v2.4.0-macOS-x64.dmg` (~88MB) -> Thao tác tương tự.
-- **Windows (10/11 64-bit)**: Tải `DormitoryManager-v2.4.0-Windows-x64.zip` (~95MB) -> Giải nén ra thư mục bất kỳ và nhấp đúp vào `Dormitory.Desktop.exe` để sử dụng ngay (Zero Setup).
-- **Linux (Ubuntu/Debian/Fedora x64)**: Tải `DormitoryManager-v2.4.0-Linux-x64.tar.gz` (~98MB) -> Giải nén và chạy `./Dormitory.Desktop`.
+- **macOS (M1/M2/M3/M4 Apple Silicon)**: Tải `DormitoryManager-v2.5.0-macOS-arm64.dmg` (~85MB) -> Mở tệp DMG và kéo ứng dụng vào thư mục `Applications`.
+- **macOS (Intel Core x86_64)**: Tải `DormitoryManager-v2.5.0-macOS-x64.dmg` (~88MB) -> Thao tác tương tự.
+- **Windows (10/11 64-bit)**: Tải `DormitoryManager-v2.5.0-Windows-x64.zip` (~95MB) -> Giải nén ra thư mục bất kỳ và nhấp đúp vào `Dormitory.Desktop.exe` để sử dụng ngay (Zero Setup).
+- **Linux (Ubuntu/Debian/Fedora x64)**: Tải `DormitoryManager-v2.5.0-Linux-x64.tar.gz` (~98MB) -> Giải nén và chạy `./Dormitory.Desktop`.
 
 ---
 
-## 9. Ghi Chú Phát Hành Phiên Bản v2.4.0 (Release Notes - Giai Đoạn 8)
+## 9. Ghi Chú Phát Hành Phiên Bản v2.5.0 (Release Notes - Giai Đoạn 9)
+
+### 🚀 Tính Năng Mới Nổi Bật:
+1. **Máy Chủ Webhook Nhúng Siêu Nhẹ (`Embedded HttpListener`)**:
+   - Tích hợp máy chủ HTTP nhúng trực tiếp sử dụng `System.Net.HttpListener`, không cần cài đặt ASP.NET Core cồng kềnh.
+   - Lắng nghe tại cổng `5005` (mặc định, tùy chỉnh linh hoạt) với endpoint `/api/webhook/payment`.
+   - Phản hồi ngay lập tức HTTP 200 OK cho cổng thanh toán để tránh timeout đường truyền, xử lý đối soát bất đồng bộ trong background thread.
+2. **Bảo Mật Cấp Độ Cao & Chống Giả Mạo Giao Dịch**:
+   - **Xác thực chữ ký HMAC-SHA256 & Secret Token**: Hỗ trợ PayOS Checksum Key và Casso Secure Token.
+   - **So sánh chống Timing Attack**: Sử dụng `CryptographicOperations.FixedTimeEquals` để so sánh chữ ký mật mã học ở độ phức tạp hằng số thời gian.
+   - **Chống ReDoS**: Regex bóc tách nội dung chuyển khoản được cấu hình thời gian chờ tối đa 500ms (`RegexMatchTimeoutException`), ngăn chặn triệt để nguy cơ treo CPU.
+   - **Đảm bảo Idempotency**: Kiểm tra duy nhất mã giao dịch ngân hàng `TransactionId`, ngăn chặn xử lý trùng lặp khi webhook gửi lại nhiều lần.
+3. **Thuật Toán Bóc Tách Nội Dung Linh Hoạt & Đối Soát Đa Kịch Bản**:
+   - Bóc tách mã hóa đơn chuẩn xác từ đa dạng cú pháp: `KTX HD001`, `KTX-HD001`, `ktxhd001`, hoặc các câu chuyển khoản kèm tên/lời nhắn sinh viên.
+   - Xử lý đối soát thông minh: Chuyển đủ tiền (chuyển trạng thái hóa đơn sang `Paid`), chuyển thiếu tiền (đánh dấu `PartiallyPaid`, giữ `Unpaid`), chuyển thừa tiền (chuyển `Paid` và lưu ghi chú số tiền thừa).
+   - Tự động lưu các giao dịch không khớp vào trạng thái `Unmatched` để xử lý thủ công.
+4. **Đồng Bộ Giao Diện Thời Gian Thực & Thông Báo Tức Thời**:
+   - Dịch vụ `IPaymentNotificationService` phát sự kiện gạch nợ thành công từ background thread.
+   - Tự động điều phối an toàn về Avalonia UI Thread (`Dispatcher.UIThread.InvokeAsync`), làm mới danh sách hóa đơn trên `BillListView` tức thì và hiển thị thông báo Toast.
+5. **Màn Hình Quản Lý Giao Dịch Đối Soát & Gán Hóa Đơn Thủ Công**:
+   - Giao diện `PaymentTransactionListView` hiện đại với DataGrid, huy hiệu màu trạng thái giao dịch.
+   - 3 thẻ KPI theo dõi: Tổng tiền thu tự động, Giao dịch thành công, Giao dịch chưa khớp cần xử lý.
+   - Bộ lọc theo trạng thái (`All`, `Success`, `PartiallyPaid`, `Unmatched`, `Duplicate`), lọc theo ngày, tìm kiếm từ khóa.
+   - Hộp thoại `AssignBillDialogWindow` cho phép kế toán gán thủ công hóa đơn cho các giao dịch chuyển khoản sai cú pháp.
+6. **Mở Rộng Bộ Kiểm Thử Tự Động Đạt 378 Tests (100% Pass)**:
+   - 361 Unit & Integration Tests bao phủ 100% logic đối soát, webhook listener, regex, bảo mật HMAC và ViewModels.
+   - 17 Avalonia Headless UI E2E Journeys kiểm thử hoàn chỉnh các luồng tự động gạch nợ, xử lý thiếu tiền, idempotency và gán thủ công.
+
+---
+
+## 10. Ghi Chú Phát Hành Phiên Bản v2.4.0 (Release Notes - Giai Đoạn 8)
 
 ### 🚀 Tính Năng Mới Nổi Bật:
 1. **Tích Hợp Thanh Toán VietQR Động Chuẩn NAPAS 247 & EMVCo**:
@@ -304,7 +334,7 @@ Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản
 
 ---
 
-## 10. Ghi Chú Phát Hành Phiên Bản v2.3.0 (Release Notes - Giai Đoạn 7)
+## 11. Ghi Chú Phát Hành Phiên Bản v2.3.0 (Release Notes - Giai Đoạn 7)
 
 ### 🚀 Tính Năng Mới Nổi Bật:
 1. **Phân Hệ Báo Cáo & Phân Tích Tổng Hợp KTX (Reporting & Analytics)**:

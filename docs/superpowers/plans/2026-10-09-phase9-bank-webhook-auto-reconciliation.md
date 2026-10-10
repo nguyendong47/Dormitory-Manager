@@ -39,10 +39,10 @@
 - [x] **Task 1: Thiết kế Thực thể `PaymentTransaction`, Cấu hình EF Core SQLite & DTOs**
 - [x] **Task 2: Thuật toán Bóc tách Cú pháp Chuyển khoản & Đối soát Hóa đơn (`IPaymentReconciliationService`) (TDD)**
 - [x] **Task 3: Dịch vụ Nhúng Lắng nghe Webhook Biến Động Số Dư & Bảo mật Chữ Ký (`IWebhookListenerService`)**
-- [ ] **Task 4: Cơ Chế Bắn Sự Kiện Thời Gian Thực & Tự Động Cập Nhật Danh Sách Hóa Đơn (`BillListViewModel`)**
-- [ ] **Task 5: Giao Diện Quản Lý Lịch Sử Giao Dịch Đối Soát & Cấu Hình Webhook Trong Cài Đặt Hệ Thống**
-- [ ] **Task 6: Kiểm Thử Tự Động E2E Headless & Mở Rộng Unit Tests**
-- [ ] **Task 7: Tài Liệu Hướng Dẫn Webhook, GitNexus Sync & Phát Hành Phiên Bản v2.5.0**
+- [x] **Task 4: Cơ Chế Bắn Sự Kiện Thời Gian Thực & Tự Động Cập Nhật Danh Sách Hóa Đơn (`BillListViewModel`)**
+- [x] **Task 5: Giao Diện Quản Lý Lịch Sử Giao Dịch Đối Soát & Cấu Hình Webhook Trong Cài Đặt Hệ Thống**
+- [x] **Task 6: Kiểm Thử Tự Động E2E Headless & Mở Rộng Unit Tests**
+- [x] **Task 7: Tài Liệu Hướng Dẫn Webhook, GitNexus Sync & Phát Hành Phiên Bản v2.5.0**
 
 ---
 
@@ -205,21 +205,21 @@
 - Modify: `tests/Dormitory.UnitTests/Services/WebhookListenerServiceTests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 6.1:** Viết kịch bản E2E `Should_Auto_Reconcile_And_Mark_Bill_Paid_Via_Webhook_Successfully`:
+- [x] **Step 6.1:** Viết kịch bản E2E `Should_Auto_Reconcile_And_Mark_Bill_Paid_Via_Webhook_Successfully`:
   - Chuẩn bị hóa đơn chưa thanh toán trong CSDL mẫu.
   - Khởi tạo listener và gửi HTTP POST request giả lập Webhook với nội dung chứa mã hóa đơn và đủ số tiền.
   - Xác minh hóa đơn trong CSDL tự động chuyển sang trạng thái `Paid` mà không cần thao tác tay.
   - Xác minh `PaymentTransaction` được tạo thành công với trạng thái `Success`.
-- [ ] **Step 6.2:** Viết kịch bản E2E `Should_Handle_Unmatched_Webhook_And_Allow_Manual_Assignment`:
+- [x] **Step 6.2:** Viết kịch bản E2E `Should_Handle_Unmatched_Webhook_And_Allow_Manual_Assignment`:
   - Gửi webhook với nội dung không chứa mã hóa đơn hợp lệ.
   - Xác minh giao dịch được lưu với trạng thái `Unmatched`.
   - Giả lập người dùng mở giao diện gán hóa đơn thủ công và xác nhận.
   - Xác minh hóa đơn được gạch nợ và giao dịch chuyển thành `Success`.
-- [ ] **Step 6.3:** Viết kịch bản E2E `Should_Reject_Webhook_With_Invalid_Secret_Key`:
+- [x] **Step 6.3:** Viết kịch bản E2E `Should_Reject_Webhook_With_Invalid_Secret_Key`:
   - Gửi webhook với sai signature / token.
   - Xác minh hệ thống từ chối (HTTP 401/403) và không gạch nợ hóa đơn.
-- [ ] **Step 6.4:** Chạy toàn bộ test suite `dotnet test` và đảm bảo đạt **100% Tests Pass**.
-- [ ] **Step 6.5:** Commit thay đổi: `test(payment): add automated E2E headless journeys and unit tests for auto-reconciliation`.
+- [x] **Step 6.4:** Chạy toàn bộ test suite `dotnet test` và đảm bảo đạt **100% Tests Pass**.
+- [x] **Step 6.5:** Commit thay đổi: `test(payment): add automated E2E headless journeys and unit tests for auto-reconciliation`.
 
 ---
 
@@ -236,12 +236,12 @@
 - Modify: `src/Dormitory.Desktop/appsettings.json`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 7.1:** Tạo tài liệu kỹ thuật `docs/phase9/webhook-auto-reconciliation-spec.md` mô tả chi tiết đặc tả cấu trúc Webhook payload của PayOS, Casso, và kịch bản kết nối thực tế qua Cloudflare Tunnel / ngrok.
-- [ ] **Step 7.2:** Cập nhật `README.md` với mục tính năng mới: Tự động gạch nợ qua Webhook biến động số dư ngân hàng, nâng phiên bản lên `v2.5.0`, cập nhật số lượng test.
-- [ ] **Step 7.3:** Cập nhật `docs/user-guide.md`: Thêm mục hướng dẫn thiết lập Webhook và sử dụng màn hình Giao dịch đối soát.
-- [ ] **Step 7.4:** Cập nhật `docs/architecture.md`: Thêm sơ đồ Mermaid kiến trúc Webhook Listener và luồng đối soát tự động.
-- [ ] **Step 7.5:** Cập nhật `docs/packaging-and-deployment.md`: Bổ sung Release Notes cho phiên bản `v2.5.0`.
-- [ ] **Step 7.6:** Chạy đồng bộ hóa GitNexus: `node .gitnexus/run.cjs analyze --index-only`.
-- [ ] **Step 7.7:** Chạy kiểm thử xác thực cuối: `dotnet test`.
-- [ ] **Step 7.8:** Commit thay đổi: `docs: finalize Phase 9 auto-reconciliation documentation and release notes for v2.5.0`.
-- [ ] **Step 7.9:** Gắn Git Tag `v2.4.0` -> `v2.5.0` và cập nhật roadmap hoàn thành.
+- [x] **Step 7.1:** Tạo tài liệu kỹ thuật `docs/phase9/webhook-auto-reconciliation-spec.md` mô tả chi tiết đặc tả cấu trúc Webhook payload của PayOS, Casso, và kịch bản kết nối thực tế qua Cloudflare Tunnel / ngrok.
+- [x] **Step 7.2:** Cập nhật `README.md` với mục tính năng mới: Tự động gạch nợ qua Webhook biến động số dư ngân hàng, nâng phiên bản lên `v2.5.0`, cập nhật số lượng test.
+- [x] **Step 7.3:** Cập nhật `docs/user-guide.md`: Thêm mục hướng dẫn thiết lập Webhook và sử dụng màn hình Giao dịch đối soát.
+- [x] **Step 7.4:** Cập nhật `docs/architecture.md`: Thêm sơ đồ Mermaid kiến trúc Webhook Listener và luồng đối soát tự động.
+- [x] **Step 7.5:** Cập nhật `docs/packaging-and-deployment.md`: Bổ sung Release Notes cho phiên bản `v2.5.0`.
+- [x] **Step 7.6:** Chạy đồng bộ hóa GitNexus: `node .gitnexus/run.cjs analyze --index-only`.
+- [x] **Step 7.7:** Chạy kiểm thử xác thực cuối: `dotnet test`.
+- [x] **Step 7.8:** Commit thay đổi: `docs: finalize Phase 9 auto-reconciliation documentation and release notes for v2.5.0`.
+- [x] **Step 7.9:** Gắn Git Tag `v2.4.0` -> `v2.5.0` và cập nhật roadmap hoàn thành.

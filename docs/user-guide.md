@@ -60,6 +60,7 @@ Thanh menu bên trái giúp chuyển đổi linh hoạt giữa các phân hệ:
 - 🎓 **Sinh viên**: Quản lý hồ sơ cá nhân sinh viên và xuất danh bạ Excel.
 - 📝 **Hợp đồng**: Lập mới, gia hạn, thanh lý hợp đồng và bộ lọc trạng thái.
 - 💵 **Hóa đơn**: Lập phiếu thu điện nước, quét mã thanh toán VietQR động (NAPAS 247), xác nhận thu tiền, lọc trạng thái, xuất Excel, gửi email và in PDF (QuestPDF).
+- 💳 **Giao dịch đối soát**: Tra cứu lịch sử biến động số dư từ Webhook ngân hàng, theo dõi KPI đối soát tự động, lọc trạng thái và gán hóa đơn thủ công.
 - 👥 **Nhân viên**: Quản lý đội ngũ nhân sự vận hành KTX (**Chỉ dành cho Quản trị viên**).
 - ⚖️ **Kỷ luật & Vi phạm**: Quản lý biên bản vi phạm nội quy KTX, xử lý kỷ luật, trừ điểm rèn luyện và phạt tiền.
 - 📊 **Báo cáo & Thống kê**: Trung tâm tổng hợp và phân tích báo cáo chuyên sâu (Vi phạm, Tài chính, Lấp đầy, Thiết bị), xuất bản PDF/Excel và quản lý kho lưu trữ tệp báo cáo.
@@ -293,7 +294,20 @@ Phân hệ dành riêng cho **Quản trị viên (Admin)** để theo dõi tình
 - **Lợi ích**: Quản trị viên có thể thay đổi vị trí lưu trữ file CSDL (ví dụ: chuyển sang phân vùng ổ đĩa chuyên dụng hoặc thư mục mạng nội bộ) mà không cần phải biên dịch lại mã nguồn chương trình.
 - **Cơ chế dự phòng an toàn (Safe Fallback)**: Nếu tệp `appsettings.json` bị xóa nhầm hoặc chuỗi kết nối để trống, hệ thống sẽ tự động chuyển về chuỗi kết nối mặc định `Data Source=dormitory.db` nhằm đảm bảo ứng dụng luôn khởi chạy ổn định.
 
-#### 5. Hướng dẫn Đóng gói và Cài đặt Đa nền tảng:
+#### 5. Cấu hình Webhook Tự Động Gạch Nợ (Open Banking):
+- **Mục đích**: Nhận thông báo biến động số dư tài khoản ngân hàng và tự động gạch nợ hóa đơn tương ứng trong thời gian thực.
+- **Vị trí thiết lập**: Quản trị viên vào **⚙️ Cài đặt** > thẻ **"Webhook Đối Soát"**.
+- **Các thông số cấu hình**:
+  - **Bật Webhook (`IsEnabled`)**: Tích chọn để khởi động máy chủ nhúng lắng nghe request.
+  - **Cổng lắng nghe (Port)**: Mặc định `5005` (có thể tùy chỉnh nếu trùng cổng ứng dụng khác).
+  - **Đường dẫn Webhook (Path)**: Mặc định `/api/webhook/payment`.
+  - **Cổng thanh toán (Provider)**: Chọn nhà cung cấp (`PayOS`, `Casso` hoặc `Generic`).
+  - **Khóa bí mật (Secret Key)**: Điền mã Checksum Key (PayOS) hoặc Secret Token (Casso).
+- **Thao tác thử nghiệm & lưu**:
+  - Nhấn nút **"🧪 Thử nghiệm gửi Webhook mẫu"**: Kiểm tra xem máy chủ nhúng có phản hồi HTTP 200 OK bình thường không.
+  - Nhấn nút **"💾 Lưu cấu hình Webhook"**: Lưu thông số bền vững vào `webhooksettings.json` và khởi động lại listener nếu có thay đổi.
+
+#### 6. Hướng dẫn Đóng gói và Cài đặt Đa nền tảng:
 - Để biết chi tiết các bước cài đặt và phân phối ứng dụng cho người dùng cuối trên các hệ điều hành khác nhau, vui lòng tham khảo tài liệu:
   👉 [**Hướng Dẫn Đóng Gói Và Triển Khai Đa Nền Tảng (Cross-Platform Packaging & Deployment)**](packaging-and-deployment.md)
   - **macOS**: Cài đặt dạng App Bundle và tệp ảnh đĩa `.dmg` (hỗ trợ cả Apple Silicon ARM64 và Intel x64).
@@ -564,6 +578,40 @@ Phân hệ **Thanh toán VietQR động** số hóa toàn diện quy trình thu 
      * Đính kèm tệp PDF phiếu thu tiền phòng đầy đủ chi tiết kỹ thuật.
      * Giúp sinh viên ở xa hoặc phụ huynh dễ dàng thanh toán tiền phòng đúng hạn, giảm tải áp lực xếp hàng tại quầy tiếp đón đầu mỗi học kỳ.
 
+
+### 3.12. Phân Hệ Quản Lý Giao Dịch Đối Soát Ngân Hàng (`PaymentTransaction`)
+
+Phân hệ **Giao dịch đối soát** cung cấp cho Ban Quản lý và Kế toán công cụ toàn diện để theo dõi, kiểm tra và xử lý toàn bộ các giao dịch chuyển khoản ngân hàng được tiếp nhận tự động qua Webhook:
+
+#### 1. Ba Thẻ KPI Thống Kê Giao Dịch Thời Gian Thực:
+- **💰 Tổng tiền thu tự động**: Tổng số tiền đã được đối soát và gạch nợ thành công vào các hóa đơn KTX.
+- **✅ Giao dịch thành công**: Số lượng giao dịch khớp đúng mã hóa đơn và số tiền nợ (`Success`).
+- **⚠️ Chưa khớp cần xử lý**: Số lượng giao dịch chuyển khoản chưa được gán hóa đơn do sinh viên ghi sai cú pháp (`Unmatched`). Cần kế toán kiểm tra và gán thủ công.
+
+#### 2. Bộ Lọc Đa Năng & Tìm Kiếm Giao Dịch:
+- **Lọc theo trạng thái**:
+  * *Tất cả*: Hiển thị toàn bộ lịch sử giao dịch ngân hàng.
+  * *Thành công (`Success`)*: Giao dịch khớp mã hóa đơn và đã tự động gạch nợ.
+  * *Thiếu tiền (`PartiallyPaid`)*: Sinh viên chuyển khoản ít hơn số tiền hóa đơn yêu cầu.
+  * *Chưa khớp (`Unmatched`)*: Không tìm thấy mã hóa đơn trong nội dung chuyển khoản hoặc mã hóa đơn không tồn tại.
+  * *Trùng lặp (`Duplicate`)*: Mã giao dịch ngân hàng đã được tiếp nhận và xử lý trước đó, hệ thống chặn gạch nợ kép.
+- **Lọc theo khoảng thời gian**: Từ ngày - Đến ngày giúp đối soát sổ phụ ngân hàng từng tháng/kỳ.
+- **Tìm kiếm từ khóa**: Tìm nhanh theo Mã giao dịch, Nội dung chuyển khoản hoặc Mã hóa đơn.
+- **Nút "🔄 Làm mới"**: Nạp lại dữ liệu giao dịch mới nhất từ CSDL.
+
+#### 3. Quy Trình Gán Hóa Đơn Thủ Công Cho Giao Dịch Chưa Khớp (`Unmatched`):
+Khi sinh viên chuyển khoản nhưng quên ghi mã hóa đơn hoặc ghi sai định dạng (ví dụ: *"Nguyen Van A nop tien phong"* thay vì *"KTX HD001"*):
+1. Giao dịch sẽ được lưu với trạng thái **Chưa khớp (`Unmatched`)** có màu vàng cam cảnh báo trên danh sách.
+2. Kế toán/Thủ quỹ chọn dòng giao dịch chưa khớp và bấm nút **"🔗 Gán Hóa Đơn"** trên thanh công cụ (hoặc nhấp đúp vào dòng).
+3. Hộp thoại **"Gán Hóa Đơn Cho Giao Dịch"** (`AssignBillDialogWindow`) hiển thị:
+   - Thông tin giao dịch: Mã GD, Số tiền, Thời gian, Nội dung chuyển khoản gốc.
+   - Danh sách hóa đơn chưa thanh toán (`Unpaid`): Chọn hóa đơn của sinh viên tương ứng.
+   - Ô nhập ghi chú đối soát (ví dụ: *"Sinh viên ghi nhầm cú pháp, đã xác minh CCCD"*).
+4. Bấm **"✅ Xác nhận gán hóa đơn"**:
+   - Hệ thống tự động gạch nợ hóa đơn được chọn sang trạng thái `Đã thanh toán (Paid)`.
+   - Cập nhật trạng thái giao dịch ngân hàng sang `Thành công (Success)`.
+   - Bắn sự kiện thời gian thực cập nhật ngay lập tức danh sách hóa đơn trên màn hình Hóa đơn.
+
 ---
 
 ## 4. Các Lưu Ý Về An Toàn Dữ Liệu & Ràng Buộc Hệ Thống
@@ -585,11 +633,12 @@ Phân hệ **Thanh toán VietQR động** số hóa toàn diện quy trình thu 
 
 ## 5. Khung Kiểm Thử Tự Động & Đảm Bảo Chất Lượng (Headless UI E2E Testing & Unit Tests)
 
-Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **294/294 Tests Passing (100%)** qua cấu trúc kiểm thử 2 tầng chuyên sâu:
+Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **378/378 Tests Passing (100%)** qua cấu trúc kiểm thử 2 tầng chuyên sâu:
 
-### 5.1. Bộ Kiểm Thử Đơn Vị & Tích Hợp (283 Unit & Integration Tests)
+### 5.1. Bộ Kiểm Thử Đơn Vị & Tích Hợp (361 Unit & Integration Tests)
 - Được tổ chức tại dự án `tests/Dormitory.UnitTests/` sử dụng **xUnit**, **Moq**, **FluentAssertions** và **Microsoft.EntityFrameworkCore.InMemory**.
 - Kiểm tra toàn diện mọi tầng nghiệp vụ:
+  - **Phân hệ Webhook & Đối soát tự động (`PaymentReconciliationServiceTests`, `WebhookListenerServiceTests`, `PaymentNotificationServiceTests`, `PaymentTransactionListViewModelTests`, `PaymentTransactionEntityTests`)**: Kiểm tra trích xuất regex mã hóa đơn chống ReDoS, idempotency chống trùng lặp `TransactionId`, đối soát số tiền (đủ/thiếu/thừa), xác thực HMAC-SHA256 chuẩn mật mã học, so sánh `FixedTimeEquals`, và phát sự kiện cập nhật UI real-time.
   - **Dịch vụ thanh toán VietQR & Cấu hình ngân hàng (`VietQrServiceTests`, `BankSettingsServiceTests`, `VietQrBankDirectoryTests`, `VietQrDialogViewModelTests`)**: Kiểm tra chính xác thuật toán sinh chuỗi TLV EMVCo, tính toán checksum CRC-16/CCITT-FALSE, sinh mảng byte ảnh PNG offline với QRCoder, URL QuickLink, quản lý cấu hình ngân hàng thụ hưởng JSON, tra cứu 40+ mã Napas BIN, và toàn bộ hành vi ViewModel hộp thoại quét mã tại quầy.
   - **Dịch vụ báo cáo & phân tích (`ReportServiceTests`, `ReportDtoTests`, `ReportHistoryTests`)**: Kiểm tra trích xuất số liệu 4 loại báo cáo, tính toán KPI, xuất Excel ClosedXML đa sheet, xuất PDF QuestPDF chuẩn A4 và quản lý vòng đời tệp báo cáo.
   - **ViewModels báo cáo (`ReportListViewModelTests`, `ReportGenerateDialogViewModelTests`)**: Kiểm thử logic bộ lọc, phân trang, lệnh mở/tải/xóa báo cáo và xác thực tham số form tạo báo cáo.
@@ -601,66 +650,38 @@ Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **294/294 Tes
   - **Dịch vụ CSDL & an toàn hệ thống (`DatabaseServiceTests`)**: Sao lưu SQLite Online Backup, khôi phục CSDL an toàn, kiểm tra tính toàn vẹn `PRAGMA integrity_check`.
   - **Bảo mật & mã hóa (`PasswordHasherTests`)**: Xác thực thuật toán băm mật khẩu an toàn BCrypt.
 
-### 5.2. Bộ Kiểm Thử Giao Diện Headless E2E Tự Động (11 Avalonia Headless UI Journeys)
+### 5.2. Bộ Kiểm Thử Giao Diện Headless E2E Tự Động (17 Avalonia Headless UI Journeys)
 - Được tổ chức tại dự án `tests/Dormitory.E2ETests/` sử dụng công nghệ **`Avalonia.Headless.XUnit`**.
 - Khung kiểm thử giao diện headless cho phép khởi chạy và tương tác toàn diện với ứng dụng Avalonia UI mà không cần màn hình hiển thị thật (Display Server) hay card đồ họa GPU, bảo đảm chạy ổn định 100% trên cả máy phát triển và môi trường CI/CD GitHub Actions Ubuntu.
-- **11 Hành trình người dùng trọng yếu (Critical User Journeys)**:
-  1. **Hành trình 1 - Xác thực & Điều hướng toàn hệ thống (`AuthAndNavigationE2ETests`)**:
-     - Khởi chạy màn hình đăng nhập `LoginView`.
-     - Nhập thông tin tài khoản Quản trị viên `admin` / `Admin@123456`.
-     - Xác thực thành công và điều hướng tuần tự qua tất cả các phân hệ: *Dashboard, Phòng ở, Thiết bị, Sinh viên, Hợp đồng, Hóa đơn, Nhân viên, Kỷ luật & Vi phạm, Báo cáo & Thống kê, Cài đặt hệ thống*.
-     - Kiểm tra dữ liệu nạp đầy đủ trên từng View và không xuất hiện ngoại lệ UI.
-  2. **Hành trình 2 - Vòng đời quản lý thiết bị phòng (`EquipmentManagementE2ETests`)**:
-     - Điều hướng tới phân hệ Quản lý tài sản `EquipmentListView`.
-     - Xác nhận 4 thẻ KPI thống kê hiển thị chính xác.
-     - Kiểm tra tính năng lọc danh sách theo phòng và theo trạng thái (*Hoạt động tốt*, *Cần bảo trì*).
-     - Mở hộp thoại `EquipmentDialogWindow`, thêm mới trang thiết bị thành công.
-     - Thực hiện thao tác báo sự cố nhanh và xóa an toàn thiết bị với hộp thoại xác nhận.
-  3. **Hành trình 3 - Xuất phiếu thu PDF từ hóa đơn (`BillExportE2ETests`)**:
-     - Điều hướng tới phân hệ Hóa đơn `BillListView`.
-     - Tải danh sách hóa đơn hiện có trong cơ sở dữ liệu.
-     - Kích hoạt lệnh xuất PDF `ExportBillPdfCommand`.
-     - Kiểm tra kết quả trả về là mảng byte tệp PDF hợp lệ, bắt đầu bằng magic header `%PDF-` chuẩn ISO 32000 và kích thước dữ liệu hoàn chỉnh.
-  4. **Hành trình 4 - Quản lý lịch sử báo cáo & KPI (`ReportManagementE2ETests - ReportListView_ShouldLoadReportsAndCalculateKpisCorrectly`)**:
-     - Nạp danh sách lịch sử báo cáo KTX.
-     - Kiểm tra các thẻ KPI: Tổng số báo cáo, Báo cáo Excel, Báo cáo PDF, Báo cáo tháng này.
-  5. **Hành trình 5 - Bộ lọc danh sách báo cáo (`ReportManagementE2ETests - FilterReports_ByTypeAndFormat_ShouldFilterCorrectly`)**:
-     - Lọc theo từng loại báo cáo (Vi phạm, Tài chính, Lấp đầy, Thiết bị) và định dạng tệp (Excel, PDF).
-     - Xác minh DataGrid chỉ hiển thị các bản ghi khớp với điều kiện lọc.
-  6. **Hành trình 6 - Khởi tạo báo cáo mới (`ReportManagementE2ETests - GenerateReport_WhenConfirmed_ShouldCallServiceAndReload`)**:
-     - Mở hộp thoại `ReportGenerateDialogWindow`.
-     - Chọn loại báo cáo, định dạng và khoảng thời gian.
-     - Xác nhận sinh báo cáo -> Kiểm tra gọi service thành công, sinh tệp và nạp lại danh sách.
-  7. **Hành trình 7 - Quản lý cấu hình ngân hàng & Thử nghiệm QR (`VietQrPaymentE2ETests - Should_Manage_Bank_Settings_And_Test_Qr_Generation_In_SystemSettings`)**:
-     - Nạp cấu hình tài khoản ngân hàng trong `SystemSettingsViewModel`.
-     - Thay đổi ngân hàng thụ hưởng (chuyển sang BIDV, đổi số tài khoản), lưu cấu hình thành công.
-     - Kích hoạt lệnh thử nghiệm sinh mã QR và xác minh hình ảnh `PreviewQrBitmap` hiển thị chuẩn xác.
-  8. **Hành trình 8 - Cửa sổ quét mã VietQR tại quầy & Xác nhận thu tiền (`VietQrPaymentE2ETests - Should_Initialize_VietQr_Dialog_And_Confirm_Payment_Successfully`)**:
-     - Khởi tạo `VietQrDialogViewModel` với hóa đơn chưa thanh toán.
-     - Xác minh Payload EMVCo, số tiền hóa đơn, nội dung chuyển khoản và ảnh QR Bitmap.
-     - Kiểm tra lệnh sao chép STK và lưu ảnh QR PNG ra tệp qua `IFileService`.
-     - Kích hoạt lệnh `ConfirmPaymentCommand`: Xác nhận thu tiền thành công, đóng hộp thoại và kiểm tra trạng thái hóa đơn trong CSDL chuyển thành `Paid`.
-  9. **Hành trình 9 - Xử lý an toàn với hóa đơn đã thanh toán (`VietQrPaymentE2ETests - Should_Handle_Already_Paid_Bill_In_VietQr_Dialog`)**:
-     - Mở hộp thoại VietQR với hóa đơn đã ở trạng thái `Paid`.
-     - Xác minh cờ `IsPaid = true`, `CanConfirmPayment = false` và không cho phép xác nhận thu tiền trùng lặp.
-  10. **Hành trình 10 - Xử lý an toàn khi tắt tính năng VietQR (`VietQrPaymentE2ETests - Should_Handle_Disabled_VietQr_Settings_Gracefully`)**:
-      - Đặt cấu hình `IsEnabled = false`.
-      - Xác minh `PdfExportService` và `EmailService` vẫn xuất bản phiếu thu PDF và gửi thư bình thường mà không sinh khối ảnh VietQR (hiển thị thông tin chuyển khoản dạng văn bản).
-      - Xác minh `VietQrDialogViewModel` hiển thị thông báo tính năng đang tắt một cách an toàn.
-  11. **Hành trình 11 - Kích hoạt lệnh mở hộp thoại VietQR từ danh sách hóa đơn (`VietQrPaymentE2ETests - Should_Trigger_OpenVietQrDialogCommand_From_BillListViewModel`)**:
-      - Chọn hóa đơn trên màn hình danh sách `BillListView`.
-      - Kích hoạt `OpenVietQrDialogCommand` và kiểm tra cửa sổ `VietQrDialogWindow` được mở lên chuẩn xác thông qua `IDialogService`.
+- **17 Hành trình người dùng trọng yếu (Critical User Journeys)**:
+  1. **Hành trình 1 - Xác thực & Điều hướng toàn hệ thống (`AuthAndNavigationE2ETests`)**
+  2. **Hành trình 2 - Vòng đời quản lý thiết bị phòng (`EquipmentManagementE2ETests`)**
+  3. **Hành trình 3 - Xuất phiếu thu PDF từ hóa đơn (`BillExportE2ETests`)**
+  4. **Hành trình 4 - Quản lý lịch sử báo cáo & KPI (`ReportManagementE2ETests`)**
+  5. **Hành trình 5 - Bộ lọc danh sách báo cáo (`ReportManagementE2ETests`)**
+  6. **Hành trình 6 - Khởi tạo báo cáo mới (`ReportManagementE2ETests`)**
+  7. **Hành trình 7 - Quản lý cấu hình ngân hàng & Thử nghiệm QR (`VietQrPaymentE2ETests`)**
+  8. **Hành trình 8 - Cửa sổ quét mã VietQR tại quầy & Xác nhận thu tiền (`VietQrPaymentE2ETests`)**
+  9. **Hành trình 9 - Xử lý an toàn với hóa đơn đã thanh toán (`VietQrPaymentE2ETests`)**
+  10. **Hành trình 10 - Xử lý an toàn khi tắt tính năng VietQR (`VietQrPaymentE2ETests`)**
+  11. **Hành trình 11 - Kích hoạt lệnh mở hộp thoại VietQR từ danh sách hóa đơn (`VietQrPaymentE2ETests`)**
+  12. **Hành trình 12 - Tự động đối soát và gạch nợ hóa đơn qua Webhook (`PaymentAutoReconciliationE2ETests - Should_Auto_Reconcile_And_Mark_Bill_Paid_Via_Webhook_Successfully`)**
+  13. **Hành trình 13 - Tiếp nhận Webhook không khớp và gán hóa đơn thủ công (`PaymentAutoReconciliationE2ETests - Should_Handle_Unmatched_Webhook_And_Allow_Manual_Assignment`)**
+  14. **Hành trình 14 - Từ chối Webhook khi Secret Key không hợp lệ (`PaymentAutoReconciliationE2ETests - Should_Reject_Webhook_With_Invalid_Secret_Key`)**
+  15. **Hành trình 15 - Xử lý an toàn trường hợp Webhook gửi số tiền nộp thiếu (`PaymentAutoReconciliationE2ETests - Should_Handle_Partially_Paid_Webhook_Gracefully`)**
+  16. **Hành trình 16 - Phòng chống trùng lặp Idempotency khi Webhook gửi lại nhiều lần (`PaymentAutoReconciliationE2ETests - Should_Handle_Duplicate_Webhook_Transaction_Idempotently`)**
+  17. **Hành trình 17 - Cập nhật giao diện tự động thời gian thực (`PaymentAutoReconciliationE2ETests - Should_Notify_And_Refresh_BillList_In_RealTime`)**
 
 ### 5.3. Lệnh Chạy Toàn Bộ Kiểm Thử
-Để thực thi toàn bộ 294 bài kiểm thử của hệ thống:
+Để thực thi toàn bộ 378 bài kiểm thử của hệ thống:
 ```bash
 dotnet test Dormitory.sln -c Release --verbosity normal
 ```
 Kết quả:
 ```
-Passed!  - Failed: 0, Passed: 283, Skipped: 0, Total: 283 (Dormitory.UnitTests.dll)
-Passed!  - Failed: 0, Passed:  11, Skipped: 0, Total:  11 (Dormitory.E2ETests.dll)
-Test Run Successful. Total tests: 294. Passed: 294. (100% Pass)
+Passed!  - Failed: 0, Passed: 361, Skipped: 0, Total: 361 (Dormitory.UnitTests.dll)
+Passed!  - Failed: 0, Passed:  17, Skipped: 0, Total:  17 (Dormitory.E2ETests.dll)
+Test Run Successful. Total tests: 378. Passed: 378. (100% Pass)
 ```
 
 
