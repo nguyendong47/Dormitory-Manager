@@ -50,7 +50,7 @@ RID="osx-${ARCH}"
 DIST_DIR="$REPO_ROOT/dist/macos-${ARCH}"
 PUBLISH_DIR="$DIST_DIR/publish"
 APP_BUNDLE="$DIST_DIR/DormitoryManager.app"
-VERSION="${VERSION:-2.4.0}"
+VERSION="${VERSION:-2.5.0}"
 DMG_FILE="$DIST_DIR/DormitoryManager-v${VERSION}-macOS-${ARCH}.dmg"
 
 echo "======================================================================"

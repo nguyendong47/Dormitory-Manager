@@ -24,7 +24,7 @@ fi
 
 RID="${1:-win-x64}"
 DIST_DIR="$REPO_ROOT/dist/windows-x64"
-VERSION="${VERSION:-2.4.0}"
+VERSION="${VERSION:-2.5.0}"
 ZIP_FILE="$DIST_DIR/DormitoryManager-v${VERSION}-Windows-x64.zip"
 
 echo "======================================================================"

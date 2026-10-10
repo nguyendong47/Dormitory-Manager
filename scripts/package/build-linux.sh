@@ -24,7 +24,7 @@ fi
 
 RID="${1:-linux-x64}"
 DIST_DIR="$REPO_ROOT/dist/linux-x64"
-VERSION="${VERSION:-2.4.0}"
+VERSION="${VERSION:-2.5.0}"
 TAR_FILE="$DIST_DIR/DormitoryManager-v${VERSION}-Linux-x64.tar.gz"
 
 echo "======================================================================"
