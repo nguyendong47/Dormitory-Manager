@@ -126,4 +126,9 @@ public class Bill
     /// Ngày lập hóa đơn
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Danh sách các giao dịch thanh toán ngân hàng gắn liền với hóa đơn này
+    /// </summary>
+    public ICollection<PaymentTransaction> PaymentTransactions { get; set; } = new List<PaymentTransaction>();
 }

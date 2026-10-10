@@ -63,6 +63,11 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
     /// </summary>
     public DbSet<ReportHistory> ReportHistories => Set<ReportHistory>();
 
+    /// <summary>
+    /// Bảng quản lý lịch sử giao dịch thanh toán ngân hàng qua Webhook
+    /// </summary>
+    public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -224,6 +229,29 @@ public class DormitoryDbContext : DbContext, IDormitoryDbContext
             entity.HasIndex(rh => rh.GeneratedAt);
             entity.HasIndex(rh => rh.ReportType);
             entity.HasIndex(rh => new { rh.ReportType, rh.GeneratedAt });
+        });
+
+        // Cấu hình bảng PaymentTransaction
+        modelBuilder.Entity<PaymentTransaction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TransactionId).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.BankBin).HasMaxLength(20);
+            entity.Property(e => e.AccountNumber).HasMaxLength(50);
+            entity.Property(e => e.Amount).HasPrecision(18, 2).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.BillCode).HasMaxLength(50);
+            entity.Property(e => e.Note).HasMaxLength(500);
+
+            entity.HasIndex(e => e.TransactionId).IsUnique();
+            entity.HasIndex(e => e.BillCode);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.TransactionDate);
+
+            entity.HasOne(e => e.Bill)
+                .WithMany(b => b.PaymentTransactions)
+                .HasForeignKey(e => e.BillId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }
