@@ -144,6 +144,16 @@ public class AttendanceService : IAttendanceService
 
         if (batchDto.StudentAttendances != null && batchDto.StudentAttendances.Count > 0)
         {
+            var studentIds = batchDto.StudentAttendances
+                .Where(x => x.StudentId > 0)
+                .Select(x => x.StudentId)
+                .Distinct()
+                .ToList();
+
+            var existingMap = await _context.AttendanceRecords
+                .Where(a => studentIds.Contains(a.StudentId) && a.AttendanceDate == attendanceDate)
+                .ToDictionaryAsync(a => a.StudentId, cancellationToken);
+
             foreach (var item in batchDto.StudentAttendances)
             {
                 if (item.StudentId <= 0)
@@ -151,8 +161,7 @@ public class AttendanceService : IAttendanceService
                     continue;
                 }
 
-                var existing = await _context.AttendanceRecords
-                    .FirstOrDefaultAsync(a => a.StudentId == item.StudentId && a.AttendanceDate == attendanceDate, cancellationToken);
+                existingMap.TryGetValue(item.StudentId, out var existing);
 
                 var recorder = !string.IsNullOrWhiteSpace(item.RecordedBy)
                     ? item.RecordedBy.Trim()
