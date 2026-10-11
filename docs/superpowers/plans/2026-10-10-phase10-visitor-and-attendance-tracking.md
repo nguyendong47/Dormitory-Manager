@@ -117,14 +117,14 @@ classDiagram
 - Test: `tests/Dormitory.UnitTests/ViewModels/VisitorListViewModelTests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 3.1:** Xây dựng `VisitorListViewModel`:
+- [x] **Step 3.1:** Xây dựng `VisitorListViewModel`:
   - Thẻ KPI: Khách đang trong KTX, Khách đã rời KTX, Khách quá giờ giới nghiêm (Overstayed).
   - Bộ lọc: Trạng thái, Tìm kiếm theo tên/CCCD, Lọc theo phòng.
   - Lệnh: `CheckInCommand` (mở hộp thoại đăng ký khách), `CheckOutCommand` (ghi nhận khách rời KTX), `RefreshCommand`.
-- [ ] **Step 3.2:** Xây dựng `VisitorCheckInDialogViewModel` và `VisitorCheckInDialogWindow`: Nhập tên khách, CCCD, SĐT, chọn sinh viên/phòng thăm, ghi chú.
-- [ ] **Step 3.3:** Thiết kế `VisitorListView.axaml` với DataGrid hiện đại, Badge màu trạng thái (Xanh lá = Trong KTX, Xám = Đã về, Đỏ = Quá giờ).
-- [ ] **Step 3.4:** Viết Unit Tests kiểm thử các hành vi của `VisitorListViewModel`.
-- [ ] **Step 3.5:** Chạy `dotnet test`. Commit: `feat(desktop): implement Visitor management UI and Check-in dialog`.
+- [x] **Step 3.2:** Xây dựng `VisitorCheckInDialogViewModel` và `VisitorCheckInDialogWindow`: Nhập tên khách, CCCD, SĐT, chọn sinh viên/phòng thăm, ghi chú.
+- [x] **Step 3.3:** Thiết kế `VisitorListView.axaml` với DataGrid hiện đại, Badge màu trạng thái (Xanh lá = Trong KTX, Xám = Đã về, Đỏ = Quá giờ).
+- [x] **Step 3.4:** Viết Unit Tests kiểm thử các hành vi của `VisitorListViewModel`.
+- [x] **Step 3.5:** Chạy `dotnet test`. Commit: `feat(desktop): implement Visitor management UI and Check-in dialog`.
 
 ---
 
@@ -136,15 +136,15 @@ classDiagram
 - Test: `tests/Dormitory.UnitTests/ViewModels/AttendanceTrackingViewModelTests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 4.1:** Xây dựng `AttendanceTrackingViewModel`:
+- [x] **Step 4.1:** Xây dựng `AttendanceTrackingViewModel`:
   - Chọn ngày điểm danh (mặc định hôm nay) và chọn phòng cần điểm danh.
   - Tự động nạp danh sách sinh viên đang cư trú trong phòng.
   - Các nút thao tác nhanh: "Tất cả có mặt", "Đánh dấu vắng", "Ghi chú phép".
   - Thẻ KPI thống kê chuyên cần: Tổng số sinh viên, Có mặt, Vắng không phép, Vắng có phép.
   - Lệnh: `SaveAttendanceCommand` (lưu kết quả điểm danh theo lô), `LoadAttendanceCommand`.
-- [ ] **Step 4.2:** Thiết kế `AttendanceTrackingView.axaml` với bố cục 2 cột (Cột trái: Chọn ngày và danh sách phòng; Cột phải: Bảng điểm danh sinh viên kèm RadioButton/ComboBox chọn trạng thái từng sinh viên).
-- [ ] **Step 4.3:** Viết Unit Tests cho `AttendanceTrackingViewModel`.
-- [ ] **Step 4.4:** Chạy `dotnet test`. Commit: `feat(desktop): implement night attendance tracking view and room batch recording`.
+- [x] **Step 4.2:** Thiết kế `AttendanceTrackingView.axaml` với bố cục Grid hiện đại (Header & Action bar, Thẻ KPI chuyên cần, Bộ lọc ngày/phòng/người điểm danh, Bảng DataGrid sinh viên với ComboBox trạng thái 4 lựa chọn và TextBox inline ghi chú).
+- [x] **Step 4.3:** Viết Unit Tests cho `AttendanceTrackingViewModel`.
+- [x] **Step 4.4:** Chạy `dotnet test`. Commit: `feat(desktop): implement night attendance tracking view and room batch recording`.
 
 ---
 

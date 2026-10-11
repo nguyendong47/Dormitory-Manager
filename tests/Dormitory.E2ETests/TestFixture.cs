@@ -165,6 +165,7 @@ public class TestFixture : IDisposable
         services.AddTransient<PaymentTransactionListViewModel>();
         services.AddTransient<VisitorListViewModel>();
         services.AddTransient<VisitorCheckInDialogViewModel>();
+        services.AddTransient<AttendanceTrackingViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
         ServiceProvider = services.BuildServiceProvider();
@@ -181,6 +182,7 @@ public class TestFixture : IDisposable
     public ViolationListViewModel CreateViolationListViewModel() => GetService<ViolationListViewModel>();
     public ReportListViewModel CreateReportListViewModel() => GetService<ReportListViewModel>();
     public ReportGenerateDialogViewModel CreateReportGenerateDialogViewModel() => GetService<ReportGenerateDialogViewModel>();
+    public AttendanceTrackingViewModel CreateAttendanceTrackingViewModel() => GetService<AttendanceTrackingViewModel>();
     public IVisitorService VisitorService => GetService<IVisitorService>();
     public IAttendanceService AttendanceService => GetService<IAttendanceService>();
 

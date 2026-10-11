@@ -1,0 +1,265 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             xmlns:dto="using:Dormitory.Application.DTOs"
+             x:Class="Dormitory.Desktop.Views.AttendanceTrackingView"
+             x:DataType="vm:AttendanceTrackingViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="24">
+        <!-- Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="📋 Điểm Danh Sinh Viên KTX Ban Đêm" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Kiểm tra chuyên cần, ghi nhận sĩ số phòng và phát hiện vi phạm giờ giới nghiêm ban đêm (sau 22:00)" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Button Content="✅ Tất cả có mặt" 
+                        Command="{Binding MarkAllPresentCommand}"
+                        Background="#107C41" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="12,8"/>
+                <Button Content="❌ Đánh dấu vắng" 
+                        Command="{Binding MarkAllAbsentCommand}"
+                        Background="#D83B01"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="12,8"/>
+                <Button Content="⏰ Về muộn" 
+                        Command="{Binding MarkAllLateCommand}"
+                        Background="#C67D00"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="12,8"/>
+                <Button Content="💾 Lưu điểm danh" 
+                        Command="{Binding SaveAttendanceCommand}"
+                        IsEnabled="{Binding CanSave}"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="14,8"/>
+                <Button Content="🔄 Làm mới" 
+                        Command="{Binding RefreshCommand}"
+                        CornerRadius="6"
+                        Padding="12,8"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- KPI Chuyên Cần Cards -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*,*" Margin="0,0,0,16">
+            <!-- KPI 1: Tổng số sinh viên -->
+            <Border Grid.Column="0" Margin="0,0,6,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="14">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#F3F2F1" CornerRadius="8" Width="40" Height="40" Margin="0,0,10,0" VerticalAlignment="Center">
+                        <TextBlock Text="👥" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Tổng sinh viên" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding TotalStudentsCount, StringFormat='{}{0:N0}'}" FontSize="18" FontWeight="Bold"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- KPI 2: Có mặt -->
+            <Border Grid.Column="1" Margin="6,0,6,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="14">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#DFF6DD" CornerRadius="8" Width="40" Height="40" Margin="0,0,10,0" VerticalAlignment="Center">
+                        <TextBlock Text="🟢" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Có mặt" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding PresentCount, StringFormat='{}{0:N0}'}" FontSize="18" FontWeight="Bold" Foreground="#107C41"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- KPI 3: Vắng không phép -->
+            <Border Grid.Column="2" Margin="6,0,6,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="14">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#FDE7E9" CornerRadius="8" Width="40" Height="40" Margin="0,0,10,0" VerticalAlignment="Center">
+                        <TextBlock Text="❌" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Vắng không phép" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding AbsentWithoutPermissionCount, StringFormat='{}{0:N0}'}" FontSize="18" FontWeight="Bold" Foreground="#A80000"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- KPI 4: Vắng có phép -->
+            <Border Grid.Column="3" Margin="6,0,6,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="14">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#DEECF9" CornerRadius="8" Width="40" Height="40" Margin="0,0,10,0" VerticalAlignment="Center">
+                        <TextBlock Text="📝" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Vắng có phép" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding AbsentWithPermissionCount, StringFormat='{}{0:N0}'}" FontSize="18" FontWeight="Bold" Foreground="#0078D4"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- KPI 5: Về muộn -->
+            <Border Grid.Column="4" Margin="6,0,0,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="14">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#FFF4CE" CornerRadius="8" Width="40" Height="40" Margin="0,0,10,0" VerticalAlignment="Center">
+                        <TextBlock Text="⏰" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Về muộn" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding LateCount, StringFormat='{}{0:N0}'}" FontSize="18" FontWeight="Bold" Foreground="#C67D00"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Filter & Control Toolbar -->
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,Auto,Auto,*" Margin="0,0,0,12" VerticalAlignment="Center">
+            <!-- Chọn ngày -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,0,16,0">
+                <TextBlock Text="Ngày điểm danh:" VerticalAlignment="Center" FontWeight="Medium" FontSize="13"/>
+                <CalendarDatePicker SelectedDate="{Binding SelectedDateNullable}"
+                                    Width="160"
+                                    VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Chọn phòng -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,0,16,0">
+                <TextBlock Text="Phòng:" VerticalAlignment="Center" FontWeight="Medium" FontSize="13"/>
+                <ComboBox ItemsSource="{Binding Rooms}"
+                          SelectedItem="{Binding SelectedRoom}"
+                          Width="150"
+                          PlaceholderText="Chọn phòng"
+                          VerticalAlignment="Center">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="dto:RoomDto">
+                            <TextBlock Text="{Binding RoomNumber, StringFormat='{}Phòng {0}'}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Người điểm danh -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,0,16,0">
+                <TextBlock Text="Người điểm danh:" VerticalAlignment="Center" FontWeight="Medium" FontSize="13"/>
+                <TextBox Text="{Binding RecordedBy}"
+                         Watermark="Người điểm danh"
+                         Width="180"
+                         VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Thông điệp trạng thái -->
+            <TextBlock Grid.Column="3"
+                       Text="{Binding StatusMessage}"
+                       Foreground="{DynamicResource SystemBaseMediumColor}"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Right"
+                       FontSize="12"/>
+        </Grid>
+
+        <!-- Bảng danh sách sinh viên điểm danh (DataGrid) -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource SystemAltHighColor}"
+                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+            <DataGrid ItemsSource="{Binding Students}"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="True"
+                      GridLinesVisibility="Horizontal"
+                      BorderThickness="0">
+                <DataGrid.Columns>
+                    <!-- MSSV -->
+                    <DataGridTextColumn Header="Mã số SV" 
+                                        Binding="{Binding StudentCode}" 
+                                        IsReadOnly="True"
+                                        Width="130"/>
+
+                    <!-- Họ và tên -->
+                    <DataGridTextColumn Header="Họ và tên sinh viên" 
+                                        Binding="{Binding StudentName}" 
+                                        IsReadOnly="True"
+                                        FontWeight="SemiBold" 
+                                        Width="220"/>
+
+                    <!-- Phòng -->
+                    <DataGridTextColumn Header="Phòng" 
+                                        Binding="{Binding RoomNumber}" 
+                                        IsReadOnly="True"
+                                        Width="100"/>
+
+                    <!-- Trạng thái điểm danh (ComboBox 4 lựa chọn) -->
+                    <DataGridTemplateColumn Header="Trạng thái điểm danh" Width="200">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:StudentAttendanceItemViewModel">
+                                <ComboBox ItemsSource="{Binding AvailableStatusOptions}"
+                                          SelectedItem="{Binding SelectedStatusOption, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Center"
+                                          Margin="4,2">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:AttendanceStatusOption">
+                                            <Border Background="{Binding BadgeBackground}" 
+                                                    CornerRadius="4" 
+                                                    Padding="6,2" 
+                                                    HorizontalAlignment="Left">
+                                                <TextBlock Text="{Binding DisplayName}" 
+                                                           Foreground="{Binding BadgeColor}" 
+                                                           FontWeight="SemiBold" 
+                                                           FontSize="12"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Lý do / Ghi chú (TextBox inline) -->
+                    <DataGridTemplateColumn Header="Lý do / Ghi chú" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:StudentAttendanceItemViewModel">
+                                <TextBox Text="{Binding Reason, Mode=TwoWay}"
+                                         Watermark="Nhập lý do vắng hoặc ghi chú..."
+                                         VerticalAlignment="Center"
+                                         Margin="4,2"
+                                         Padding="8,4"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

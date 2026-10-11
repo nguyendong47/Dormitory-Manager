@@ -91,6 +91,7 @@ public partial class App : Avalonia.Application
         services.AddTransient<PaymentTransactionListViewModel>();
         services.AddTransient<VisitorListViewModel>();
         services.AddTransient<VisitorCheckInDialogViewModel>();
+        services.AddTransient<AttendanceTrackingViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
         // 4. Cấu hình Views
