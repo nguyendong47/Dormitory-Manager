@@ -90,7 +90,17 @@ public class AuthAndNavigationE2ETests : IDisposable
         vm.CurrentView.Should().BeOfType<ViolationListViewModel>();
         vm.ActiveMenu.Should().Be("Violations");
 
-        // 5.8 Điều hướng tới báo cáo & thống kê
+        // 5.8 Điều hướng tới quản lý khách ra vào
+        vm.NavigateToVisitorsCommand.Execute(null);
+        vm.CurrentView.Should().BeOfType<VisitorListViewModel>();
+        vm.ActiveMenu.Should().Be("Visitors");
+
+        // 5.9 Điều hướng tới quản lý điểm danh KTX
+        vm.NavigateToAttendanceCommand.Execute(null);
+        vm.CurrentView.Should().BeOfType<AttendanceTrackingViewModel>();
+        vm.ActiveMenu.Should().Be("Attendance");
+
+        // 5.10 Điều hướng tới báo cáo & thống kê
         vm.NavigateToReportsCommand.Execute(null);
         vm.CurrentView.Should().BeOfType<ReportListViewModel>();
         vm.ActiveMenu.Should().Be("Reports");

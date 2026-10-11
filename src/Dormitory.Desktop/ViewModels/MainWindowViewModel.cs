@@ -21,6 +21,8 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ReportListViewModel _reportListVm;
     private readonly SystemSettingsViewModel _systemSettingsVm;
     private readonly PaymentTransactionListViewModel _transactionListVm;
+    private readonly VisitorListViewModel _visitorListVm;
+    private readonly AttendanceTrackingViewModel _attendanceTrackingVm;
     private readonly IUserSession _userSession;
 
     public LoginViewModel LoginVm { get; }
@@ -55,6 +57,8 @@ public partial class MainWindowViewModel : ViewModelBase
         ReportListViewModel reportListVm,
         SystemSettingsViewModel systemSettingsVm,
         PaymentTransactionListViewModel transactionListVm,
+        VisitorListViewModel visitorListVm,
+        AttendanceTrackingViewModel attendanceTrackingVm,
         LoginViewModel loginVm,
         IUserSession userSession)
     {
@@ -69,6 +73,8 @@ public partial class MainWindowViewModel : ViewModelBase
         _reportListVm = reportListVm;
         _systemSettingsVm = systemSettingsVm;
         _transactionListVm = transactionListVm;
+        _visitorListVm = visitorListVm;
+        _attendanceTrackingVm = attendanceTrackingVm;
         LoginVm = loginVm;
         _userSession = userSession;
 
@@ -101,6 +107,8 @@ public partial class MainWindowViewModel : ViewModelBase
         NavigateToEmployeesCommand = new RelayCommand(NavigateToEmployees);
         NavigateToViolationsCommand = new RelayCommand(NavigateToViolations);
         NavigateToReportsCommand = new RelayCommand(NavigateToReports);
+        NavigateToVisitorsCommand = new RelayCommand(NavigateToVisitors);
+        NavigateToAttendanceCommand = new RelayCommand(NavigateToAttendance);
         NavigateToSettingsCommand = new AsyncRelayCommand(NavigateToSettingsAsync);
         LogoutCommand = new RelayCommand(Logout);
     }
@@ -115,6 +123,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public IRelayCommand NavigateToEmployeesCommand { get; }
     public IRelayCommand NavigateToViolationsCommand { get; }
     public IRelayCommand NavigateToReportsCommand { get; }
+    public IRelayCommand NavigateToVisitorsCommand { get; }
+    public IRelayCommand NavigateToAttendanceCommand { get; }
     public IAsyncRelayCommand NavigateToSettingsCommand { get; }
     public IRelayCommand LogoutCommand { get; }
 
@@ -236,6 +246,20 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentView = _reportListVm;
         ActiveMenu = "Reports";
         _ = _reportListVm.LoadReportHistoriesAsync();
+    }
+
+    public void NavigateToVisitors()
+    {
+        CurrentView = _visitorListVm;
+        ActiveMenu = "Visitors";
+        _ = _visitorListVm.LoadVisitorsAsync();
+    }
+
+    public void NavigateToAttendance()
+    {
+        CurrentView = _attendanceTrackingVm;
+        ActiveMenu = "Attendance";
+        _ = _attendanceTrackingVm.LoadAttendanceAsync();
     }
 
     public async Task NavigateToSettingsAsync()

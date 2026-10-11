@@ -46,6 +46,9 @@
         <DataTemplate DataType="{x:Type vm:SystemSettingsViewModel}">
             <views:SystemSettingsView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:VisitorListViewModel}">
+            <views:VisitorListView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:AttendanceTrackingViewModel}">
             <views:AttendanceTrackingView/>
         </DataTemplate>
@@ -107,6 +110,16 @@
 
                         <Button Content="👤  Nhân viên"
                                 Command="{Binding NavigateToEmployeesCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
+
+                        <Button Content="👥  Khách ra vào"
+                                Command="{Binding NavigateToVisitorsCommand}"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                Padding="12,10" CornerRadius="6"/>
+
+                        <Button Content="📋  Điểm danh KTX"
+                                Command="{Binding NavigateToAttendanceCommand}"
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                                 Padding="12,10" CornerRadius="6"/>
 
