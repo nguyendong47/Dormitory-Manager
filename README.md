@@ -1,8 +1,8 @@
 # 🏢 Hệ Thống Quản Lý Ký Túc Xá (Dormitory Management System)
 
 [![CI/CD Pipeline](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/nguyendong47/Dormitory-Manager/actions/workflows/ci-cd.yml)
-![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)
-![Tests](https://img.shields.io/badge/tests-378%2F378%20passed-success.svg)
+![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)
+![Tests](https://img.shields.io/badge/tests-498%2F498%20passed-success.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 > Ứng dụng Desktop hiện đại quản lý toàn diện Ký túc xá sinh viên, xây dựng trên nền tảng **.NET 8 LTS**, **Avalonia UI 11** và **Entity Framework Core 8** theo chuẩn kiến trúc **Clean Architecture** và mô hình **MVVM**.
@@ -128,6 +128,20 @@
     - **Đồng bộ thời gian thực lên giao diện Avalonia Desktop**: Phát sự kiện qua `PaymentNotificationService` điều phối về UI Thread (`Dispatcher.UIThread.InvokeAsync`), tự động nạp lại danh sách hóa đơn và hiển thị thông báo Toast.
     - **Màn hình Quản lý Giao dịch Đối soát (`PaymentTransactionListView`)**: Tra cứu toàn bộ lịch sử biến động số dư, 3 thẻ KPI theo dõi số tiền thu tự động, bộ lọc trạng thái và hộp thoại gán thủ công (`AssignBillDialogWindow`) cho các giao dịch chuyển khoản sai cú pháp (`Unmatched`).
 
+19. **👥 Quản Lý Khách Ra Vào KTX & Cảnh Báo Giới Nghiêm (`VisitorLog`)**:
+    - **Kiểm soát an ninh khách đến thăm**: Đăng ký thông tin khách (Họ tên, CCCD/CMND, Số điện thoại, Sinh viên được thăm, Phòng ở, Ghi chú đồ dùng gửi lại) và lưu thời điểm Check-in chính xác.
+    - **Quy định giờ giấc giới nghiêm (Curfew 22:00)**: Tự động phát hiện và cảnh báo khách lưu trú qua đêm hoặc chưa check-out sau 22:00 hàng ngày (`MarkOverstayedVisitorsAsync`).
+    - **Thủ tục Check-out rời KTX nhanh chóng**: Cập nhật trạng thái `CheckedOut`, thời điểm rời KTX và ghi chú bàn giao/trả giấy tờ.
+    - **4 Thẻ KPI giám sát thời gian thực**: Theo dõi số khách đang ở KTX (`InDormitory`), khách quá giờ giới nghiêm (`Overstayed`), tổng lượt khách trong ngày và khách đã rời đi.
+    - **Bộ lọc đa năng**: Lọc theo phòng, lọc trạng thái, tìm kiếm từ khóa tức thì và tùy chọn hiển thị riêng khách quá giờ.
+
+20. **📋 Điểm Danh Sinh Viên Nội Trú Ban Đêm Theo Phòng (`AttendanceRecord`)**:
+    - **Tự động liên kết danh sách cư trú hợp lệ**: Chọn phòng và ngày điểm danh, hệ thống tự động nạp danh sách sinh viên đang có hợp đồng thuê phòng hiệu lực (`ContractStatus.Active`).
+    - **4 Trạng thái điểm danh chuyên cần chuẩn mực**: `Có mặt (Present)`, `Vắng không phép (AbsentWithoutPermission)`, `Vắng có phép (AbsentWithPermission)`, `Về muộn (Late)` kèm trường ghi chú lý do vắng/nghỉ phép.
+    - **Thao tác nhanh tiện lợi**: Nút bấm nhanh **"Tất cả có mặt"** và **"Đánh dấu vắng"** giúp cán bộ điểm danh hoàn tất phòng chỉ với một cú nhấp chuột.
+    - **Lưu kết quả theo lô & Chống trùng lặp trong ngày (Idempotency)**: Lưu toàn bộ kết quả điểm danh phòng trong một giao dịch (`RecordBatchRoomAttendanceAsync`), tự động cập nhật bản ghi nếu đã điểm danh trước đó trong ngày mà không sinh bản ghi trùng lặp.
+    - **Thống kê chuyên cần thời gian thực**: 4 thẻ KPI sĩ số, có mặt, vắng không phép, vắng có phép/về muộn và tự động tính tỷ lệ chuyên cần (%) phòng ngay trên giao diện.
+
 ---
 
 ## 🗺️ Lộ Trình Phát Triển (Roadmap)
@@ -141,10 +155,11 @@
 - [x] **Phase 7:** Trung Tâm Báo Cáo Quản Trị & Phân Tích Tổng Hợp KTX - v2.3.0
 - [x] **Phase 8:** Tích Hợp Thanh Toán VietQR Động Chuẩn NAPAS 247 & EMVCo - v2.4.0
 - [x] **Phase 9:** Tự Động Gạch Nợ Hóa Đơn Qua Webhook Biến Động Số Dư (Open Banking Auto-Reconciliation) - v2.5.0
+- [x] **Phase 10:** Quản Lý Khách Ra Vào KTX & Điểm Danh Sinh Viên Ban Đêm - v2.6.0
 
 ---
 
-## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature Matrix - Hoàn Thành 100% Cả 9 Giai Đoạn - v2.5.0)
+## 📋 Bảng Tổng Hợp Trạng Thái Chức Năng (Feature Matrix - Hoàn Thành 100% Cả 10 Giai Đoạn - v2.6.0)
 
 | Phân hệ / Hạng mục | Xem Danh Sách | Thêm Mới (Create) | Chỉnh Sửa (Update) | Xóa / Hủy (Delete) | Tìm Kiếm / Lọc | Xuất Excel / PDF | Phân Quyền | Trạng Thái |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -171,7 +186,9 @@
 | **Webhook Lắng Nghe Số Dư (HttpListener)** | ✅ (Nhúng siêu nhẹ) | — | ✅ (Cấu hình Port/Key) | — | — | — | Tất cả | **Hoàn thành (Phase 9 - Webhook Listener)** |
 | **Tự Động Đối Soát Gạch Nợ (Reconciliation)** | ✅ (Idempotent) | ✅ (Tự động gạch nợ) | ✅ (Gán thủ công) | — | ✅ (Lọc TT & Ngày) | — | Tất cả | **Hoàn thành (Phase 9 - Auto-Reconciliation)** |
 | **Quản Lý Giao Dịch Đối Soát (Transactions)** | ✅ (KPIs & Bảng) | — | ✅ (Gán hóa đơn) | — | ✅ (Tìm kiếm, Trạng thái) | — | Admin / Manager | **Hoàn thành (Phase 9 - Transaction Management)** |
-| **Kiểm Thử E2E Headless & Unit Tests** | ✅ | ✅ (Auto-Reconcile E2E) | ✅ (Unmatched/Manual E2E) | ✅ (HMAC Security E2E) | — | — | Tự động hóa CI/CD | **Hoàn thành (Phase 9 - 378/378 Tests Pass)** |
+| **Khách Ra Vào KTX (Visitors)** | ✅ | ✅ (`VisitorDialog` Check-in) | ✅ (Quét quá giờ 22:00) | ✅ (Check-out rời KTX) | ✅ (Lọc TT, Phòng, Ngày) | — | Admin / Manager | **Hoàn thành (Phase 10 - Visitor Security)** |
+| **Điểm Danh Phòng Đêm (Attendance)** | ✅ (Theo phòng & ngày) | ✅ (Lưu theo lô Batch) | ✅ (Cập nhật trong ngày) | — | ✅ (Chọn phòng & ngày) | — | Admin / Manager | **Hoàn thành (Phase 10 - Night Attendance)** |
+| **Kiểm Thử E2E Headless & Unit Tests** | ✅ | ✅ (Auto-Reconcile E2E) | ✅ (Visitor & Attendance E2E) | ✅ (HMAC Security E2E) | — | — | Tự động hóa CI/CD | **Hoàn thành (Phase 10 - 498/498 Tests Pass)** |
 
 ---
 
@@ -235,6 +252,7 @@ Dormitory-Manager/
 │   ├── packaging-and-deployment.md   # Hướng dẫn đóng gói và triển khai đa nền tảng
 │   ├── phase7/                       # Đặc tả yêu cầu báo cáo & phân tích tổng hợp KTX
 │   ├── phase9/                       # Đặc tả Webhook biến động số dư & tự động đối soát gạch nợ
+│   ├── phase10/                      # Đặc tả Quản lý khách ra vào KTX & Điểm danh ban đêm
 │   ├── spec-modernization.md         # Đặc tả kiến trúc hiện đại hóa
 │   └── user-guide.md                 # Hướng dẫn sử dụng chi tiết các phân hệ
 │
@@ -252,18 +270,18 @@ Dormitory-Manager/
 │       └── build-linux.sh            # Đóng gói Linux Self-Contained Binary & Tar.gz
 │
 ├── src/
-│   ├── Dormitory.Core/               # Domain: Thực thể và Enums (Room, Equipment, Student, Contract, Bill, Employee, Violation, ReportHistory, PaymentTransaction, User)
-│   ├── Dormitory.Application/        # Application: DTOs, Services, Interfaces, Business Logic (IPaymentReconciliationService, IWebhookListenerService, IPaymentNotificationService,...)
-│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, PaymentReconciliationService, WebhookListenerService, PaymentNotificationService, VietQrService,...
-│   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs, PaymentTransactionListView, appsettings.json
+│   ├── Dormitory.Core/               # Domain: Thực thể và Enums (Room, Equipment, Student, Contract, Bill, Employee, Violation, ReportHistory, PaymentTransaction, VisitorLog, AttendanceRecord, User)
+│   ├── Dormitory.Application/        # Application: DTOs, Services, Interfaces, Business Logic (IVisitorService, IAttendanceService, IPaymentReconciliationService,...)
+│   ├── Dormitory.Infrastructure/     # Data Access: EF Core SQLite, VisitorService, AttendanceService, PaymentReconciliationService, VietQrService,...
+│   └── Dormitory.Desktop/            # Presentation: Avalonia UI 11, FluentTheme, MVVM, Dialogs, VisitorListView, AttendanceTrackingView, appsettings.json
 │       ├── Assets/                   # Nhận diện thương hiệu (AppIcon.ico, AppIcon.png) & Fonts
-│       ├── Converters/               # Value Converters (PaymentStatusColorConverter, ReportFormatConverter,...)
-│       ├── ViewModels/               # PaymentTransactionListViewModel, BillListViewModel, SystemSettingsViewModel,...
-│       └── Views/                    # PaymentTransactionListView, AssignBillDialogWindow, BillListView, SystemSettingsView,...
+│       ├── Converters/               # Value Converters (AttendanceStatusColorConverter, PaymentStatusColorConverter,...)
+│       ├── ViewModels/               # VisitorListViewModel, AttendanceTrackingViewModel, BillListViewModel,...
+│       └── Views/                    # VisitorListView, AttendanceTrackingView, BillListView,...
 │
 ├── tests/
-│   ├── Dormitory.UnitTests/          # Kiểm thử đơn vị & tích hợp xUnit & FluentAssertions (361/361 Passed - 100%)
-│   └── Dormitory.E2ETests/           # Kiểm thử giao diện tự động Avalonia Headless UI (17/17 Journeys Passed - 100%)
+│   ├── Dormitory.UnitTests/          # Kiểm thử đơn vị & tích hợp xUnit & FluentAssertions (477/477 Passed - 100%)
+│   └── Dormitory.E2ETests/           # Kiểm thử giao diện tự động Avalonia Headless UI (21/21 Journeys Passed - 100%)
 │
 ├── Dormitory.sln                     # .NET 8 Solution
 └── README.md
@@ -277,10 +295,10 @@ Dormitory-Manager/
 
 Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản cài đặt hoặc gói chạy độc lập (Self-Contained - không yêu cầu cài đặt trước .NET Runtime) tại trang [**GitHub Releases**](https://github.com/nguyendong47/Dormitory-Manager/releases):
 
-- **macOS (Apple Silicon M1/M2/M3/M4)**: Tải tệp `DormitoryManager-v2.5.0-macOS-arm64.dmg` -> Nhấp đúp và kéo thả `DormitoryManager.app` vào thư mục `Applications`.
-- **macOS (Intel x64)**: Tải tệp `DormitoryManager-v2.5.0-macOS-x64.dmg` -> Cài đặt tương tự như trên.
-- **Windows (10/11 64-bit)**: Tải tệp `DormitoryManager-v2.5.0-Windows-x64.zip` -> Giải nén và nhấp đúp vào `Dormitory.Desktop.exe` để chạy ngay.
-- **Linux (Ubuntu, Debian, Fedora x64)**: Tải tệp `DormitoryManager-v2.5.0-Linux-x64.tar.gz` -> Giải nén và thực thi `./Dormitory.Desktop`.
+- **macOS (Apple Silicon M1/M2/M3/M4)**: Tải tệp `DormitoryManager-v2.6.0-macOS-arm64.dmg` -> Nhấp đúp và kéo thả `DormitoryManager.app` vào thư mục `Applications`.
+- **macOS (Intel x64)**: Tải tệp `DormitoryManager-v2.6.0-macOS-x64.dmg` -> Cài đặt tương tự như trên.
+- **Windows (10/11 64-bit)**: Tải tệp `DormitoryManager-v2.6.0-Windows-x64.zip` -> Giải nén và nhấp đúp vào `Dormitory.Desktop.exe` để chạy ngay.
+- **Linux (Ubuntu, Debian, Fedora x64)**: Tải tệp `DormitoryManager-v2.6.0-Linux-x64.tar.gz` -> Giải nén và thực thi `./Dormitory.Desktop`.
 
 ### Yêu Cầu Môi Trường (Dành Cho Lập Trình Viên)
 - **.NET 8 SDK** (hoặc mới hơn) cài đặt trên máy phát triển.
@@ -326,12 +344,12 @@ Thành phẩm sau khi đóng gói sẽ nằm tại thư mục `dist/`.
 
 ## 🧪 Chạy Kiểm Thử Tự Động (Unit Tests & Headless UI E2E)
 
-Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, thuật toán sinh chuỗi EMVCo TLV & checksum CRC-16 VietQR offline, tạo ảnh QR PNG với QRCoder, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, dịch vụ xuất phiếu thu PDF QuestPDF kèm khối mã VietQR, quản lý tài sản phòng ở, quản lý kỷ luật vi phạm, gửi thư email SMTP hóa đơn kèm QR, trung tâm báo cáo & phân tích tổng hợp, cấu hình tài khoản ngân hàng thụ hưởng Napas BIN, máy chủ nhúng Webhook HttpListener, xác thực chữ ký HMAC-SHA256, đối soát tự động hóa đơn, phát thông báo thời gian thực UI, cấu hình động `appsettings.json`, dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`), và 17 hành trình người dùng E2E chạy hoàn toàn tự động trên nền tảng Avalonia Headless:
+Dự án bao gồm bộ kiểm thử tự động kiểm tra chặt chẽ toàn diện: logic tính toán hóa đơn, thuật toán sinh chuỗi EMVCo TLV & checksum CRC-16 VietQR offline, tạo ảnh QR PNG với QRCoder, quy tắc ràng buộc phòng, quản lý hợp đồng, nghiệp vụ nhân viên, mã hóa mật khẩu, dịch vụ xuất báo cáo Excel ClosedXML, dịch vụ xuất phiếu thu PDF QuestPDF kèm khối mã VietQR, quản lý tài sản phòng ở, quản lý kỷ luật vi phạm, gửi thư email SMTP hóa đơn kèm QR, trung tâm báo cáo & phân tích tổng hợp, cấu hình tài khoản ngân hàng thụ hưởng Napas BIN, máy chủ nhúng Webhook HttpListener, xác thực chữ ký HMAC-SHA256, đối soát tự động hóa đơn, phát thông báo thời gian thực UI, quy trình an ninh khách ra vào KTX và giới nghiêm 22:00, quy trình điểm danh chuyên cần nội trú ban đêm theo phòng, cấu hình động `appsettings.json`, dịch vụ sao lưu/phục hồi/kiểm tra toàn vẹn CSDL SQLite (`IDatabaseService`), và 21 hành trình người dùng E2E chạy hoàn toàn tự động trên nền tảng Avalonia Headless:
 
 ```bash
 dotnet test Dormitory.sln
 ```
 
-Kết quả: **378/378 Tests Passed** (100% Pass: 361 Unit Tests + 17 Avalonia Headless UI E2E Journeys).
+Kết quả: **498/498 Tests Passed** (100% Pass: 477 Unit Tests + 21 Avalonia Headless UI E2E Journeys).
 
 

@@ -14,21 +14,21 @@ Hệ thống được thiết kế tuân thủ nguyên tắc **Clean Architectur
 ```mermaid
 graph TD
     subgraph Presentation Layer [Tầng Presentation - Avalonia UI 11 / MVVM]
-        Views[Views: Dashboard, Rooms, Students, Contracts, Bills, Equipments, Violations, Reports, SystemSettings]
-        Dialogs[Dialogs: Room, Student, Contract, Bill, Equipment, Violation, Report, VietQrDialogWindow]
+        Views[Views: Dashboard, Rooms, Students, Contracts, Bills, Equipments, Violations, Reports, SystemSettings, VisitorListView, AttendanceTrackingView]
+        Dialogs[Dialogs: Room, Student, Contract, Bill, Equipment, Violation, Report, VietQrDialogWindow, VisitorDialogWindow]
         VMs[ViewModels: CommunityToolkit.Mvvm ObservableObject]
         DialogService[DialogService: IDialogService, IFileService]
     end
 
     subgraph Application Layer [Tầng Application - Use Cases & Business Contracts]
-        AppServices[Interfaces: IRoomService, IStudentService, IContractService, IBillService, IVietQrService, IBankSettingsService, IReportService, IEmailService, IPdfExportService]
-        DTOs[DTOs: RoomDto, StudentDto, ContractDto, BillDto, BankSettingsDto, VietQrPayloadDto, ReportDto]
+        AppServices[Interfaces: IRoomService, IStudentService, IContractService, IBillService, IVietQrService, IBankSettingsService, IReportService, IEmailService, IPdfExportService, IVisitorService, IAttendanceService]
+        DTOs[DTOs: RoomDto, StudentDto, ContractDto, BillDto, BankSettingsDto, VietQrPayloadDto, ReportDto, VisitorLogDto, AttendanceRecordDto]
         Directories[Static Directories: VietQrBankDirectory - 40+ Napas BINs]
     end
 
     subgraph Domain Layer [Tầng Domain - Core Business Entities]
-        Entities[Entities: Room, Student, Contract, Bill, Equipment, Violation, ReportHistory, Employee, User]
-        Enums[Enums: RoomStatus, RoomType, BillStatus, ContractStatus, EquipmentStatus, ViolationSeverity]
+        Entities[Entities: Room, Student, Contract, Bill, Equipment, Violation, ReportHistory, Employee, VisitorLog, AttendanceRecord, User]
+        Enums[Enums: RoomStatus, RoomType, BillStatus, ContractStatus, EquipmentStatus, ViolationSeverity, VisitorStatus, AttendanceStatus]
     end
 
     subgraph Infrastructure Layer [Tầng Infrastructure - Data & External Services]
@@ -40,6 +40,8 @@ graph TD
         MailEngine[EmailService: MailKit / MimeKit SMTP Engine]
         Security[PasswordHasher: BCrypt.Net-Next]
         DbService[DatabaseService: SQLite Online Backup & Integrity Check]
+        VisitorEngine[VisitorService: Visitor Tracking & Curfew Enforcement]
+        AttendanceEngine[AttendanceService: Night Room Attendance & Batch Sync]
     end
 
     Views --> VMs
@@ -55,6 +57,8 @@ graph TD
     ExcelEngine -.->|Implements| AppServices
     MailEngine -.->|Implements| AppServices
     DbService -.->|Implements| AppServices
+    VisitorEngine -.->|Implements| AppServices
+    AttendanceEngine -.->|Implements| AppServices
 ```
 
 ---
@@ -63,12 +67,12 @@ graph TD
 
 | Tầng (Project) | Trách nhiệm chính | Thư viện & Công nghệ |
 | :--- | :--- | :--- |
-| **`Dormitory.Core`** | Chứa Entities, Enums, Value Objects và các quy tắc Domain cốt lõi. Hoàn toàn độc lập với các thư viện bên ngoài. | .NET 8 BCL (Không có dependency ngoài) |
-| **`Dormitory.Application`** | Chứa DTOs, Business Interfaces (`IPaymentReconciliationService`, `IWebhookListenerService`, `IPaymentNotificationService`, `IVietQrService`, `IBankSettingsService`, `IBillService`,...), quy tắc nghiệp vụ, danh mục ngân hàng tĩnh (`VietQrBankDirectory`). | `Microsoft.EntityFrameworkCore` (Abstractions) |
-| **`Dormitory.Infrastructure`** | Hiện thực hóa các dịch vụ: EF Core SQLite DbContext, `PaymentReconciliationService`, `WebhookListenerService`, `PaymentNotificationService`, `VietQrService` (EMVCo + CRC-16 + QRCoder), `BankSettingsService`, QuestPDF, ClosedXML, MailKit SMTP, BCrypt, SQLite Online Backup. | `Microsoft.EntityFrameworkCore.Sqlite`, `QRCoder`, `QuestPDF`, `ClosedXML`, `MailKit`, `BCrypt.Net-Next` |
-| **`Dormitory.Desktop`** | Giao diện đồ họa đa nền tảng (macOS, Windows, Linux), điều phối ViewModel, Data Binding, Navigation, Dialogs (`PaymentTransactionListView`, `AssignBillDialogWindow`, `VietQrDialogWindow`, `SystemSettingsView`,...). | `Avalonia 11`, `Avalonia.Themes.Fluent`, `CommunityToolkit.Mvvm`, `LiveChartsCore.SkiaSharpView.Avalonia` |
-| **`Dormitory.UnitTests`** | Kiểm thử đơn vị & tích hợp: logic hóa đơn, đối soát Webhook, xác thực HMAC-SHA256, thuật toán VietQR EMVCo/CRC-16, xuất PDF/Excel, phân quyền, bảo mật (361 bài test). | `xUnit`, `FluentAssertions`, `Moq`, `NSubstitute`, `EF Core InMemory` |
-| **`Dormitory.E2ETests`** | Kiểm thử hành trình người dùng E2E headless hoàn toàn tự động không cần màn hình hiển thị (17 hành trình). | `Avalonia.Headless.XUnit` |
+| **`Dormitory.Core`** | Chứa Entities, Enums, Value Objects và các quy tắc Domain cốt lõi (`VisitorLog`, `AttendanceRecord`, `VisitorStatus`, `AttendanceStatus`). Hoàn toàn độc lập với các thư viện bên ngoài. | .NET 8 BCL (Không có dependency ngoài) |
+| **`Dormitory.Application`** | Chứa DTOs, Business Interfaces (`IVisitorService`, `IAttendanceService`, `IPaymentReconciliationService`, `IWebhookListenerService`, `IVietQrService`, `IBillService`,...), quy tắc nghiệp vụ, tính toán KPI chuyên cần. | `Microsoft.EntityFrameworkCore` (Abstractions) |
+| **`Dormitory.Infrastructure`** | Hiện thực hóa các dịch vụ: EF Core SQLite DbContext, `VisitorService`, `AttendanceService`, `PaymentReconciliationService`, `WebhookListenerService`, `PaymentNotificationService`, `VietQrService`, `BankSettingsService`, QuestPDF, ClosedXML, MailKit SMTP, BCrypt, SQLite Online Backup. | `Microsoft.EntityFrameworkCore.Sqlite`, `QRCoder`, `QuestPDF`, `ClosedXML`, `MailKit`, `BCrypt.Net-Next` |
+| **`Dormitory.Desktop`** | Giao diện đồ họa đa nền tảng (macOS, Windows, Linux), điều phối ViewModel, Data Binding, Navigation, Dialogs (`VisitorListView`, `AttendanceTrackingView`, `VisitorDialogWindow`, `PaymentTransactionListView`,...). | `Avalonia 11`, `Avalonia.Themes.Fluent`, `CommunityToolkit.Mvvm`, `LiveChartsCore.SkiaSharpView.Avalonia` |
+| **`Dormitory.UnitTests`** | Kiểm thử đơn vị & tích hợp: logic khách ra vào, điểm danh lô, đối soát Webhook, xác thực HMAC-SHA256, thuật toán VietQR EMVCo/CRC-16, xuất PDF/Excel, phân quyền, bảo mật (477 bài test). | `xUnit`, `FluentAssertions`, `Moq`, `NSubstitute`, `EF Core InMemory` |
+| **`Dormitory.E2ETests`** | Kiểm thử hành trình người dùng E2E headless hoàn toàn tự động không cần màn hình hiển thị (21 hành trình). | `Avalonia.Headless.XUnit` |
 
 ---
 

@@ -61,6 +61,8 @@ Thanh menu bên trái giúp chuyển đổi linh hoạt giữa các phân hệ:
 - 📝 **Hợp đồng**: Lập mới, gia hạn, thanh lý hợp đồng và bộ lọc trạng thái.
 - 💵 **Hóa đơn**: Lập phiếu thu điện nước, quét mã thanh toán VietQR động (NAPAS 247), xác nhận thu tiền, lọc trạng thái, xuất Excel, gửi email và in PDF (QuestPDF).
 - 💳 **Giao dịch đối soát**: Tra cứu lịch sử biến động số dư từ Webhook ngân hàng, theo dõi KPI đối soát tự động, lọc trạng thái và gán hóa đơn thủ công.
+- 👥 **Khách ra vào**: Quản lý khách đến thăm sinh viên KTX, đăng ký check-in, check-out và cảnh báo khách quá giờ giới nghiêm 22:00.
+- 📋 **Điểm danh KTX**: Điểm danh chuyên cần sinh viên nội trú ban đêm theo từng phòng, thao tác nhanh tất cả có mặt/vắng, tính tỷ lệ chuyên cần thời gian thực và lưu kết quả theo lô.
 - 👥 **Nhân viên**: Quản lý đội ngũ nhân sự vận hành KTX (**Chỉ dành cho Quản trị viên**).
 - ⚖️ **Kỷ luật & Vi phạm**: Quản lý biên bản vi phạm nội quy KTX, xử lý kỷ luật, trừ điểm rèn luyện và phạt tiền.
 - 📊 **Báo cáo & Thống kê**: Trung tâm tổng hợp và phân tích báo cáo chuyên sâu (Vi phạm, Tài chính, Lấp đầy, Thiết bị), xuất bản PDF/Excel và quản lý kho lưu trữ tệp báo cáo.
@@ -610,7 +612,86 @@ Khi sinh viên chuyển khoản nhưng quên ghi mã hóa đơn hoặc ghi sai �
 4. Bấm **"✅ Xác nhận gán hóa đơn"**:
    - Hệ thống tự động gạch nợ hóa đơn được chọn sang trạng thái `Đã thanh toán (Paid)`.
    - Cập nhật trạng thái giao dịch ngân hàng sang `Thành công (Success)`.
-   - Bắn sự kiện thời gian thực cập nhật ngay lập tức danh sách hóa đơn trên màn hình Hóa đơn.
+    - Bắn sự kiện thời gian thực cập nhật ngay lập tức danh sách hóa đơn trên màn hình Hóa đơn.
+
+### 3.13. Phân Hệ Quản Lý Khách Ra Vào KTX & Cảnh Báo Giới Nghiêm (`VisitorLog`)
+
+Phân hệ **Khách ra vào** giúp Ban Quản lý và Tổ Bảo vệ KTX số hóa toàn diện quy trình kiểm soát an ninh khách vãng lai, truy vết lịch sử ra vào và ngăn chặn việc lưu trú trái phép qua đêm:
+
+#### 1. Bốn Thẻ KPI Thống Kê Khách Thời Gian Thực:
+- **🚶 Đang ở KTX (`ActiveVisitorsCount`)**: Số lượng khách đã check-in nhưng chưa làm thủ tục rời khỏi KTX.
+- **⏰ Quá giờ giới nghiêm (`OverstayedCount`)**: Số lượng khách lưu trú vượt quá mốc 22:00 chưa check-out, cần bảo vệ kiểm tra thực địa.
+- **📅 Tổng hôm nay (`TotalTodayCount`)**: Tổng số lượt khách đến thăm sinh viên KTX trong ngày hiện tại.
+- **🚪 Đã rời hôm nay (`CheckedOutTodayCount`)**: Số lượt khách đã hoàn tất thủ tục check-out trong ngày.
+
+#### 2. Quy Trình Đăng Ký Khách Đến Thăm (Check-in):
+Khi có người thân hoặc khách ngoài đến thăm sinh viên tại KTX:
+1. Nhân viên bảo vệ/quản lý nhấp nút **"➕ Đăng ký khách mới"** trên thanh công cụ (hoặc nhấn phím tắt **Ctrl+N**).
+2. Hộp thoại **"Đăng Ký Khách Đến Thăm KTX"** (`VisitorDialogWindow`) xuất hiện:
+   - **Sinh viên được thăm**: Chọn sinh viên trong danh sách sinh viên nội trú. Hệ thống sẽ **tự động điền mã phòng** tương ứng của sinh viên.
+   - **Họ và tên khách**: Nhập họ tên đầy đủ của khách đến thăm (ví dụ: *"Trần Thị Mai"*).
+   - **Số CCCD / CMND**: Nhập số định danh cá nhân của khách.
+   - **Số điện thoại**: Nhập số điện thoại liên hệ của khách.
+   - **Ghi chú / Đồ gửi lại**: Nhập lý do thăm hoặc tư trang, chìa khóa, xe máy gửi lại cổng bảo vệ.
+3. Nhấp **"Lưu & Check-in"**: Hệ thống ghi nhận lượt vào với thời điểm hiện tại và tự động thêm vào danh sách với trạng thái **"Trong KTX"** (màu xanh lá cây). Thẻ KPI "Đang ở KTX" lập tức tăng thêm 1.
+
+#### 3. Quy Trình Ghi Nhận Khách Rời Đi (Check-out):
+Khi khách đến quầy bảo vệ làm thủ tục ra về:
+1. Bảo vệ chọn dòng của khách trong danh sách (hoặc gõ tên/CCCD vào thanh tìm kiếm).
+2. Nhấp nút **"🚪 Check-out"** trên thanh công cụ (hoặc nhấp đúp vào dòng).
+3. Hộp thoại xác nhận hiển thị kèm ô nhập ghi chú rời đi (tùy chọn).
+4. Nhấp **"Xác nhận"**: Hệ thống tự động ghi nhận thời gian rời KTX (`CheckOutTime`), cập nhật trạng thái sang **"Đã rời KTX"** (màu xám nhạt). Thẻ KPI "Đang ở KTX" tự động giảm và KPI "Đã rời hôm nay" tự động tăng.
+
+#### 4. Quét Và Xử Lý Khách Quá Giờ Giới Nghiêm (Sau 22:00):
+Ký túc xá quy định giờ tiếp khách từ **06:00 đến 22:00**. Sau 22:00, mọi khách chưa rời KTX đều bị xem là quá giờ:
+1. Bảo vệ nhấp nút **"⏰ Quét khách quá giờ"** trên thanh công cụ.
+2. Hệ thống tự động rà soát toàn bộ các lượt khách đang ở KTX (`InDormitory`) mà thời điểm hiện tại đã vượt qua 22:00.
+3. Các bản ghi vi phạm tự động chuyển sang trạng thái **"Quá giờ" (`Overstayed`)** với màu đỏ cảnh báo nổi bật.
+4. Bảo vệ có thể tích chọn hộp kiểm **"Chỉ khách quá giờ"** để lọc nhanh danh sách các phòng có khách ở lại qua đêm, từ đó tiến hành kiểm tra phòng và lập biên bản xử lý kịp thời.
+
+#### 5. Bộ Lọc Đa Năng & Tra Cứu Lịch Sử:
+- **Lọc theo trạng thái**: *Tất cả*, *Trong KTX*, *Đã rời KTX*, *Quá giờ*.
+- **Lọc theo phòng**: Chọn xem danh sách khách từng phòng cụ thể.
+- **Lọc theo khoảng ngày**: Từ ngày - Đến ngày phục vụ trích xuất dữ liệu an ninh theo tuần/tháng.
+- **Tìm kiếm từ khóa**: Tìm nhanh tức thì theo Họ tên khách, CCCD, Số điện thoại hoặc Tên sinh viên được thăm.
+
+---
+
+### 3.14. Phân Hệ Điểm Danh Sinh Viên Nội Trú Ban Đêm Theo Phòng (`AttendanceRecord`)
+
+Phân hệ **Điểm danh KTX** hỗ trợ cán bộ quản lý và tổ tự quản sinh viên thực hiện kiểm tra chuyên cần ban đêm theo từng phòng ở nhanh chóng, chuẩn xác và không trùng lặp số liệu:
+
+#### 1. Thiết Lập Tham Số Điểm Danh Phòng:
+1. **Ngày điểm danh**: Mặc định là ngày hôm nay (`DateTime.Today`). Người dùng có thể chọn ngày trong quá khứ để xem lại hoặc bổ sung dữ liệu.
+2. **Chọn phòng ở**: Chọn phòng cần kiểm tra trong danh sách thả xuống (ví dụ: *"Phòng 101 - Tòa A"*).
+3. **Người điểm danh**: Tên cán bộ/quản lý thực hiện kiểm tra (hệ thống tự động điền theo tài khoản đăng nhập hiện tại).
+4. Khi chọn phòng, hệ thống tự động tải danh sách toàn bộ sinh viên đang có hợp đồng cư trú hiệu lực (`ContractStatus.Active`) tại phòng đó.
+
+#### 2. Bốn Trạng Thái Điểm Danh & Thao Tác Nhanh:
+Bảng danh sách hiển thị chi tiết từng sinh viên kèm ComboBox trạng thái 4 lựa chọn:
+- **🟢 Có mặt (`Present`)**: Sinh viên có mặt trong phòng tại thời điểm điểm danh.
+- **🔴 Vắng không phép (`AbsentWithoutPermission`)**: Sinh viên không có mặt và không có đơn báo vắng.
+- **🟡 Vắng có phép (`AbsentWithPermission`)**: Sinh viên có đơn nghỉ phép được duyệt (về quê, việc gia đình). Cán bộ nhập lý do vào cột "Lý do / Ghi chú".
+- **🔵 Về muộn (`Late`)**: Sinh viên về sau giờ giới nghiêm KTX có báo trước hoặc lý do chính đáng.
+
+**Các nút thao tác nhanh trên thanh công cụ:**
+- **"✅ Tất cả có mặt"**: Đánh dấu toàn bộ sinh viên trong phòng thành **Có mặt** chỉ với 1 cú click (phục vụ trường hợp phòng đầy đủ sĩ số).
+- **"❌ Đánh dấu vắng"**: Chuyển nhanh toàn bộ sang **Vắng không phép** (để cán bộ chỉ cần tích chọn lại những bạn có mặt).
+
+#### 3. Thẻ KPI Thống Kê Chuyên Cần Thời Gian Thực:
+Mỗi khi cán bộ thay đổi trạng thái của bất kỳ sinh viên nào trên bảng, hệ thống tự động tính toán lại tức thì:
+- **👥 Tổng sinh viên phòng**: Tổng sĩ số hợp đồng của phòng.
+- **✅ Có mặt**: Số lượng sinh viên có mặt thực tế.
+- **❌ Vắng không phép**: Số lượng sinh viên vắng không rõ lý do (dùng để báo cáo kỷ luật).
+- **📝 Vắng có phép / Về muộn**: Số lượng sinh viên vắng có đơn hoặc về muộn.
+- **📊 Tỷ lệ chuyên cần (%)**: Được tính tự động bằng công thức:
+  $$\text{Tỷ lệ} = \frac{\text{Số Có mặt} + \text{Số Về muộn}}{\text{Tổng sinh viên}} \times 100\%$$
+
+#### 4. Lưu Kết Quả Theo Lô & Chống Trùng Lặp Trong Ngày (Idempotency):
+1. Cán bộ nhấp **"💾 Lưu kết quả điểm danh"** (hoặc nhấn phím tắt **Ctrl+S**).
+2. Hệ thống kiểm tra hợp lệ dữ liệu và lưu toàn bộ kết quả điểm danh của phòng xuống CSDL trong một giao dịch đơn nhất (`RecordBatchRoomAttendanceAsync`).
+3. **Cơ chế chống trùng lặp dữ liệu**: Nếu phòng đã được điểm danh trong ngày trước đó, hệ thống sẽ tự động cập nhật (`UPDATE`) trạng thái và lý do mới nhất cho từng sinh viên thay vì tạo thêm bản ghi trùng lặp (`INSERT`), bảo đảm số liệu thống kê luôn chính xác và duy nhất trong ngày.
+4. Thông báo Toast hiển thị xác nhận đã lưu thành công kết quả điểm danh phòng.
 
 ---
 
@@ -633,11 +714,12 @@ Khi sinh viên chuyển khoản nhưng quên ghi mã hóa đơn hoặc ghi sai �
 
 ## 5. Khung Kiểm Thử Tự Động & Đảm Bảo Chất Lượng (Headless UI E2E Testing & Unit Tests)
 
-Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **378/378 Tests Passing (100%)** qua cấu trúc kiểm thử 2 tầng chuyên sâu:
+Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **498/498 Tests Passing (100%)** qua cấu trúc kiểm thử 2 tầng chuyên sâu:
 
-### 5.1. Bộ Kiểm Thử Đơn Vị & Tích Hợp (361 Unit & Integration Tests)
+### 5.1. Bộ Kiểm Thử Đơn Vị & Tích Hợp (477 Unit & Integration Tests)
 - Được tổ chức tại dự án `tests/Dormitory.UnitTests/` sử dụng **xUnit**, **Moq**, **FluentAssertions** và **Microsoft.EntityFrameworkCore.InMemory**.
 - Kiểm tra toàn diện mọi tầng nghiệp vụ:
+  - **Phân hệ Khách ra vào & Điểm danh đêm (`VisitorServiceTests`, `AttendanceServiceTests`, `VisitorListViewModelTests`, `AttendanceTrackingViewModelTests`)**: Kiểm tra toàn diện quy trình check-in, check-out, gắn cờ khách quá giờ sau 22:00, điểm danh phòng ban đêm theo lô, chống trùng lặp ngày (`Idempotency`), tính tỷ lệ chuyên cần thời gian thực và xác thực dữ liệu đầu vào.
   - **Phân hệ Webhook & Đối soát tự động (`PaymentReconciliationServiceTests`, `WebhookListenerServiceTests`, `PaymentNotificationServiceTests`, `PaymentTransactionListViewModelTests`, `PaymentTransactionEntityTests`)**: Kiểm tra trích xuất regex mã hóa đơn chống ReDoS, idempotency chống trùng lặp `TransactionId`, đối soát số tiền (đủ/thiếu/thừa), xác thực HMAC-SHA256 chuẩn mật mã học, so sánh `FixedTimeEquals`, và phát sự kiện cập nhật UI real-time.
   - **Dịch vụ thanh toán VietQR & Cấu hình ngân hàng (`VietQrServiceTests`, `BankSettingsServiceTests`, `VietQrBankDirectoryTests`, `VietQrDialogViewModelTests`)**: Kiểm tra chính xác thuật toán sinh chuỗi TLV EMVCo, tính toán checksum CRC-16/CCITT-FALSE, sinh mảng byte ảnh PNG offline với QRCoder, URL QuickLink, quản lý cấu hình ngân hàng thụ hưởng JSON, tra cứu 40+ mã Napas BIN, và toàn bộ hành vi ViewModel hộp thoại quét mã tại quầy.
   - **Dịch vụ báo cáo & phân tích (`ReportServiceTests`, `ReportDtoTests`, `ReportHistoryTests`)**: Kiểm tra trích xuất số liệu 4 loại báo cáo, tính toán KPI, xuất Excel ClosedXML đa sheet, xuất PDF QuestPDF chuẩn A4 và quản lý vòng đời tệp báo cáo.
@@ -650,10 +732,10 @@ Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **378/378 Tes
   - **Dịch vụ CSDL & an toàn hệ thống (`DatabaseServiceTests`)**: Sao lưu SQLite Online Backup, khôi phục CSDL an toàn, kiểm tra tính toàn vẹn `PRAGMA integrity_check`.
   - **Bảo mật & mã hóa (`PasswordHasherTests`)**: Xác thực thuật toán băm mật khẩu an toàn BCrypt.
 
-### 5.2. Bộ Kiểm Thử Giao Diện Headless E2E Tự Động (17 Avalonia Headless UI Journeys)
+### 5.2. Bộ Kiểm Thử Giao Diện Headless E2E Tự Động (21 Avalonia Headless UI Journeys)
 - Được tổ chức tại dự án `tests/Dormitory.E2ETests/` sử dụng công nghệ **`Avalonia.Headless.XUnit`**.
 - Khung kiểm thử giao diện headless cho phép khởi chạy và tương tác toàn diện với ứng dụng Avalonia UI mà không cần màn hình hiển thị thật (Display Server) hay card đồ họa GPU, bảo đảm chạy ổn định 100% trên cả máy phát triển và môi trường CI/CD GitHub Actions Ubuntu.
-- **17 Hành trình người dùng trọng yếu (Critical User Journeys)**:
+- **21 Hành trình người dùng trọng yếu (Critical User Journeys)**:
   1. **Hành trình 1 - Xác thực & Điều hướng toàn hệ thống (`AuthAndNavigationE2ETests`)**
   2. **Hành trình 2 - Vòng đời quản lý thiết bị phòng (`EquipmentManagementE2ETests`)**
   3. **Hành trình 3 - Xuất phiếu thu PDF từ hóa đơn (`BillExportE2ETests`)**
@@ -671,17 +753,21 @@ Dự án duy trì tỷ lệ kiểm thử chất lượng cao với **378/378 Tes
   15. **Hành trình 15 - Xử lý an toàn trường hợp Webhook gửi số tiền nộp thiếu (`PaymentAutoReconciliationE2ETests - Should_Handle_Partially_Paid_Webhook_Gracefully`)**
   16. **Hành trình 16 - Phòng chống trùng lặp Idempotency khi Webhook gửi lại nhiều lần (`PaymentAutoReconciliationE2ETests - Should_Handle_Duplicate_Webhook_Transaction_Idempotently`)**
   17. **Hành trình 17 - Cập nhật giao diện tự động thời gian thực (`PaymentAutoReconciliationE2ETests - Should_Notify_And_Refresh_BillList_In_RealTime`)**
+  18. **Hành trình 18 - Đăng ký khách (Check-in) và Ghi nhận rời KTX (Check-out) thành công (`VisitorAndAttendanceE2ETests - Should_CheckIn_And_CheckOut_Visitor_Successfully`)**
+  19. **Hành trình 19 - Tự động phát hiện và cảnh báo khách lưu trú quá 22:00 (`VisitorAndAttendanceE2ETests - Should_Detect_And_Highlight_Overstayed_Visitors`)**
+  20. **Hành trình 20 - Điểm danh phòng ban đêm theo lô và chống trùng lặp dữ liệu trong ngày (`VisitorAndAttendanceE2ETests - Should_Record_Night_Attendance_And_Prevent_Duplicate_Date`)**
+  21. **Hành trình 21 - Điều hướng Sidebar qua lại giữa Khách ra vào và Điểm danh KTX (`VisitorAndAttendanceE2ETests - Should_Navigate_Between_Visitor_And_Attendance_Screens`)**
 
 ### 5.3. Lệnh Chạy Toàn Bộ Kiểm Thử
-Để thực thi toàn bộ 378 bài kiểm thử của hệ thống:
+Để thực thi toàn bộ 498 bài kiểm thử của hệ thống:
 ```bash
 dotnet test Dormitory.sln -c Release --verbosity normal
 ```
 Kết quả:
 ```
-Passed!  - Failed: 0, Passed: 361, Skipped: 0, Total: 361 (Dormitory.UnitTests.dll)
-Passed!  - Failed: 0, Passed:  17, Skipped: 0, Total:  17 (Dormitory.E2ETests.dll)
-Test Run Successful. Total tests: 378. Passed: 378. (100% Pass)
+Passed!  - Failed: 0, Passed: 477, Skipped: 0, Total: 477 (Dormitory.UnitTests.dll)
+Passed!  - Failed: 0, Passed:  21, Skipped: 0, Total:  21 (Dormitory.E2ETests.dll)
+Test Run Successful. Total tests: 498. Passed: 498. (100% Pass)
 ```
 
 

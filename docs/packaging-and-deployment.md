@@ -276,7 +276,32 @@ Người dùng cuối và Quản trị viên KTX có thể tải ngay các bản
 
 ---
 
-## 9. Ghi Chú Phát Hành Phiên Bản v2.5.0 (Release Notes - Giai Đoạn 9)
+## 9. Ghi Chú Phát Hành Phiên Bản v2.6.0 (Release Notes - Giai Đoạn 10)
+
+### 🚀 Tính Năng Mới Nổi Bật:
+1. **Quản Lý Khách Ra Vào KTX & Cảnh Báo Giới Nghiêm (`VisitorLog`)**:
+   - **Đăng ký khách (Check-in)**: Ghi nhận đầy đủ họ tên, số CCCD/CMND/Hộ chiếu, số điện thoại, phòng đến thăm, sinh viên đón tiếp và ghi chú/mục đích thăm.
+   - **Ghi nhận khách rời đi (Check-out)**: Thao tác check-out nhanh chóng có hộp thoại xác nhận, tự động ghi nhận thời gian rời KTX (`CheckOutTime`).
+   - **Kiểm soát giờ giới nghiêm (22:00)**: Tự động quét và phát hiện các lượt khách chưa rời đi sau 22:00, tự động gắn cờ cảnh báo `Overstayed` (Quá giờ).
+   - **Thẻ KPI thời gian thực**: Theo dõi số khách đang có mặt trong KTX, số khách quá giờ giới nghiêm và tổng lượt khách trong ngày.
+   - **Bộ lọc đa năng**: Lọc theo trạng thái (*Trong KTX, Đã rời KTX, Quá giờ*), theo phòng, khoảng ngày, từ khóa tìm kiếm và tùy chọn chỉ xem khách quá giờ.
+2. **Điểm Danh Sinh Viên Nội Trú Ban Đêm Theo Phòng (`AttendanceRecord`)**:
+   - **Điểm danh theo phòng**: Chọn ngày và phòng, hệ thống tự động nạp danh sách sinh viên nội trú của phòng đó.
+   - **4 trạng thái điểm danh**: Có mặt (`Present`), Vắng không phép (`AbsentWithoutPermission`), Vắng có phép (`AbsentWithPermission`), Về muộn sau giờ giới nghiêm (`Late`).
+   - **Thao tác nhanh 1 chạm**: Nút "✅ Tất cả có mặt", "❌ Đánh dấu vắng", "⏰ Về muộn" giúp cán bộ quản lý điểm danh nhanh toàn phòng trong vài giây.
+   - **Nhập lý do vắng / ghi chú inline**: Cho phép nhập lý do xin phép nghỉ hoặc vi phạm ngay trên từng dòng của bảng sinh viên.
+   - **Lưu theo lô (Batch Upsert)**: Lưu đồng thời kết quả của cả phòng, cơ chế cập nhật thông minh (Upsert) ngăn chặn triệt để lỗi trùng lặp dữ liệu khi điểm danh lại trong cùng ngày.
+   - **Thẻ KPI chuyên cần thời gian thực**: Cập nhật tức thì số lượng Có mặt, Vắng không phép, Vắng có phép và Về muộn.
+3. **Tích Hợp Điều Hướng Sidebar & Phân Quyền RBAC**:
+   - Bổ sung 2 mục menu trực quan trên thanh Sidebar: *"👥 Khách ra vào"* và *"📋 Điểm danh KTX"*.
+   - Hỗ trợ đầy đủ phân quyền RBAC cho Quản trị viên (`Admin`), Quản lý KTX (`Manager`) và Nhân viên (`Staff`).
+4. **Mở Rộng Bộ Kiểm Thử Tự Động Đạt 498 Tests (100% Pass)**:
+   - 477 Unit & Integration Tests bao phủ 100% entities, services, viewmodels, navigation và ma trận phân quyền.
+   - 21 Avalonia Headless UI E2E Journeys kiểm thử toàn bộ hành trình người dùng đăng ký khách, check-out, quét vi phạm giới nghiêm, điểm danh đêm và điều hướng hệ thống.
+
+---
+
+## 10. Ghi Chú Phát Hành Phiên Bản v2.5.0 (Release Notes - Giai Đoạn 9)
 
 ### 🚀 Tính Năng Mới Nổi Bật:
 1. **Máy Chủ Webhook Nhúng Siêu Nhẹ (`Embedded HttpListener`)**:

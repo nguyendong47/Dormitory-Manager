@@ -175,7 +175,7 @@ classDiagram
 - [x] **Step 6.3:** Viết kịch bản E2E `Should_Record_Night_Attendance_And_Prevent_Duplicate_Date`: Điểm danh cả phòng, lưu thành công, ngăn chặn ghi đè không hợp lệ trong cùng một ngày.
 - [x] **Step 6.4:** Viết kịch bản E2E `Should_Navigate_Between_Visitor_And_Attendance_Screens`: Chuyển đổi mượt mà giữa các phân hệ trên Sidebar.
 - [x] **Step 6.5:** Chạy toàn bộ test suite `dotnet test` đảm bảo **100% tests PASS**.
-- [ ] **Step 6.6:** Commit: `test(e2e): add automated headless journeys for visitor tracking and room attendance`.
+- [x] **Step 6.6:** Commit: `test(e2e): add automated headless journeys for visitor tracking and room attendance`.
 
 ---
 
@@ -189,12 +189,12 @@ classDiagram
 - Modify: `src/Dormitory.Desktop/appsettings.json`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 7.1:** Tạo tài liệu đặc tả `docs/phase10/visitor-and-attendance-spec.md` mô tả quy trình an ninh KTX và nội quy giờ giấc.
-- [ ] **Step 7.2:** Cập nhật `README.md`, nâng phiên bản lên `v2.6.0`, cập nhật tổng số test.
-- [ ] **Step 7.3:** Cập nhật `docs/user-guide.md`: Hướng dẫn vận hành màn hình Khách ra vào và Điểm danh đêm.
-- [ ] **Step 7.4:** Cập nhật `docs/architecture.md`: Thêm sơ đồ kiến trúc phân hệ an ninh trật tự.
-- [ ] **Step 7.5:** Cập nhật `docs/packaging-and-deployment.md`: Bổ sung Release Notes `v2.6.0`.
-- [ ] **Step 7.6:** Chạy đồng bộ GitNexus: `node .gitnexus/run.cjs analyze --index-only`.
-- [ ] **Step 7.7:** Kiểm thử xác nhận cuối: `dotnet test`.
-- [ ] **Step 7.8:** Commit: `docs: finalize Phase 10 visitor and attendance documentation and release notes for v2.6.0`.
-- [ ] **Step 7.9:** Gắn tag phát hành `v2.6.0`.
+- [x] **Step 7.1:** Tạo tài liệu đặc tả `docs/phase10/visitor-and-attendance-spec.md` mô tả quy trình an ninh KTX và nội quy giờ giấc.
+- [x] **Step 7.2:** Cập nhật `README.md`, nâng phiên bản lên `v2.6.0`, cập nhật tổng số test.
+- [x] **Step 7.3:** Cập nhật `docs/user-guide.md`: Hướng dẫn vận hành màn hình Khách ra vào và Điểm danh đêm.
+- [x] **Step 7.4:** Cập nhật `docs/architecture.md`: Thêm sơ đồ kiến trúc phân hệ an ninh trật tự.
+- [x] **Step 7.5:** Cập nhật `docs/packaging-and-deployment.md`: Bổ sung Release Notes `v2.6.0`.
+- [x] **Step 7.6:** Chạy đồng bộ GitNexus: `node .gitnexus/run.cjs analyze --index-only`.
+- [x] **Step 7.7:** Kiểm thử xác nhận cuối: `dotnet test`.
+- [x] **Step 7.8:** Commit: `docs: finalize Phase 10 visitor and attendance documentation and release notes for v2.6.0`.
+- [x] **Step 7.9:** Gắn tag phát hành `v2.6.0`.
