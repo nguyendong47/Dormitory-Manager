@@ -50,7 +50,10 @@ RID="osx-${ARCH}"
 DIST_DIR="$REPO_ROOT/dist/macos-${ARCH}"
 PUBLISH_DIR="$DIST_DIR/publish"
 APP_BUNDLE="$DIST_DIR/DormitoryManager.app"
-VERSION="${VERSION:-2.5.0}"
+if [ -n "$GITHUB_REF_NAME" ]; then
+    VERSION="${GITHUB_REF_NAME#v}"
+fi
+VERSION="${VERSION:-2.6.0}"
 DMG_FILE="$DIST_DIR/DormitoryManager-v${VERSION}-macOS-${ARCH}.dmg"
 
 echo "======================================================================"

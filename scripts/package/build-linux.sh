@@ -24,7 +24,10 @@ fi
 
 RID="${1:-linux-x64}"
 DIST_DIR="$REPO_ROOT/dist/linux-x64"
-VERSION="${VERSION:-2.5.0}"
+if [ -n "$GITHUB_REF_NAME" ]; then
+    VERSION="${GITHUB_REF_NAME#v}"
+fi
+VERSION="${VERSION:-2.6.0}"
 TAR_FILE="$DIST_DIR/DormitoryManager-v${VERSION}-Linux-x64.tar.gz"
 
 echo "======================================================================"
