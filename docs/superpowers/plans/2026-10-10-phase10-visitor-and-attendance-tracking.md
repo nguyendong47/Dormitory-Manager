@@ -157,11 +157,11 @@ classDiagram
 - Test: `tests/Dormitory.UnitTests/ViewModels/MainWindowNavigationPhase10Tests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 5.1:** Đăng ký ViewModel `VisitorListViewModel` và `AttendanceTrackingViewModel` vào DI Container.
-- [ ] **Step 5.2:** Thêm điều hướng trong `MainWindowViewModel.cs`: `NavigateToVisitorsCommand` và `NavigateToAttendanceCommand`.
-- [ ] **Step 5.3:** Cập nhật Sidebar trong `MainWindow.axaml`: Bổ sung 2 mục menu *"👥 Khách ra vào"* và *"📋 Điểm danh KTX"*.
-- [ ] **Step 5.4:** Phân quyền RBAC: Nhân viên quản lý và Admin đều có quyền xem và ghi nhận; chỉ Admin có quyền xóa lịch sử.
-- [ ] **Step 5.5:** Chạy `dotnet test`. Commit: `feat(desktop): integrate Visitor and Attendance navigation into MainWindow sidebar`.
+- [x] **Step 5.1:** Đăng ký ViewModel `VisitorListViewModel` và `AttendanceTrackingViewModel` vào DI Container.
+- [x] **Step 5.2:** Thêm điều hướng trong `MainWindowViewModel.cs`: `NavigateToVisitorsCommand` và `NavigateToAttendanceCommand`.
+- [x] **Step 5.3:** Cập nhật Sidebar trong `MainWindow.axaml`: Bổ sung 2 mục menu *"👥 Khách ra vào"* và *"📋 Điểm danh KTX"*.
+- [x] **Step 5.4:** Phân quyền RBAC: Nhân viên quản lý và Admin đều có quyền xem và ghi nhận; chỉ Admin có quyền xóa lịch sử.
+- [x] **Step 5.5:** Chạy `dotnet test`. Commit: `feat(desktop): integrate Visitor and Attendance navigation into MainWindow sidebar`.
 
 ---
 
@@ -170,11 +170,11 @@ classDiagram
 - Create: `tests/Dormitory.E2ETests/Journeys/VisitorAndAttendanceE2ETests.cs`
 
 **Chi tiết các bước thực hiện:**
-- [ ] **Step 6.1:** Viết kịch bản E2E `Should_CheckIn_And_CheckOut_Visitor_Successfully`: Khách đăng ký vào KTX, hiển thị trong danh sách, check-out thành công.
-- [ ] **Step 6.2:** Viết kịch bản E2E `Should_Detect_And_Highlight_Overstayed_Visitors`: Khách vào KTX trước 22:00 nhưng chưa check-out, hệ thống tự động gắn cờ `Overstayed`.
-- [ ] **Step 6.3:** Viết kịch bản E2E `Should_Record_Night_Attendance_And_Prevent_Duplicate_Date`: Điểm danh cả phòng, lưu thành công, ngăn chặn ghi đè không hợp lệ trong cùng một ngày.
-- [ ] **Step 6.4:** Viết kịch bản E2E `Should_Navigate_Between_Visitor_And_Attendance_Screens`: Chuyển đổi mượt mà giữa các phân hệ trên Sidebar.
-- [ ] **Step 6.5:** Chạy toàn bộ test suite `dotnet test` đảm bảo **100% tests PASS**.
+- [x] **Step 6.1:** Viết kịch bản E2E `Should_CheckIn_And_CheckOut_Visitor_Successfully`: Khách đăng ký vào KTX, hiển thị trong danh sách, check-out thành công.
+- [x] **Step 6.2:** Viết kịch bản E2E `Should_Detect_And_Highlight_Overstayed_Visitors`: Khách vào KTX trước 22:00 nhưng chưa check-out, hệ thống tự động gắn cờ `Overstayed`.
+- [x] **Step 6.3:** Viết kịch bản E2E `Should_Record_Night_Attendance_And_Prevent_Duplicate_Date`: Điểm danh cả phòng, lưu thành công, ngăn chặn ghi đè không hợp lệ trong cùng một ngày.
+- [x] **Step 6.4:** Viết kịch bản E2E `Should_Navigate_Between_Visitor_And_Attendance_Screens`: Chuyển đổi mượt mà giữa các phân hệ trên Sidebar.
+- [x] **Step 6.5:** Chạy toàn bộ test suite `dotnet test` đảm bảo **100% tests PASS**.
 - [ ] **Step 6.6:** Commit: `test(e2e): add automated headless journeys for visitor tracking and room attendance`.
 
 ---

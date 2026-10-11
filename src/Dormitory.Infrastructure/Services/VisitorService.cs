@@ -239,11 +239,29 @@ public class VisitorService : IVisitorService
             .Where(v => v.CheckInTime >= dayStart && v.CheckInTime <= dayEnd)
             .ToListAsync(cancellationToken);
 
+        if (date.HasValue)
+        {
+            return new VisitorSummaryDto
+            {
+                TotalVisitorsToday = todayLogs.Count,
+                ActiveVisitorsCount = todayLogs.Count(v => v.Status == VisitorStatus.InDormitory),
+                OverstayedCount = todayLogs.Count(v => v.Status == VisitorStatus.Overstayed)
+            };
+        }
+
+        var activeCount = await _context.VisitorLogs
+            .AsNoTracking()
+            .CountAsync(v => v.Status == VisitorStatus.InDormitory, cancellationToken);
+
+        var overstayedCount = await _context.VisitorLogs
+            .AsNoTracking()
+            .CountAsync(v => v.Status == VisitorStatus.Overstayed, cancellationToken);
+
         return new VisitorSummaryDto
         {
             TotalVisitorsToday = todayLogs.Count,
-            ActiveVisitorsCount = todayLogs.Count(v => v.Status == VisitorStatus.InDormitory),
-            OverstayedCount = todayLogs.Count(v => v.Status == VisitorStatus.Overstayed)
+            ActiveVisitorsCount = activeCount,
+            OverstayedCount = overstayedCount
         };
     }
 
