@@ -1,0 +1,218 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Dormitory.Desktop.ViewModels"
+             xmlns:dto="using:Dormitory.Application.DTOs"
+             x:Class="Dormitory.Desktop.Views.VisitorListView"
+             x:DataType="vm:VisitorListViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="24">
+        <!-- Header & Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="👥 Quản Lý Khách Ra Vào KTX" FontSize="24" FontWeight="SemiBold"/>
+                <TextBlock Text="Kiểm soát an ninh khách đến thăm sinh viên và cảnh báo lưu trú quá giờ quy định (22:00)" 
+                           Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="13"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Button Content="➕ Đăng ký khách (Check-in)" 
+                        Command="{Binding CheckInCommand}"
+                        Background="#0078D4" 
+                        Foreground="White" 
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="14,8"/>
+                <Button Content="🚪 Check-out khách" 
+                        Command="{Binding CheckOutCommand}"
+                        IsEnabled="{Binding CanCheckOut}"
+                        Background="#D83B01"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="14,8"/>
+                <Button Content="⏰ Quét quá giờ" 
+                        Command="{Binding MarkOverstayedCommand}"
+                        CornerRadius="6"
+                        Padding="14,8"/>
+                <Button Content="🔄 Làm mới" 
+                        Command="{Binding RefreshCommand}"
+                        CornerRadius="6"
+                        Padding="14,8"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- KPI Cards -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*" Margin="0,0,0,16">
+            <!-- KPI 1: Khách đang trong KTX -->
+            <Border Grid.Column="0" Margin="0,0,8,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#DFF6DD" CornerRadius="8" Width="44" Height="44" Margin="0,0,14,0" VerticalAlignment="Center">
+                        <TextBlock Text="🟢" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Khách đang trong KTX" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding ActiveVisitorsCount, StringFormat='{}{0:N0}'}" FontSize="20" FontWeight="Bold" Foreground="#107C41"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- KPI 2: Khách quá giờ giới nghiêm -->
+            <Border Grid.Column="1" Margin="8,0,8,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#FDE7E9" CornerRadius="8" Width="44" Height="44" Margin="0,0,14,0" VerticalAlignment="Center">
+                        <TextBlock Text="⏰" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Khách quá giờ giới nghiêm" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding OverstayedCount, StringFormat='{}{0:N0}'}" FontSize="20" FontWeight="Bold" Foreground="#A80000"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- KPI 3: Tổng lượt khách hôm nay -->
+            <Border Grid.Column="2" Margin="8,0,0,0"
+                    Background="{DynamicResource SystemAltHighColor}"
+                    BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Background="#EBF3FC" CornerRadius="8" Width="44" Height="44" Margin="0,0,14,0" VerticalAlignment="Center">
+                        <TextBlock Text="👥" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Tổng lượt khách hôm nay" Foreground="{DynamicResource SystemBaseMediumColor}" FontSize="12" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding TotalVisitorsToday, StringFormat='{}{0:N0}'}" FontSize="20" FontWeight="Bold" Foreground="#0078D4"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Filter Toolbar -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto" Margin="0,0,0,12" VerticalAlignment="Center">
+            <!-- Ô tìm kiếm từ khóa -->
+            <TextBox Grid.Column="0"
+                     Text="{Binding SearchKeyword}"
+                     Watermark="🔍 Tìm kiếm theo tên khách, CCCD, SĐT, tên sinh viên..."
+                     Margin="0,0,10,0"/>
+
+            <!-- Bộ lọc trạng thái -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,0,10,0">
+                <TextBlock Text="Trạng thái:" VerticalAlignment="Center" FontWeight="Medium" FontSize="13"/>
+                <ComboBox ItemsSource="{Binding StatusFilterOptions}"
+                          SelectedItem="{Binding SelectedStatusFilter}"
+                          Width="140"
+                          VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Bộ lọc phòng -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,0,10,0">
+                <TextBlock Text="Phòng:" VerticalAlignment="Center" FontWeight="Medium" FontSize="13"/>
+                <ComboBox ItemsSource="{Binding RoomFilterOptions}"
+                          SelectedItem="{Binding SelectedRoomFilter}"
+                          Width="130"
+                          PlaceholderText="Tất cả"
+                          VerticalAlignment="Center">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding RoomNumber}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- CheckBox chỉ khách quá giờ -->
+            <CheckBox Grid.Column="3"
+                      Content="Chỉ quá giờ"
+                      IsChecked="{Binding OnlyOverstayed}"
+                      VerticalAlignment="Center"
+                      Margin="0,0,10,0"/>
+
+            <!-- Nút lọc -->
+            <Button Grid.Column="4"
+                    Content="🔍 Lọc dữ liệu"
+                    Command="{Binding LoadVisitorsCommand}"
+                    Margin="0,0,10,0"
+                    CornerRadius="6"
+                    Padding="14,7"/>
+
+            <!-- Trạng thái -->
+            <TextBlock Grid.Column="5"
+                       Text="{Binding StatusMessage}"
+                       Foreground="{DynamicResource SystemBaseMediumColor}"
+                       VerticalAlignment="Center"
+                       FontSize="12"/>
+        </Grid>
+
+        <!-- DataGrid Danh Sách Khách Ra Vào -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource SystemAltHighColor}"
+                BorderBrush="{DynamicResource SystemControlTransientBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+            <DataGrid ItemsSource="{Binding Visitors}"
+                      SelectedItem="{Binding SelectedVisitor}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      GridLinesVisibility="Horizontal"
+                      CanUserResizeColumns="True"
+                      BorderThickness="0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Thời gian vào" 
+                                        Binding="{Binding CheckInTime, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" 
+                                        Width="140"/>
+                    <DataGridTextColumn Header="Thời gian ra" 
+                                        Binding="{Binding CheckOutTime, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" 
+                                        Width="140"/>
+                    <DataGridTextColumn Header="Họ tên khách" 
+                                        Binding="{Binding VisitorName}" 
+                                        FontWeight="SemiBold" 
+                                        Width="160"/>
+                    <DataGridTextColumn Header="Số CCCD / CMND" 
+                                        Binding="{Binding IdentificationNumber}" 
+                                        Width="130"/>
+                    <DataGridTextColumn Header="Số điện thoại" 
+                                        Binding="{Binding PhoneNumber}" 
+                                        Width="120"/>
+                    <DataGridTextColumn Header="Sinh viên thăm" 
+                                        Binding="{Binding StudentName}" 
+                                        Width="150"/>
+                    <DataGridTextColumn Header="Phòng" 
+                                        Binding="{Binding RoomNumber}" 
+                                        Width="80"/>
+                    <!-- Cột hiển thị Badge màu trạng thái -->
+                    <DataGridTemplateColumn Header="Trạng thái" Width="140">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="dto:VisitorLogDto">
+                                <Border Background="{Binding StatusBadgeBackground}"
+                                        CornerRadius="4"
+                                        Padding="8,3"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Margin="4,0">
+                                    <TextBlock Text="{Binding StatusText}"
+                                               Foreground="{Binding StatusBadgeColor}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"/>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Ghi chú" 
+                                        Binding="{Binding Note}" 
+                                        Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

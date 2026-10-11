@@ -163,6 +163,8 @@ public class TestFixture : IDisposable
         services.AddTransient<SystemSettingsViewModel>();
         services.AddTransient<VietQrDialogViewModel>();
         services.AddTransient<PaymentTransactionListViewModel>();
+        services.AddTransient<VisitorListViewModel>();
+        services.AddTransient<VisitorCheckInDialogViewModel>();
         services.AddTransient<MainWindowViewModel>();
 
         ServiceProvider = services.BuildServiceProvider();
@@ -174,6 +176,8 @@ public class TestFixture : IDisposable
     public EquipmentListViewModel CreateEquipmentListViewModel() => GetService<EquipmentListViewModel>();
     public BillListViewModel CreateBillListViewModel() => GetService<BillListViewModel>();
     public PaymentTransactionListViewModel CreatePaymentTransactionListViewModel() => GetService<PaymentTransactionListViewModel>();
+    public VisitorListViewModel CreateVisitorListViewModel() => GetService<VisitorListViewModel>();
+    public VisitorCheckInDialogViewModel CreateVisitorCheckInDialogViewModel() => GetService<VisitorCheckInDialogViewModel>();
     public ViolationListViewModel CreateViolationListViewModel() => GetService<ViolationListViewModel>();
     public ReportListViewModel CreateReportListViewModel() => GetService<ReportListViewModel>();
     public ReportGenerateDialogViewModel CreateReportGenerateDialogViewModel() => GetService<ReportGenerateDialogViewModel>();

@@ -1,0 +1,130 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dormitory.Desktop.ViewModels"
+        x:Class="Dormitory.Desktop.Views.VisitorCheckInDialogWindow"
+        x:DataType="vm:VisitorCheckInDialogViewModel"
+        Title="Đăng Ký Khách Thăm Ký Túc Xá"
+        Width="580"
+        Height="620"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Border Padding="24" Background="{DynamicResource SystemAltHighColor}">
+        <Grid RowDefinitions="Auto,*,Auto">
+            <!-- Header tiêu đề hộp thoại -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16" Spacing="4">
+                <TextBlock Text="👥 ĐĂNG KÝ KHÁCH THĂM KÝ TÚC XÁ"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="#0078D4"/>
+                <TextBlock Text="Ghi nhận thông tin khách đến thăm sinh viên lưu trú và thời điểm vào KTX"
+                           Foreground="{DynamicResource SystemBaseMediumColor}"
+                           FontSize="12"/>
+            </StackPanel>
+
+            <!-- Khối nội dung form nhập liệu -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="14" Margin="0,0,8,0">
+                    <!-- Họ và tên khách -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Họ và tên khách: *" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBox Text="{Binding VisitorName}"
+                                 Watermark="Nhập họ và tên khách đến thăm (ví dụ: Nguyễn Văn A)..."/>
+                    </StackPanel>
+
+                    <!-- Số CCCD / CMND / Hộ chiếu -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Số CCCD / CMND / Hộ chiếu: *" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBox Text="{Binding IdentificationNumber}"
+                                 Watermark="Nhập số giấy tờ tùy thân của khách..."/>
+                    </StackPanel>
+
+                    <!-- Số điện thoại liên hệ -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Số điện thoại liên hệ: *" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBox Text="{Binding PhoneNumber}"
+                                 Watermark="Nhập số điện thoại liên hệ..."/>
+                    </StackPanel>
+
+                    <!-- Chọn phòng cần thăm -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Phòng cần thăm: *" FontWeight="SemiBold" FontSize="12"/>
+                        <ComboBox ItemsSource="{Binding Rooms}"
+                                  SelectedItem="{Binding SelectedRoom}"
+                                  HorizontalAlignment="Stretch"
+                                  PlaceholderText="-- Chọn phòng ký túc xá --">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding RoomNumber}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Chọn sinh viên cần thăm -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Sinh viên được thăm: *" FontWeight="SemiBold" FontSize="12"/>
+                        <ComboBox ItemsSource="{Binding StudentsInRoom}"
+                                  SelectedItem="{Binding SelectedStudent}"
+                                  HorizontalAlignment="Stretch"
+                                  PlaceholderText="-- Chọn sinh viên trong phòng --">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding FullName}" FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding StudentCode, StringFormat='({0})'}" Foreground="{DynamicResource SystemBaseMediumColor}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Ghi chú / Mục đích thăm -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Ghi chú / Mục đích thăm:" FontWeight="Medium" FontSize="12"/>
+                        <TextBox Text="{Binding Note}"
+                                 Height="70"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 Watermark="Nhập mục đích thăm hoặc đồ vật gửi lại phòng bảo vệ..."/>
+                    </StackPanel>
+
+                    <!-- Thông báo lỗi (nếu có) -->
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#D83B01"
+                               FontWeight="Medium"
+                               FontSize="12"
+                               IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Footer: Nút bấm xác nhận & hủy -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" Margin="0,16,0,0">
+                <ProgressBar Grid.Column="0"
+                             IsIndeterminate="True"
+                             IsVisible="{Binding IsLoading}"
+                             Height="4"
+                             VerticalAlignment="Center"
+                             Margin="0,0,16,0"/>
+
+                <Button Grid.Column="1"
+                        Content="Hủy bỏ"
+                        Command="{Binding CancelCommand}"
+                        Margin="0,0,10,0"
+                        CornerRadius="6"
+                        Padding="16,8"/>
+
+                <Button Grid.Column="2"
+                        Content="✓ Xác nhận Đăng Ký"
+                        Command="{Binding ConfirmCheckInCommand}"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        CornerRadius="6"
+                        Padding="18,8"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
